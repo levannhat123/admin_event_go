@@ -19,25 +19,11 @@ class _EventsPageState extends State<EventsPage> {
       "route": RouterPath.eventsList,
     },
     {
-      "title": "Event Details",
-      "icon": Icons.info_outline,
-      "color": Color(0xFFEC4899),
-      "gradient": [Color(0xFFEC4899), Color(0xFFF43F5E)],
-      "route": RouterPath.eventDetails,
-    },
-    {
       "title": "Categories",
       "icon": Icons.category,
       "color": Color(0xFFF59E0B),
       "gradient": [Color(0xFFF59E0B), Color(0xFFEF4444)],
       "route": RouterPath.categories,
-    },
-    {
-      "title": "Ticket Types",
-      "icon": Icons.confirmation_number,
-      "color": Color(0xFF10B981),
-      "gradient": [Color(0xFF10B981), Color(0xFF06B6D4)],
-      "route": RouterPath.ticketTypes,
     },
   ];
 
@@ -51,11 +37,7 @@ class _EventsPageState extends State<EventsPage> {
         backgroundColor: Color(0xFF1E293B),
         title: Text(
           "Event Management",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
       body: SingleChildScrollView(
@@ -63,10 +45,7 @@ class _EventsPageState extends State<EventsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Module Grid
-            SizedBox(
-              height: 400,
-              child: _buildModuleGrid(),
-            ),
+            SizedBox(height: 200, child: _buildModuleGrid()),
 
             // Recent Events Section
             Padding(
@@ -90,10 +69,7 @@ class _EventsPageState extends State<EventsPage> {
                           context.push(RouterPath.eventsList);
                         },
                         icon: Icon(Icons.arrow_forward, color: Color(0xFF6366F1), size: 16),
-                        label: Text(
-                          'View All',
-                          style: TextStyle(color: Color(0xFF6366F1)),
-                        ),
+                        label: Text('View All', style: TextStyle(color: Color(0xFF6366F1))),
                       ),
                     ],
                   ),
@@ -201,10 +177,7 @@ class _EventsPageState extends State<EventsPage> {
       decoration: BoxDecoration(
         color: Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Color(0xFF334155),
-          width: 1,
-        ),
+        border: Border.all(color: Color(0xFF334155), width: 1),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -215,9 +188,7 @@ class _EventsPageState extends State<EventsPage> {
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                ),
+                gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(Icons.event, color: Colors.white, size: 30),
@@ -270,7 +241,11 @@ class _EventsPageState extends State<EventsPage> {
                       SizedBox(width: 4),
                       Text(
                         tickets,
-                        style: TextStyle(color: Color(0xFFEC4899), fontSize: 13, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          color: Color(0xFFEC4899),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       Spacer(),
                       Container(
@@ -349,11 +324,7 @@ class _EventsPageState extends State<EventsPage> {
                       color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Icon(
-                      module['icon'] as IconData,
-                      color: Colors.white,
-                      size: 32,
-                    ),
+                    child: Icon(module['icon'] as IconData, color: Colors.white, size: 32),
                   ),
                   Spacer(),
                   Text(
@@ -367,10 +338,7 @@ class _EventsPageState extends State<EventsPage> {
                   SizedBox(height: 4),
                   Text(
                     'Manage ${module['title']}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withOpacity(0.8),
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.8)),
                   ),
                 ],
               ),

@@ -2,6 +2,8 @@ import 'package:admin_event_go/data/repositories/auth_repository.dart';
 import 'package:admin_event_go/data/repositories/auth_repository_impl.dart';
 import 'package:admin_event_go/data/repositories/event/event_repository.dart';
 import 'package:admin_event_go/data/repositories/event/event_repository_impl.dart';
+import 'package:admin_event_go/data/repositories/category/category_repository.dart';
+import 'package:admin_event_go/data/repositories/category/category_repository_impl.dart';
 import 'package:admin_event_go/domain/usecase/auth/login_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/logout_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/register_usecase.dart';
@@ -13,9 +15,16 @@ import 'package:admin_event_go/domain/usecase/event/update_event_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/delete_event_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/get_event_by_id_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/get_all_events_usecase.dart';
+import 'package:admin_event_go/domain/usecase/category/add_category_usecase.dart';
+import 'package:admin_event_go/domain/usecase/category/update_category_usecase.dart';
+import 'package:admin_event_go/domain/usecase/category/delete_category_usecase.dart';
+import 'package:admin_event_go/domain/usecase/category/get_category_by_id_usecase.dart';
+import 'package:admin_event_go/domain/usecase/category/get_all_categories_usecase.dart';
+import 'package:admin_event_go/domain/usecase/category/watch_all_categories_usecase.dart';
 import 'package:admin_event_go/presentation/view_models/auth_change_notifier.dart';
 import 'package:admin_event_go/presentation/view_models/auth_view_model.dart';
 import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
+import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
 import 'package:admin_event_go/data/services/supabase_storage_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +39,7 @@ void setupDependencies(GoRouter router) {
   getIt.registerSingleton<AuthChangeNotifier>(AuthChangeNotifier());
   getIt.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   getIt.registerLazySingleton<EventRepository>(() => EventRepositoryImpl());
+  getIt.registerLazySingleton<CategoryRepository>(() => CategoryRepositoryImpl());
 
   // Auth UseCases
   getIt.registerLazySingleton(() => LoginUseCase(getIt<AuthRepository>()));
@@ -45,6 +55,14 @@ void setupDependencies(GoRouter router) {
   getIt.registerLazySingleton(() => DeleteEventUsecase(getIt<EventRepository>()));
   getIt.registerLazySingleton(() => GetEventByIdUsecase(getIt<EventRepository>()));
   getIt.registerLazySingleton(() => GetAllEventsUsecase(getIt<EventRepository>()));
+
+  // Category UseCases
+  getIt.registerLazySingleton(() => AddCategoryUsecase(getIt<CategoryRepository>()));
+  getIt.registerLazySingleton(() => UpdateCategoryUsecase(getIt<CategoryRepository>()));
+  getIt.registerLazySingleton(() => DeleteCategoryUsecase(getIt<CategoryRepository>()));
+  getIt.registerLazySingleton(() => GetCategoryByIdUsecase(getIt<CategoryRepository>()));
+  getIt.registerLazySingleton(() => GetAllCategoriesUsecase(getIt<CategoryRepository>()));
+  getIt.registerLazySingleton(() => WatchAllCategoriesUsecase(getIt<CategoryRepository>()));
 
   // ViewModels
   getIt.registerFactory(() => AuthViewModel(
@@ -63,5 +81,14 @@ void setupDependencies(GoRouter router) {
     deleteEventUsecase: getIt<DeleteEventUsecase>(),
     getEventByIdUsecase: getIt<GetEventByIdUsecase>(),
     getAllEventsUsecase: getIt<GetAllEventsUsecase>(),
+  ));
+
+  getIt.registerFactory(() => CategoryViewModel(
+    addCategoryUsecase: getIt<AddCategoryUsecase>(),
+    updateCategoryUsecase: getIt<UpdateCategoryUsecase>(),
+    deleteCategoryUsecase: getIt<DeleteCategoryUsecase>(),
+    getCategoryByIdUsecase: getIt<GetCategoryByIdUsecase>(),
+    getAllCategoriesUsecase: getIt<GetAllCategoriesUsecase>(),
+    watchAllCategoriesUsecase: getIt<WatchAllCategoriesUsecase>(),
   ));
 }

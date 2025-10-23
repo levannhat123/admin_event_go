@@ -25,7 +25,7 @@ class AppRouter {
   final GoRouter router;
   AppRouter(AuthChangeNotifier authNotifier)
     : router = GoRouter(
-        initialLocation: RouterPath.login,
+        initialLocation: RouterPath.dashboard,
         debugLogDiagnostics: true,
         routes: [
           GoRoute(path: RouterPath.login, builder: (context, state) => LoginScreen()),

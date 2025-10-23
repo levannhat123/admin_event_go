@@ -1,4 +1,11 @@
+import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/widgets/custom_no_data.dart';
 import 'package:flutter/material.dart';
+import 'package:admin_event_go/data/models/category/category_model.dart';
+import 'package:admin_event_go/presentation/pages/events/category_edit_page.dart';
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({Key? key}) : super(key: key);
@@ -8,15 +15,18 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
+  // Using CategoryViewModel via BaseView + getIt
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF0F172A),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF1E293B),
+        centerTitle: true,
         title: Text(
-          'Categories',
+          'Danh mục',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -28,15 +38,33 @@ class _CategoriesPageState extends State<CategoriesPage> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 5,
-        itemBuilder: (context, index) => _buildCategoryItem(index),
+      body: BaseView<CategoryViewModel>(
+        padding: false,
+        viewModelBuilder: () => getIt<CategoryViewModel>(),
+        onModelReady: (vm) => vm.watchAll(),
+        builder: (context, vm, child) {
+          if (vm.isBusy && vm.categories.isEmpty) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (vm.categories.isEmpty) {
+            return _buildEmpty(vm);
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => vm.getAll(),
+            backgroundColor: Color(0xFF1E293B),
+            color: Color(0xFF6366F1),
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: vm.categories.length,
+              itemBuilder: (context, index) => _buildCategoryItem(vm, vm.categories[index]),
+            ),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Show dialog to add category
-        },
+        onPressed: () => _openEditPage(),
         backgroundColor: Color(0xFFF59E0B),
         icon: const Icon(Icons.add, color: Colors.white),
         label: Text(
@@ -47,14 +75,20 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  Widget _buildCategoryItem(int index) {
+  Widget _buildEmpty(CategoryViewModel? vm) {
+    return Center(
+      child: Center(child: CustomNoData()),
+    );
+  }
+
+  Widget _buildCategoryItem(CategoryViewModel vm, CategoryModel category) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Color(0xFFF59E0B).withOpacity(0.3),
+          color: Color.fromRGBO(245, 158, 11, 0.3),
           width: 1,
         ),
       ),
@@ -63,7 +97,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
         leading: Container(
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Color(0xFFF59E0B).withOpacity(0.2),
+            color: Color.fromRGBO(245, 158, 11, 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
@@ -73,7 +107,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           ),
         ),
         title: Text(
-          "Category ${index + 1}",
+          category.name,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -83,10 +117,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
-            'Category description ${index + 1}',
+            'ID: ${category.id}',
             style: TextStyle(
               fontSize: 14,
-              color: Colors.white.withOpacity(0.6),
+              color: Color.fromRGBO(255, 255, 255, 0.6),
             ),
           ),
         ),
@@ -95,14 +129,60 @@ class _CategoriesPageState extends State<CategoriesPage> {
           children: [
             IconButton(
               icon: Icon(Icons.edit, color: Color(0xFFF59E0B)),
-              onPressed: () {},
+              onPressed: () => _openEditPage(category: category),
             ),
             IconButton(
               icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {},
+              onPressed: () => _confirmDelete(vm, category),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Navigate to full-screen add/edit page. Returns CategoryModel when saved.
+  Future<void> _openEditPage({CategoryModel? category}) async {
+    final result = await Navigator.of(context).push<CategoryModel>(
+      MaterialPageRoute(builder: (context) => CategoryEditPage(category: category)),
+    );
+
+    if (result != null) {
+      final vm = getIt<CategoryViewModel>();
+      final exists = vm.categories.any((c) => c.id == result.id);
+      if (exists) {
+        await vm.update(result.id, result);
+      } else {
+        await vm.add(result);
+      }
+    }
+  }
+
+  void _confirmDelete(CategoryViewModel vm, CategoryModel category) {
+    showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Color(0xFF0F172A),
+        title: Text('Delete category', style: TextStyle(color: Colors.white)),
+        content: Text('Are you sure you want to delete "${category.name}"?', style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Cancel', style: TextStyle(color: Colors.white70)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              Navigator.of(context).pop();
+              final success = await vm.delete(category.id);
+              if (!success) {
+                final message = vm.errorMessage ?? 'Failed to delete category';
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+              }
+            },
+            child: Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }
