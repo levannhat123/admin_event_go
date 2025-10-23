@@ -1,6 +1,10 @@
+import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 
 class EventsPage extends StatefulWidget {
   const EventsPage({Key? key}) : super(key: key);
@@ -74,6 +78,7 @@ class _EventsPageState extends State<EventsPage> {
                     ],
                   ),
                   SizedBox(height: 16),
+                  // Use real events from EventViewModel instead of static data
                   _buildRecentEventsList(),
                 ],
               ),
@@ -103,181 +108,326 @@ class _EventsPageState extends State<EventsPage> {
   }
 
   Widget _buildRecentEventsList() {
-    final recentEvents = [
-      {
-        'title': 'Summer Music Festival 2024',
-        'date': 'Jun 15, 2024',
-        'status': 'Live',
-        'statusColor': Color(0xFF10B981),
-        'tickets': '450/500',
-        'category': 'Music',
-      },
-      {
-        'title': 'Tech Conference Asia',
-        'date': 'Jun 20, 2024',
-        'status': 'Upcoming',
-        'statusColor': Color(0xFF6366F1),
-        'tickets': '320/400',
-        'category': 'Technology',
-      },
-      {
-        'title': 'Food & Wine Expo',
-        'date': 'Jun 25, 2024',
-        'status': 'Upcoming',
-        'statusColor': Color(0xFF6366F1),
-        'tickets': '180/300',
-        'category': 'Food',
-      },
-      {
-        'title': 'Art Gallery Opening',
-        'date': 'Jun 10, 2024',
-        'status': 'Completed',
-        'statusColor': Color(0xFF64748B),
-        'tickets': '250/250',
-        'category': 'Arts',
-      },
-      {
-        'title': 'Sports Championship Final',
-        'date': 'Jul 5, 2024',
-        'status': 'Upcoming',
-        'statusColor': Color(0xFF6366F1),
-        'tickets': '890/1000',
-        'category': 'Sports',
-      },
-    ];
+    return BaseView<EventViewModel>(
+      viewModelBuilder: () => getIt<EventViewModel>(),
+      onModelReady: (vm) => vm.watchAll(),
+      builder: (context, vm, child) {
+        if (vm.isBusy && vm.events.isEmpty) return Center(child: CircularProgressIndicator());
+        if (vm.events.isEmpty) return Center(child: Text('No events', style: TextStyle(color: Colors.white60)));
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: recentEvents.length,
-      itemBuilder: (context, index) {
-        final event = recentEvents[index];
-        return _buildEventItem(
-          event['title'] as String,
-          event['date'] as String,
-          event['status'] as String,
-          event['statusColor'] as Color,
-          event['tickets'] as String,
-          event['category'] as String,
+        final now = DateTime.now();
+        final sorted = List<EventDetailModel>.from(vm.events);
+        sorted.sort((a, b) {
+          final da = a.startTime?.difference(now).abs() ?? Duration(days: 36500);
+          final db = b.startTime?.difference(now).abs() ?? Duration(days: 36500);
+          return da.compareTo(db);
+        });
+        final recent = sorted.take(5).toList();
+
+        // Use a Column of cards instead of ListView inside SingleChildScrollView
+        // to avoid RenderBox not laid out errors from unbounded height.
+        return Column(
+          children: recent.map((e) => _buildRecentCard(e)).toList(),
         );
       },
     );
   }
 
-  Widget _buildEventItem(
-    String title,
-    String date,
-    String status,
-    Color statusColor,
-    String tickets,
-    String category,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFF334155), width: 1),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // Event Image/Icon
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(Icons.event, color: Colors.white, size: 30),
-            ),
-            SizedBox(width: 16),
+  Widget _buildRecentCard(EventDetailModel e) {
+    String dateLine = '';
+    if (e.startTime != null) {
+      final d = e.startTime!.toLocal();
+      final day = d.day.toString().padLeft(2, '0');
+      final month = d.month.toString().padLeft(2, '0');
+      final hour = d.hour.toString().padLeft(2, '0');
+      final minute = d.minute.toString().padLeft(2, '0');
+      dateLine = '$day/$month • $hour:$minute';
+    }
 
-            // Event Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
+    final subtitle = e.venue ?? e.orgName ?? e.address ?? '';
+    final category = e.categories?.name ?? '';
+    final price = e.isFree == true ? 'Free' : (e.minTicketPrice != null ? '${e.minTicketPrice}đ' : '-');
+
+    Color statusColor;
+    Color statusBgColor;
+    switch ((e.status ?? '').toLowerCase()) {
+      case 'live':
+        statusColor = Color(0xFF10B981);
+        statusBgColor = Color(0xFF10B981).withAlpha(25);
+        break;
+      case 'completed':
+        statusColor = Color(0xFF6B7280);
+        statusBgColor = Color(0xFF6B7280).withAlpha(25);
+        break;
+      case 'upcoming':
+        statusColor = Color(0xFF3B82F6);
+        statusBgColor = Color(0xFF3B82F6).withAlpha(25);
+        break;
+      default:
+        statusColor = Color(0xFF9CA3AF);
+        statusBgColor = Color(0xFF9CA3AF).withAlpha(25);
+    }
+
+    return Stack(
+      children: [
+        Container(
+          height: 130,
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF1E293B),
+                Color(0xFF0F172A),
+              ],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: Color(0xFF334155).withAlpha(80),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFF000000).withAlpha(40),
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+              BoxShadow(
+                color: Color(0xFF6366F1).withAlpha(15),
+                blurRadius: 16,
+                offset: Offset(0, 0),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Row(
+              children: [
+                // Banner / thumbnail with gradient overlay
+                Container(
+                  width: 120,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 8),
-                  Row(
+                  child: Stack(
                     children: [
-                      Icon(Icons.calendar_today, size: 14, color: Colors.white60),
-                      SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          date,
-                          style: TextStyle(color: Colors.white60, fontSize: 13),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Icon(Icons.category, size: 14, color: Colors.white60),
-                      SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          category,
-                          style: TextStyle(color: Colors.white60, fontSize: 13),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.confirmation_number, size: 14, color: Color(0xFFEC4899)),
-                      SizedBox(width: 4),
-                      Text(
-                        tickets,
-                        style: TextStyle(
-                          color: Color(0xFFEC4899),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Spacer(),
+                      // Image or placeholder
+                      e.bannerURL != null && e.bannerURL!.isNotEmpty
+                          ? Image.network(
+                              e.bannerURL!,
+                              width: 130,
+                              height: 130,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, o, s) => _buildImagePlaceholder(),
+                            )
+                          : _buildImagePlaceholder(),
+
+                      // Gradient overlay
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          status,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Color(0xFF000000).withAlpha(40),
+                            ],
                           ),
                         ),
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
 
-            // Actions
-            SizedBox(width: 8),
-            IconButton(
-              icon: Icon(Icons.arrow_forward_ios, color: Color(0xFF6366F1), size: 18),
-              onPressed: () {},
+                // Info section
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Top section: Title
+                        Flexible(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                e.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+
+                              // Date and venue with improved icons
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF6366F1).withAlpha(30),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Icon(
+                                      Icons.schedule,
+                                      size: 9,
+                                      color: Color(0xFF6366F1),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Expanded(
+                                    child: Text(
+                                      dateLine,
+                                      style: TextStyle(
+                                        color: Color(0xFFE2E8F0),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFEC4899).withAlpha(30),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Icon(
+                                      Icons.location_on,
+                                      size: 9,
+                                      color: Color(0xFFEC4899),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Expanded(
+                                    child: Text(
+                                      subtitle.isEmpty ? 'No location' : subtitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Color(0xFFE2E8F0),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Bottom row: category, price, action
+                        Flexible(
+                          flex: 1,
+                          child: Row(
+                            children: [
+                              if (category.isNotEmpty)
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xFF6366F1).withAlpha(30),
+                                        Color(0xFF8B5CF6).withAlpha(30),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: Color(0xFF6366F1).withAlpha(60),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    category,
+                                    style: TextStyle(
+                                      color: Color(0xFF6366F1),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              if (category.isNotEmpty) SizedBox(width: 6),
+
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFEC4899).withAlpha(20),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  price,
+                                  style: TextStyle(
+                                    color: Color(0xFFEC4899),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
+
+                              Spacer(),
+
+                              GestureDetector(
+                                onTap: () {
+                                  // Navigate to event details
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xFF6366F1),
+                                        Color(0xFF8B5CF6),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xFF6366F1).withAlpha(60),
+                                        blurRadius: 6,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+
+
+      ],
     );
   }
 
@@ -296,7 +446,7 @@ class _EventsPageState extends State<EventsPage> {
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: (module['color'] as Color).withOpacity(0.3),
+              color: (module['color'] as Color).withAlpha((0.3 * 255).round()),
               blurRadius: 20,
               offset: Offset(0, 10),
             ),
@@ -309,7 +459,7 @@ class _EventsPageState extends State<EventsPage> {
               bottom: -20,
               child: Icon(
                 module['icon'] as IconData,
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withAlpha((0.2 * 255).round()),
                 size: 120,
               ),
             ),
@@ -321,7 +471,7 @@ class _EventsPageState extends State<EventsPage> {
                   Container(
                     padding: EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withAlpha((0.2 * 255).round()),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(module['icon'] as IconData, color: Colors.white, size: 32),
@@ -338,9 +488,54 @@ class _EventsPageState extends State<EventsPage> {
                   SizedBox(height: 4),
                   Text(
                     'Manage ${module['title']}',
-                    style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.8)),
+                    style: TextStyle(fontSize: 12, color: Colors.white.withAlpha((0.8 * 255).round())),
                   ),
                 ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 130,
+      height: 130,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF6366F1).withAlpha(30),
+            Color(0xFF8B5CF6).withAlpha(30),
+          ],
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Color(0xFF6366F1).withAlpha(40),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                Icons.event,
+                color: Color(0xFF6366F1),
+                size: 28,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Event',
+              style: TextStyle(
+                color: Color(0xFF6366F1),
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ],

@@ -1,10 +1,8 @@
-
 import 'package:admin_event_go/presentation/pages/auth/forgot_password_screen.dart';
 import 'package:admin_event_go/presentation/pages/auth/login_screen.dart';
 import 'package:admin_event_go/presentation/pages/auth/new_password_screen.dart';
 import 'package:admin_event_go/presentation/pages/auth/otp_verification_screen.dart';
 import 'package:admin_event_go/presentation/pages/auth/sign_up_screen.dart';
-import 'package:admin_event_go/presentation/pages/dashboad/dashboard_screen.dart';
 import 'package:admin_event_go/presentation/pages/dashboard_page.dart';
 import 'package:admin_event_go/presentation/pages/events_page.dart';
 import 'package:admin_event_go/presentation/pages/events/events_list_page.dart';
@@ -53,7 +51,7 @@ class AppRouter {
           GoRoute(
             path: RouterPath.addEvent,
             name: RouterName.addEvent,
-            builder: (context, state) => AddEventPage(),
+            builder: (context, state) => AddEventPage(isEditing: false),
           ),
           GoRoute(
             path: RouterPath.eventsList,
@@ -109,7 +107,9 @@ class AppRouter {
             builder: (context, state, child) => MainScreen(child: child),
           ),
         ],
-        redirect: (context, state) async {},
+        redirect: (context, state) async {
+          return null;
+        },
         refreshListenable: authNotifier,
       ) {
       }

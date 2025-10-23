@@ -13,6 +13,8 @@ import 'package:admin_event_go/presentation/widgets/ticket_type_item_widget.dart
 import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/data/services/supabase_storage_service.dart';
 import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +22,9 @@ import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_colors.dart';
 
 class AddEventPage extends StatefulWidget {
-  const AddEventPage({super.key});
+  final EventDetailModel? event; // nullable: if provided, page works in edit mode
+  final bool? isEditing; // optional explicit flag to indicate edit mode
+  const AddEventPage({super.key, this.event, this.isEditing});
 
   @override
   State<AddEventPage> createState() => _AddEventPageState();
@@ -37,7 +41,7 @@ class _AddEventPageState extends State<AddEventPage> {
   final idLocationController = TextEditingController();
 
   String? status = 'ACTIVE';
-  String? category;
+  CategoryModel? selectedCategory;
   String? ticketType;
   bool isFree = false;
   bool isHot = false;
@@ -50,6 +54,11 @@ class _AddEventPageState extends State<AddEventPage> {
   File? logoImageFile;
 
   final _formKey = GlobalKey<FormState>();
+
+  bool get isEdit => widget.isEditing ?? widget.event != null;
+
+  String? _existingBannerUrl;
+  String? _existingLogoUrl;
 
   Future<void> _selectDateTime(BuildContext context, bool isStartTime) async {
     final DateTime? pickedDate = await showDatePicker(
@@ -128,17 +137,13 @@ class _AddEventPageState extends State<AddEventPage> {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.grey.shade100,
+           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey.shade300),
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: const Color(0xFF4257b4),
-              size: 24,
-            ),
+            Icon(icon, color: const Color(0xFF4257b4), size: 24),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -166,11 +171,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 ],
               ),
             ),
-            Icon(
-              Icons.calendar_today,
-              color: Colors.grey.shade400,
-              size: 20,
-            ),
+            Icon(Icons.calendar_today, color: Colors.grey.shade400, size: 20),
           ],
         ),
       ),
@@ -182,11 +183,7 @@ class _AddEventPageState extends State<AddEventPage> {
       padding: const EdgeInsets.only(bottom: 12, top: 8),
       child: Text(
         title,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF0F172A),
-        ),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
       ),
     );
   }
@@ -194,10 +191,7 @@ class _AddEventPageState extends State<AddEventPage> {
   Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Divider(
-        color: Colors.grey.shade300,
-        thickness: 1,
-      ),
+      child: Divider(color: Colors.grey.shade300, thickness: 1),
     );
   }
 
@@ -233,7 +227,9 @@ class _AddEventPageState extends State<AddEventPage> {
       return;
     }
 
-    if (bannerImageFile == null) {
+    // Require banner either new file or existing url when editing
+    if (bannerImageFile == null &&
+        !(isEdit && _existingBannerUrl != null && _existingBannerUrl!.isNotEmpty)) {
       _showErrorDialog('Vui lòng chọn ảnh banner');
       return;
     }
@@ -243,7 +239,7 @@ class _AddEventPageState extends State<AddEventPage> {
       return;
     }
 
-    if (category == null) {
+    if (selectedCategory == null) {
       _showErrorDialog('Vui lòng chọn danh mục');
       return;
     }
@@ -253,54 +249,58 @@ class _AddEventPageState extends State<AddEventPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
       final storageService = getIt<SupabaseStorageService>();
       final eventViewModel = getIt<EventViewModel>();
 
-      // Upload banner image to Supabase
+      // Upload banner image to Supabase (if new file chosen), otherwise keep existing URL when editing
       String? bannerUrl;
+      // Debug: log current image state
+      print('[AddEventPage] bannerImageFile: ${bannerImageFile?.path}');
+      print('[AddEventPage] _existingBannerUrl: $_existingBannerUrl');
       if (bannerImageFile != null) {
         bannerUrl = await storageService.uploadImage(
           imageFile: bannerImageFile!,
           bucket: 'event_go_image',
           folder: 'banners',
         );
+        print('[AddEventPage] uploaded bannerUrl: $bannerUrl');
+      } else if (isEdit) {
+        bannerUrl = _existingBannerUrl;
+        print('[AddEventPage] using existing bannerUrl: $bannerUrl');
       }
 
-      // Upload logo image to Supabase (if exists)
+      // Upload logo image to Supabase (if new file chosen), otherwise keep existing URL when editing
       String? logoUrl;
+      print('[AddEventPage] logoImageFile: ${logoImageFile?.path}');
+      print('[AddEventPage] _existingLogoUrl: $_existingLogoUrl');
       if (logoImageFile != null) {
         logoUrl = await storageService.uploadImage(
           imageFile: logoImageFile!,
           bucket: 'event_go_image',
           folder: 'logos',
         );
+        print('[AddEventPage] uploaded logoUrl: $logoUrl');
+      } else if (isEdit) {
+        logoUrl = _existingLogoUrl;
+        print('[AddEventPage] using existing logoUrl: $logoUrl');
       }
 
       // Create event object
-      final eventId = const Uuid().v4();
+      final eventId = isEdit ? widget.event!.id : const Uuid().v4();
       final event = EventDetailModel(
         id: eventId,
         title: titleController.text.trim(),
         bannerURL: bannerUrl,
         description: descController.text.trim(),
         venue: locationController.text.trim(),
-        categories: CategoryModel(
-          id: category == 'Hội thảo' ? '1' : category == 'Ca nhạc' ? '2' : '3',
-          name: category!,
-        ),
-        address: addressController.text.trim().isNotEmpty
-            ? addressController.text.trim()
-            : null,
+        categories: selectedCategory!,
+        address: addressController.text.trim().isNotEmpty ? addressController.text.trim() : null,
         orgLogoURL: logoUrl,
-        orgName: orgNameController.text.trim().isNotEmpty
-            ? orgNameController.text.trim()
-            : null,
+        orgName: orgNameController.text.trim().isNotEmpty ? orgNameController.text.trim() : null,
         orgDescription: orgDescController.text.trim().isNotEmpty
             ? orgDescController.text.trim()
             : null,
@@ -317,9 +317,15 @@ class _AddEventPageState extends State<AddEventPage> {
             : null,
         isHot: isHot,
       );
+      print('[AddEventPage] event.bannerURL before save: ${event.bannerURL}');
 
-      // Save event to Firebase
-      final success = await eventViewModel.addEvent(event);
+      // Save event to Firebase (add or update depending on mode)
+      bool success;
+      if (isEdit) {
+        success = await eventViewModel.updateEvent(eventId, event);
+      } else {
+        success = await eventViewModel.addEvent(event);
+      }
 
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
@@ -342,12 +348,7 @@ class _AddEventPageState extends State<AddEventPage> {
       builder: (context) => AlertDialog(
         title: const Text('Lỗi'),
         content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Đóng'))],
       ),
     );
   }
@@ -401,10 +402,7 @@ class _AddEventPageState extends State<AddEventPage> {
         title: const Text('Xác nhận xóa'),
         content: const Text('Bạn có chắc chắn muốn xóa loại vé này?'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
           TextButton(
             onPressed: () {
               setState(() {
@@ -412,14 +410,44 @@ class _AddEventPageState extends State<AddEventPage> {
               });
               Navigator.pop(context);
             },
-            child: const Text(
-              'Xóa',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // If editing, prefill fields from provided event
+    if (isEdit) {
+      final e = widget.event!;
+      // Debug logs to verify incoming event data
+      print(
+        '[AddEventPage] initState editing event id=${e.id} title=${e.title} bannerURL=${e.bannerURL} logoURL=${e.orgLogoURL}',
+      );
+      titleController.text = e.title;
+      descController.text = e.description ?? '';
+      locationController.text = e.venue ?? '';
+      addressController.text = e.address ?? '';
+      orgNameController.text = e.orgName ?? '';
+      orgDescController.text = e.orgDescription ?? '';
+      minPriceController.text = e.minTicketPrice?.toString() ?? '';
+      idLocationController.text = e.locationId ?? '';
+      status = e.status ?? status;
+      selectedCategory = e.categories;
+      ticketTypes = e.ticketType ?? [];
+      isFree = e.isFree ?? false;
+      isHot = e.isHot ?? false;
+      startTime = e.startTime;
+      endTime = e.endTime;
+      _existingBannerUrl = e.bannerURL;
+      _existingLogoUrl = e.orgLogoURL;
+      print(
+        '[AddEventPage] existingBannerUrl=$_existingBannerUrl existingLogoUrl=$_existingLogoUrl',
+      );
+    }
   }
 
   @override
@@ -428,12 +456,9 @@ class _AddEventPageState extends State<AddEventPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
-        title: const Text('Thêm sự kiện mới'),
+        title: Text(isEdit ? 'Chỉnh sửa sự kiện' : 'Thêm sự kiện mới'),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
+        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
       ),
       body: Form(
         key: _formKey,
@@ -446,335 +471,351 @@ class _AddEventPageState extends State<AddEventPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                    // === THÔNG TIN CƠ BẢN ===
-                    _buildSectionTitle('📋 Thông tin cơ bản'),
-                    AppTextField(
-                      lableText: 'Tiêu đề',
-                      controller: titleController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
+                      // === THÔNG TIN CƠ BẢN ===
+                      _buildSectionTitle('📋 Thông tin cơ bản'),
+                      AppTextField(
+                        lableText: 'Tiêu đề',
+                        controller: titleController,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
+                      const SizedBox(height: 10),
 
-                    // Ảnh banner
-                    ImagePickerWidget(
-                      label: 'Ảnh banner sự kiện',
-                      imageFile: bannerImageFile,
-                      height: 180,
-                      onImageSelected: (file) {
-                        setState(() {
-                          bannerImageFile = file;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
+                      // Ảnh banner
+                      ImagePickerWidget(
+                        label: 'Ảnh banner sự kiện',
+                        imageFile: bannerImageFile,
+                        imageUrl: _existingBannerUrl,
+                        height: 180,
+                        onImageSelected: (file) {
+                          setState(() {
+                            bannerImageFile = file;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10),
 
-                    AppTextField(
-                      lableText: 'Mô tả sự kiện',
-                      controller: descController,
-                      maxLines: 4,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
+                      AppTextField(
+                        lableText: 'Mô tả sự kiện',
+                        controller: descController,
+                        maxLines: 4,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
+                      const SizedBox(height: 10),
 
-                    CustomDropdown<String>(
-                      label: 'Trạng thái',
-                      items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
-                      value: status,
-                      getLabel: (v) {
-                        switch (v) {
-                          case 'ACTIVE':
-                            return 'Đang hoạt động';
-                          case 'INACTIVE':
-                            return 'Tạm dừng';
-                          case 'COMPLETED':
-                            return 'Đã kết thúc';
-                          default:
-                            return v;
-                        }
-                      },
-                      onChanged: (v) => setState(() => status = v),
-                    ),
-                    const SizedBox(height: 10),
+                      CustomDropdown<String>(
+                        label: 'Trạng thái',
+                        items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
+                        value: status,
+                        getLabel: (v) {
+                          switch (v) {
+                            case 'ACTIVE':
+                              return 'Đang hoạt động';
+                            case 'INACTIVE':
+                              return 'Tạm dừng';
+                            case 'COMPLETED':
+                              return 'Đã kết thúc';
+                            default:
+                              return v;
+                          }
+                        },
+                        onChanged: (v) => setState(() => status = v),
+                      ),
+                      const SizedBox(height: 10),
 
-                    CustomDropdown<String>(
-                      label: 'Danh mục',
-                      items: ['Hội thảo', 'Ca nhạc', 'Thể thao'],
-                      value: category,
-                      getLabel: (v) => v,
-                      onChanged: (v) => setState(() => category = v),
-                    ),
+                      // Danh mục (realtime dropdown provided by CategoryViewModel below
+                      BaseView<CategoryViewModel>(
+                        padding: false,
+                        viewModelBuilder: () => getIt<CategoryViewModel>(),
+                        onModelReady: (vm) => vm.watchAll(),
+                        builder: (context, vm, child) {
+                          if (vm.isBusy && vm.categories.isEmpty) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Center(
+                                child: SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              ),
+                            );
+                          }
 
-                    _buildDivider(),
+                          return CustomDropdown<CategoryModel>(
+                            label: 'Danh mục',
+                            items: vm.categories,
+                            value: selectedCategory,
+                            getLabel: (c) => c.name,
+                            onChanged: (v) => setState(() => selectedCategory = v),
+                          );
+                        },
+                      ),
 
-                    // === ĐỊA ĐIỂM ===
-                    _buildSectionTitle('📍 Địa điểm tổ chức'),
-                    AppTextField(
-                      lableText: 'Địa điểm tổ chức (Venue)',
-                      controller: locationController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
+                      _buildDivider(),
 
-                    AppTextField(
-                      lableText: 'Địa chỉ chi tiết',
-                      controller: addressController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
+                      // === ĐỊA ĐIỂM ===
+                      _buildSectionTitle('📍 Địa điểm tổ chức'),
+                      AppTextField(
+                        lableText: 'Địa điểm tổ chức (Venue)',
+                        controller: locationController,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
+                      const SizedBox(height: 10),
 
-                    AppTextField(
-                      lableText: 'ID địa điểm',
-                      controller: idLocationController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
+                      AppTextField(
+                        lableText: 'Địa chỉ chi tiết',
+                        controller: addressController,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
+                      const SizedBox(height: 10),
 
-                    _buildDivider(),
+                      AppTextField(
+                        lableText: 'ID địa điểm',
+                        controller: idLocationController,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
 
-                    // === THỜI GIAN ===
-                    _buildSectionTitle('🕒 Thời gian'),
-                    _buildDateTimeField(
-                      label: 'Thời gian bắt đầu',
-                      dateTime: startTime,
-                      onTap: () => _selectDateTime(context, true),
-                      icon: Icons.access_time,
-                    ),
-                    const SizedBox(height: 10),
+                      _buildDivider(),
 
-                    _buildDateTimeField(
-                      label: 'Thời gian kết thúc',
-                      dateTime: endTime,
-                      onTap: () => _selectDateTime(context, false),
-                      icon: Icons.event_available,
-                    ),
+                      // === THỜI GIAN ===
+                      _buildSectionTitle('🕒 Thời gian'),
+                      _buildDateTimeField(
+                        label: 'Thời gian bắt đầu',
+                        dateTime: startTime,
+                        onTap: () => _selectDateTime(context, true),
+                        icon: Icons.access_time,
+                      ),
+                      const SizedBox(height: 10),
 
-                    _buildDivider(),
+                      _buildDateTimeField(
+                        label: 'Thời gian kết thúc',
+                        dateTime: endTime,
+                        onTap: () => _selectDateTime(context, false),
+                        icon: Icons.event_available,
+                      ),
 
-                    // === THÔNG TIN VÉ ===
-                    _buildSectionTitle('💰 Thông tin giá vé'),
-                    AppTextField(
-                      lableText: 'Giá vé tối thiểu (VNĐ)',
-                      controller: minPriceController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
+                      _buildDivider(),
 
-                    CustomSwitch(
-                      label: 'Sự kiện miễn phí',
-                      value: isFree,
-                      onChanged: (v) => setState(() => isFree = v),
-                    ),
+                      // === THÔNG TIN VÉ ===
+                      _buildSectionTitle('💰 Thông tin giá vé'),
+                      AppTextField(
+                        lableText: 'Giá vé tối thiểu (VNĐ)',
+                        controller: minPriceController,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
+                      const SizedBox(height: 10),
 
-                    _buildDivider(),
+                      CustomSwitch(
+                        label: 'Sự kiện miễn phí',
+                        value: isFree,
+                        onChanged: (v) => setState(() => isFree = v),
+                      ),
 
-                    // === QUẢN LÝ LOẠI VÉ ===
-                    _buildSectionTitle('🎫 Quản lý loại vé'),
+                      _buildDivider(),
 
-                    // Nút thêm loại vé
-                    InkWell(
-                      onTap: () => _showAddEditTicketTypeDialog(),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4257b4).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF4257b4),
-                            width: 2,
-                            style: BorderStyle.solid,
+                      // === QUẢN LÝ LOẠI VÉ ===
+                      _buildSectionTitle('🎫 Quản lý loại vé'),
+
+                      // Nút thêm loại vé
+                      InkWell(
+                        onTap: () => _showAddEditTicketTypeDialog(),
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4257b4).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: const Color(0xFF4257b4),
+                              width: 2,
+                              style: BorderStyle.solid,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF4257b4),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(Icons.add, color: Colors.white, size: 24),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Thêm loại vé mới',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF4257b4),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4257b4),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Thêm loại vé mới',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF4257b4),
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    // Danh sách loại vé
-                    if (ticketTypes.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.confirmation_number_outlined,
-                              size: 48,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Chưa có loại vé nào',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
+                      // Danh sách loại vé
+                      if (ticketTypes.isEmpty)
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade50,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.confirmation_number_outlined,
+                                size: 48,
+                                color: Colors.grey.shade400,
                               ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Nhấn nút "Thêm loại vé mới" để bắt đầu',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade500,
+                              const SizedBox(height: 12),
+                              Text(
+                                'Chưa có loại vé nào',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey.shade600,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      ...ticketTypes.map((ticketType) {
-                        return TicketTypeItemWidget(
-                          ticketType: ticketType,
-                          onEdit: () => _showAddEditTicketTypeDialog(ticketType: ticketType),
-                          onDelete: () => _deleteTicketType(ticketType.id),
-                        );
-                      }),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Nhấn nút "Thêm loại vé mới" để bắt đầu',
+                                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        ...ticketTypes.map((ticketType) {
+                          return TicketTypeItemWidget(
+                            ticketType: ticketType,
+                            onEdit: () => _showAddEditTicketTypeDialog(ticketType: ticketType),
+                            onDelete: () => _deleteTicketType(ticketType.id),
+                          );
+                        }),
 
-                    _buildDivider(),
+                      _buildDivider(),
 
-                    // === TỔ CHỨC ===
-                    _buildSectionTitle('🏢 Thông tin tổ chức'),
-                    ImagePickerWidget(
-                      label: 'Logo tổ chức',
-                      imageFile: logoImageFile,
-                      height: 120,
-                      onImageSelected: (file) {
-                        setState(() {
-                          logoImageFile = file;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
+                      // === TỔ CHỨC ===
+                      _buildSectionTitle('🏢 Thông tin tổ chức'),
+                      ImagePickerWidget(
+                        label: 'Logo tổ chức',
+                        imageFile: logoImageFile,
+                        imageUrl: _existingLogoUrl,
+                        height: 120,
+                        onImageSelected: (file) {
+                          setState(() {
+                            logoImageFile = file;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 10),
 
-                    AppTextField(
-                      lableText: 'Tên tổ chức',
-                      controller: orgNameController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
+                      AppTextField(
+                        lableText: 'Tên tổ chức',
+                        controller: orgNameController,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
+                      const SizedBox(height: 10),
 
-                    AppTextField(
-                      lableText: 'Mô tả tổ chức',
-                      controller: orgDescController,
-                      maxLines: 3,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
+                      AppTextField(
+                        lableText: 'Mô tả tổ chức',
+                        controller: orgDescController,
+                        maxLines: 3,
+                        borderColor: Colors.grey.shade300,
+                        fillColor: Colors.grey.shade100,
+                        focusedBorderColor: const Color(0xFF4257b4),
+                        enabledBorderColor: Colors.grey.shade300,
+                        shadowColor: AppColors.transparent,
+                      ),
 
-                    _buildDivider(),
+                      _buildDivider(),
 
-                    // === TÙY CHỌN KHÁC ===
-                    _buildSectionTitle('⚙️ Tùy chọn khác'),
-                    CustomSwitch(
-                      label: 'Sự kiện nổi bật',
-                      value: isHot,
-                      onChanged: (v) => setState(() => isHot = v),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                      // === TÙY CHỌN KHÁC ===
+                      _buildSectionTitle('⚙️ Tùy chọn khác'),
+                      CustomSwitch(
+                        label: 'Sự kiện nổi bật',
+                        value: isHot,
+                        onChanged: (v) => setState(() => isHot = v),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // Nút hành động
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: AppElevatedButton(
-                    onPressed: () => context.pop(),
-                    text: 'Hủy',
-                    borderColor: Colors.grey.shade300,
-                    color: Colors.white,
-                    textColor: Colors.black87,
+            // Nút hành động
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppElevatedButton(
-                    onPressed: _saveEvent,
-                    text: 'Lưu sự kiện',
-                    borderColor: const Color(0xFF4257b4),
-                    color: const Color(0xFF4257b4),
-                    textColor: Colors.white,
+                ],
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AppElevatedButton(
+                      onPressed: () => context.pop(),
+                      text: 'Hủy',
+                      borderColor: Colors.grey.shade300,
+                      color: Colors.white,
+                      textColor: Colors.black87,
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: AppElevatedButton(
+                      onPressed: _saveEvent,
+                      text: 'Lưu sự kiện',
+                      borderColor: const Color(0xFF4257b4),
+                      color: const Color(0xFF4257b4),
+                      textColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

@@ -15,6 +15,7 @@ import 'package:admin_event_go/domain/usecase/event/update_event_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/delete_event_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/get_event_by_id_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/get_all_events_usecase.dart';
+import 'package:admin_event_go/domain/usecase/event/watch_all_events_usecase.dart';
 import 'package:admin_event_go/domain/usecase/category/add_category_usecase.dart';
 import 'package:admin_event_go/domain/usecase/category/update_category_usecase.dart';
 import 'package:admin_event_go/domain/usecase/category/delete_category_usecase.dart';
@@ -55,6 +56,7 @@ void setupDependencies(GoRouter router) {
   getIt.registerLazySingleton(() => DeleteEventUsecase(getIt<EventRepository>()));
   getIt.registerLazySingleton(() => GetEventByIdUsecase(getIt<EventRepository>()));
   getIt.registerLazySingleton(() => GetAllEventsUsecase(getIt<EventRepository>()));
+  getIt.registerLazySingleton(() => WatchAllEventsUsecase(getIt<EventRepository>()));
 
   // Category UseCases
   getIt.registerLazySingleton(() => AddCategoryUsecase(getIt<CategoryRepository>()));
@@ -81,6 +83,7 @@ void setupDependencies(GoRouter router) {
     deleteEventUsecase: getIt<DeleteEventUsecase>(),
     getEventByIdUsecase: getIt<GetEventByIdUsecase>(),
     getAllEventsUsecase: getIt<GetAllEventsUsecase>(),
+    watchAllEventsUsecase: getIt<WatchAllEventsUsecase>(),
   ));
 
   getIt.registerFactory(() => CategoryViewModel(
