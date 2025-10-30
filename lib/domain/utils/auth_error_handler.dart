@@ -24,7 +24,7 @@ class AuthErrorHandler {
       return AppStrings.passwordTooShort;
     } else if (lowerCaseError.contains('invalid email')) {
       return AppStrings.invalidEmail;
-    } else if (lowerCaseError.contains('user not found')) {
+    } else if (lowerCaseError.contains('users not found')) {
       return AppStrings.accountNotFound;
     } else if (lowerCaseError.contains('too many requests')) {
       return AppStrings.tooManyRequests;

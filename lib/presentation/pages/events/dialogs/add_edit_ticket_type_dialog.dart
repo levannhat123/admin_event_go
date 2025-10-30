@@ -5,16 +5,14 @@ import 'package:admin_event_go/core/widgets/custom_switch.dart';
 import 'package:admin_event_go/core/widgets/text_field.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class AddEditTicketTypeDialog extends StatefulWidget {
   final TicketTypeModel? ticketType;
 
-  const AddEditTicketTypeDialog({
-    super.key,
-    this.ticketType,
-  });
+  const AddEditTicketTypeDialog({super.key, this.ticketType});
 
   @override
   State<AddEditTicketTypeDialog> createState() => _AddEditTicketTypeDialogState();
@@ -141,11 +139,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: const Color(0xFF4257b4),
-              size: 20,
-            ),
+            Icon(icon, color: const Color(0xFF4257b4), size: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -173,11 +167,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                 ],
               ),
             ),
-            Icon(
-              Icons.calendar_today,
-              color: Colors.grey.shade400,
-              size: 16,
-            ),
+            Icon(Icons.calendar_today, color: Colors.grey.shade400, size: 16),
           ],
         ),
       ),
@@ -217,12 +207,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
       builder: (context) => AlertDialog(
         title: const Text('Lỗi'),
         content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
-          ),
-        ],
+        actions: [TextButton(onPressed: () => context.pop(), child: const Text('Đóng'))],
       ),
     );
   }
@@ -230,9 +215,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 600),
         child: Column(
@@ -250,11 +233,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.confirmation_number,
-                    color: Colors.white,
-                    size: 28,
-                  ),
+                  const Icon(Icons.confirmation_number, color: Colors.white, size: 28),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -281,7 +260,6 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Tên loại vé
                     AppTextField(
                       lableText: 'Tên loại vé *',
                       controller: nameController,
@@ -401,15 +379,13 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Colors.grey.shade300),
-                ),
+                border: Border(top: BorderSide(color: Colors.grey.shade300)),
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: AppElevatedButton(
-                      onPressed: () => Navigator.of(context).pop(),
+                      onPressed: () => context.pop(),
                       text: 'Hủy',
                       borderColor: Colors.grey.shade300,
                       color: Colors.white,

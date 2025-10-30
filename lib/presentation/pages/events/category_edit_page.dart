@@ -34,7 +34,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
       final name = _nameController.text.trim();
       final id = widget.category?.id ?? DateTime.now().millisecondsSinceEpoch.toString();
       final result = CategoryModel(id: id, name: name);
-     context.pop(result);
+      context.pop(result);
     }
   }
 

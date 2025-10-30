@@ -48,10 +48,7 @@ class _EventsPageState extends State<EventsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Module Grid
             SizedBox(height: 200, child: _buildModuleGrid()),
-
-            // Recent Events Section
             Padding(
               padding: const EdgeInsets.all(24),
               child: Column(
@@ -78,7 +75,6 @@ class _EventsPageState extends State<EventsPage> {
                     ],
                   ),
                   SizedBox(height: 16),
-                  // Use real events from EventViewModel instead of static data
                   _buildRecentEventsList(),
                 ],
               ),
@@ -113,7 +109,10 @@ class _EventsPageState extends State<EventsPage> {
       onModelReady: (vm) => vm.watchAll(),
       builder: (context, vm, child) {
         if (vm.isBusy && vm.events.isEmpty) return Center(child: CircularProgressIndicator());
-        if (vm.events.isEmpty) return Center(child: Text('No events', style: TextStyle(color: Colors.white60)));
+        if (vm.events.isEmpty)
+          return Center(
+            child: Text('No events', style: TextStyle(color: Colors.white60)),
+          );
 
         final now = DateTime.now();
         final sorted = List<EventDetailModel>.from(vm.events);
@@ -123,12 +122,7 @@ class _EventsPageState extends State<EventsPage> {
           return da.compareTo(db);
         });
         final recent = sorted.take(5).toList();
-
-        // Use a Column of cards instead of ListView inside SingleChildScrollView
-        // to avoid RenderBox not laid out errors from unbounded height.
-        return Column(
-          children: recent.map((e) => _buildRecentCard(e)).toList(),
-        );
+        return Column(children: recent.map((e) => _buildRecentCard(e)).toList());
       },
     );
   }
@@ -146,7 +140,9 @@ class _EventsPageState extends State<EventsPage> {
 
     final subtitle = e.venue ?? e.orgName ?? e.address ?? '';
     final category = e.categories?.name ?? '';
-    final price = e.isFree == true ? 'Free' : (e.minTicketPrice != null ? '${e.minTicketPrice}đ' : '-');
+    final price = e.isFree == true
+        ? 'Free'
+        : (e.minTicketPrice != null ? '${e.minTicketPrice}đ' : '-');
 
     Color statusColor;
     Color statusBgColor;
@@ -177,16 +173,10 @@ class _EventsPageState extends State<EventsPage> {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF1E293B),
-                Color(0xFF0F172A),
-              ],
+              colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
             ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: Color(0xFF334155).withAlpha(80),
-              width: 1,
-            ),
+            border: Border.all(color: Color(0xFF334155).withAlpha(80), width: 1),
             boxShadow: [
               BoxShadow(
                 color: Color(0xFF000000).withAlpha(40),
@@ -204,7 +194,6 @@ class _EventsPageState extends State<EventsPage> {
             borderRadius: BorderRadius.circular(16),
             child: Row(
               children: [
-                // Banner / thumbnail with gradient overlay
                 Container(
                   width: 120,
                   height: 130,
@@ -216,7 +205,6 @@ class _EventsPageState extends State<EventsPage> {
                   ),
                   child: Stack(
                     children: [
-                      // Image or placeholder
                       e.bannerURL != null && e.bannerURL!.isNotEmpty
                           ? Image.network(
                               e.bannerURL!,
@@ -226,25 +214,18 @@ class _EventsPageState extends State<EventsPage> {
                               errorBuilder: (c, o, s) => _buildImagePlaceholder(),
                             )
                           : _buildImagePlaceholder(),
-
-                      // Gradient overlay
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Color(0xFF000000).withAlpha(40),
-                            ],
+                            colors: [Colors.transparent, Color(0xFF000000).withAlpha(40)],
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
-
-                // Info section
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -252,7 +233,6 @@ class _EventsPageState extends State<EventsPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Top section: Title
                         Flexible(
                           flex: 3,
                           child: Column(
@@ -271,8 +251,6 @@ class _EventsPageState extends State<EventsPage> {
                                 ),
                               ),
                               const SizedBox(height: 4),
-
-                              // Date and venue with improved icons
                               Row(
                                 children: [
                                   Container(
@@ -281,11 +259,7 @@ class _EventsPageState extends State<EventsPage> {
                                       color: Color(0xFF6366F1).withAlpha(30),
                                       borderRadius: BorderRadius.circular(3),
                                     ),
-                                    child: Icon(
-                                      Icons.schedule,
-                                      size: 9,
-                                      color: Color(0xFF6366F1),
-                                    ),
+                                    child: Icon(Icons.schedule, size: 9, color: Color(0xFF6366F1)),
                                   ),
                                   const SizedBox(width: 3),
                                   Expanded(
@@ -386,17 +360,12 @@ class _EventsPageState extends State<EventsPage> {
                               Spacer(),
 
                               GestureDetector(
-                                onTap: () {
-                                  // Navigate to event details
-                                },
+                                onTap: () {},
                                 child: Container(
                                   padding: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [
-                                        Color(0xFF6366F1),
-                                        Color(0xFF8B5CF6),
-                                      ],
+                                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
                                     ),
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
@@ -425,8 +394,6 @@ class _EventsPageState extends State<EventsPage> {
             ),
           ),
         ),
-
-
       ],
     );
   }
@@ -488,7 +455,10 @@ class _EventsPageState extends State<EventsPage> {
                   SizedBox(height: 4),
                   Text(
                     'Manage ${module['title']}',
-                    style: TextStyle(fontSize: 12, color: Colors.white.withAlpha((0.8 * 255).round())),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withAlpha((0.8 * 255).round()),
+                    ),
                   ),
                 ],
               ),
@@ -507,10 +477,7 @@ class _EventsPageState extends State<EventsPage> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xFF6366F1).withAlpha(30),
-            Color(0xFF8B5CF6).withAlpha(30),
-          ],
+          colors: [Color(0xFF6366F1).withAlpha(30), Color(0xFF8B5CF6).withAlpha(30)],
         ),
       ),
       child: Center(
@@ -523,20 +490,12 @@ class _EventsPageState extends State<EventsPage> {
                 color: Color(0xFF6366F1).withAlpha(40),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                Icons.event,
-                color: Color(0xFF6366F1),
-                size: 28,
-              ),
+              child: Icon(Icons.event, color: Color(0xFF6366F1), size: 28),
             ),
             SizedBox(height: 4),
             Text(
               'Event',
-              style: TextStyle(
-                color: Color(0xFF6366F1),
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: Color(0xFF6366F1), fontSize: 10, fontWeight: FontWeight.w600),
             ),
           ],
         ),
