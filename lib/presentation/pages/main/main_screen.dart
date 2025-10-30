@@ -33,11 +33,6 @@ class MainScreen extends StatefulWidget {
       label: 'Users',
       route: RouterPath.users,
     ),
-    NavItem(
-      icon: AppSvg.settings,
-      label: 'Settings',
-      route: RouterPath.settings,
-    ),
   ];
 
 

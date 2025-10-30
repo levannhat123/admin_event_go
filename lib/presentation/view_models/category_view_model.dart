@@ -46,9 +46,7 @@ class CategoryViewModel extends BaseViewModel {
     }
   }
 
-  /// Start realtime listening to categories collection. Updates [_categories] on each snapshot.
   void watchAll() {
-    // Cancel previous subscription if any
     _subscription?.cancel();
     setBusy(true);
     clearError();

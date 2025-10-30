@@ -187,7 +187,7 @@ class _UsersPageState extends State<UsersPage> {
             children: [
               SlidableAction(
                 onPressed: (context) {
-                  _showDeleteDialog(context, vm, originalIndex, user.email ?? 'this user');
+                  _showDeleteDialog(context, vm, originalIndex, user.email ?? 'this users');
                 },
                 backgroundColor: Color(0xFFEF4444),
                 foregroundColor: Colors.white,

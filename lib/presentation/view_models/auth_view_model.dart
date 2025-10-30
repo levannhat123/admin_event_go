@@ -192,7 +192,7 @@ class AuthViewModel extends BaseViewModel {
       _setLoading(false);
     } catch (e) {
       _setLoading(false);
-      _setError("Lỗi khi lấy user: $e");
+      _setError("Lỗi khi lấy users: $e");
     }
   }
   Future<bool> deleteUser(String userId) async {
@@ -211,8 +211,8 @@ class AuthViewModel extends BaseViewModel {
       return true;
     } catch (e) {
       _setLoading(false);
-      _setError("Lỗi khi xóa user: $e");
-      print("Lỗi khi xóa user: $e");
+      _setError("Lỗi khi xóa users: $e");
+      print("Lỗi khi xóa users: $e");
       return false;
     }
   }

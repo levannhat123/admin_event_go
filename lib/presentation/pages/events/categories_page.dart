@@ -1,11 +1,12 @@
 import 'package:admin_event_go/core/constants/app_colors.dart';
 import 'package:admin_event_go/core/widgets/custom_no_data.dart';
+import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:admin_event_go/data/models/category/category_model.dart';
-import 'package:admin_event_go/presentation/pages/events/category_edit_page.dart';
 import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
+import 'package:go_router/go_router.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({Key? key}) : super(key: key);
@@ -15,8 +16,6 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class _CategoriesPageState extends State<CategoriesPage> {
-  // Using CategoryViewModel via BaseView + getIt
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,11 +26,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
         centerTitle: true,
         title: Text(
           'Danh mục',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -46,11 +41,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
           if (vm.isBusy && vm.categories.isEmpty) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (vm.categories.isEmpty) {
             return _buildEmpty(vm);
           }
-
           return RefreshIndicator(
             onRefresh: () => vm.getAll(),
             backgroundColor: Color(0xFF1E293B),
@@ -76,9 +69,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
   }
 
   Widget _buildEmpty(CategoryViewModel? vm) {
-    return Center(
-      child: Center(child: CustomNoData()),
-    );
+    return Center(child: Center(child: CustomNoData()));
   }
 
   Widget _buildCategoryItem(CategoryViewModel vm, CategoryModel category) {
@@ -87,10 +78,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       decoration: BoxDecoration(
         color: Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Color.fromRGBO(245, 158, 11, 0.3),
-          width: 1,
-        ),
+        border: Border.all(color: Color.fromRGBO(245, 158, 11, 0.3), width: 1),
       ),
       child: ListTile(
         contentPadding: EdgeInsets.all(16),
@@ -100,28 +88,17 @@ class _CategoriesPageState extends State<CategoriesPage> {
             color: Color.fromRGBO(245, 158, 11, 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            Icons.category,
-            color: Color(0xFFF59E0B),
-            size: 24,
-          ),
+          child: Icon(Icons.category, color: Color(0xFFF59E0B), size: 24),
         ),
         title: Text(
           category.name,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             'ID: ${category.id}',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color.fromRGBO(255, 255, 255, 0.6),
-            ),
+            style: TextStyle(fontSize: 14, color: Color.fromRGBO(255, 255, 255, 0.6)),
           ),
         ),
         trailing: Row(
@@ -141,11 +118,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
     );
   }
 
-  // Navigate to full-screen add/edit page. Returns CategoryModel when saved.
   Future<void> _openEditPage({CategoryModel? category}) async {
-    final result = await Navigator.of(context).push<CategoryModel>(
-      MaterialPageRoute(builder: (context) => CategoryEditPage(category: category)),
-    );
+    final result = await context.push<CategoryModel>(RouterPath.editCategory, extra: category);
 
     if (result != null) {
       final vm = getIt<CategoryViewModel>();
@@ -164,16 +138,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
       builder: (context) => AlertDialog(
         backgroundColor: Color(0xFF0F172A),
         title: Text('Delete category', style: TextStyle(color: Colors.white)),
-        content: Text('Are you sure you want to delete "${category.name}"?', style: TextStyle(color: Colors.white70)),
+        content: Text(
+          'Are you sure you want to delete "${category.name}"?',
+          style: TextStyle(color: Colors.white70),
+        ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => context.pop(),
             child: Text('Cancel', style: TextStyle(color: Colors.white70)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
-              Navigator.of(context).pop();
+              context.pop();
               final success = await vm.delete(category.id);
               if (!success) {
                 final message = vm.errorMessage ?? 'Failed to delete category';

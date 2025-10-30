@@ -1,6 +1,4 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-// AuthResult được sử dụng bởi UseCase để trả về kết quả cho Presentation layer
 class AuthResult {
   final bool isSuccess;
   final User? user;
