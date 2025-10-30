@@ -1,6 +1,9 @@
-import 'package:admin_event_go/routers/router_name.dart';
+import 'package:admin_event_go/presentation/pages/events/add_event_page.dart';
+import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class EventsListPage extends StatefulWidget {
   const EventsListPage({Key? key}) : super(key: key);
@@ -19,89 +22,96 @@ class _EventsListPageState extends State<EventsListPage> {
         backgroundColor: Color(0xFF1E293B),
         title: Text(
           'Events',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => context.pop(),
-        ),
+        leading: IconButton(icon: Icon(Icons.arrow_back, color: Colors.white), onPressed: () => Navigator.pop(context)),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: 5,
-        itemBuilder: (context, index) => _buildEventItem(index),
+      body: BaseView<EventViewModel>(
+        padding: false,
+        viewModelBuilder: () => getIt<EventViewModel>(),
+        onModelReady: (vm) => vm.watchAll(),
+        builder: (context, vm, child) {
+          if (vm.isBusy && vm.events.isEmpty) return const Center(child: CircularProgressIndicator());
+
+          if (vm.events.isEmpty) {
+            return Center(child: Text('No events', style: TextStyle(color: Colors.white70)));
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: vm.events.length,
+            itemBuilder: (context, index) => _buildEventItem(vm, vm.events[index]),
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          context.push(RouterPath.addEvent);
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const AddEventPage(isEditing: false)));
         },
         backgroundColor: Color(0xFF6366F1),
         icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'Add Event',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
+        label: Text('Add Event', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
       ),
     );
   }
 
-  Widget _buildEventItem(int index) {
+  Widget _buildEventItem(EventViewModel vm, EventDetailModel event) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Color(0xFF6366F1).withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: Color.fromRGBO(99, 102, 241, 0.3), width: 1),
       ),
       child: ListTile(
         contentPadding: EdgeInsets.all(16),
-        leading: Container(
-          padding: EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Color(0xFF6366F1).withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(
-            Icons.event,
-            color: Color(0xFF6366F1),
-            size: 24,
-          ),
-        ),
-        title: Text(
-          "Event ${index + 1}",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-          ),
-        ),
+        leading: event.bannerURL != null && event.bannerURL!.isNotEmpty
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(event.bannerURL!, width: 56, height: 56, fit: BoxFit.cover, errorBuilder: (c, e, s) => Icon(Icons.event, color: Color(0xFF6366F1))),
+              )
+            : Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(color: Color.fromRGBO(99, 102, 241, 0.2), borderRadius: BorderRadius.circular(12)),
+                child: Icon(Icons.event, color: Color(0xFF6366F1), size: 24),
+              ),
+        title: Text(event.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white)),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
-          child: Text(
-            'Event description ${index + 1}',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withOpacity(0.6),
-            ),
-          ),
+          child: Text(event.categories?.name ?? '', style: TextStyle(fontSize: 14, color: Color.fromRGBO(255, 255, 255, 0.6))),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
               icon: Icon(Icons.edit, color: Color(0xFF6366F1)),
-              onPressed: () {},
+              onPressed: () async {
+                // navigate to edit page — stream will update list automatically
+                await Navigator.push(context, MaterialPageRoute(builder: (_) => AddEventPage(event: event, isEditing: true)));
+              },
             ),
             IconButton(
               icon: Icon(Icons.delete, color: Colors.red),
-              onPressed: () {},
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Xác nhận xóa'),
+                        content: Text('Bạn có chắc chắn muốn xóa sự kiện "${event.title}"?'),
+                        actions: [
+                          TextButton(onPressed: () => Navigator.pop(context, false), child: Text('Hủy')),
+                          TextButton(onPressed: () => Navigator.pop(context, true), child: Text('Xóa', style: TextStyle(color: Colors.red))),
+                        ],
+                      ),
+                    ) ?? false;
+
+                if (confirmed) {
+                  final success = await vm.deleteEvent(event.id);
+                  if (!success) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(vm.errorMessage ?? 'Failed to delete event')));
+                  }
+                }
+              },
             ),
           ],
         ),
