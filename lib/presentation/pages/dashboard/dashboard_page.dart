@@ -1,5 +1,12 @@
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/data/models/event/event_detail_model.dart';
+import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart';
+import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
+import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:go_router/go_router.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
@@ -17,24 +24,383 @@ class DashboardPage extends StatelessWidget {
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
+      body: BaseView<DashboadViewModel>(
+        viewModelBuilder: () => getIt<DashboadViewModel>(),
+        onModelReady: (vm) {
+          vm.watchAll();
+          vm.fetchUsers();
+        },
+        autoDispose: false,
+        builder: (context, vm, child) {
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildStatsGrid(vm),
+                SizedBox(height: 24),
+                _buildChartsSection(),
+                SizedBox(height: 24),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Recent Events',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () {
+                            context.push(RouterPath.eventsList);
+                          },
+                          icon: Icon(Icons.arrow_forward, color: Color(0xFF6366F1), size: 16),
+                          label: Text('View All', style: TextStyle(color: Color(0xFF6366F1))),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    _buildRecentEventsList(vm),
+                  ],
+                ),
+                SizedBox(height: 24),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+  Widget _buildRecentEventsList(DashboadViewModel vm) {
+    if (vm.isBusy && vm.events.isEmpty) return Center(child: CircularProgressIndicator());
+    if (vm.events.isEmpty) {
+      return Center(
+        child: Text('No events', style: TextStyle(color: Colors.white60)),
+      );
+    }
+
+    final now = DateTime.now();
+    final sorted = List<EventDetailModel>.from(vm.events);
+    sorted.sort((a, b) {
+      final da = a.startTime?.difference(now).abs() ?? Duration(days: 36500);
+      final db = b.startTime?.difference(now).abs() ?? Duration(days: 36500);
+      return da.compareTo(db);
+    });
+    final recent = sorted.take(5).toList();
+        return Column(children: recent.map((e) => _buildRecentCard(e)).toList());
+  }
+
+  Widget _buildRecentCard(EventDetailModel e) {
+    String dateLine = '';
+    if (e.startTime != null) {
+      final d = e.startTime!.toLocal();
+      final day = d.day.toString().padLeft(2, '0');
+      final month = d.month.toString().padLeft(2, '0');
+      final hour = d.hour.toString().padLeft(2, '0');
+      final minute = d.minute.toString().padLeft(2, '0');
+      dateLine = '$day/$month • $hour:$minute';
+    }
+
+    final subtitle = e.venue ?? e.orgName ?? e.address ?? '';
+    final category = e.categories?.name ?? '';
+    final price = e.isFree == true
+        ? 'Free'
+        : (e.minTicketPrice != null ? '${e.minTicketPrice}đ' : '-');
+
+    Color statusColor;
+    Color statusBgColor;
+    switch ((e.status ?? '').toLowerCase()) {
+      case 'live':
+        statusColor = Color(0xFF10B981);
+        statusBgColor = Color(0xFF10B981).withAlpha(25);
+        break;
+      case 'completed':
+        statusColor = Color(0xFF6B7280);
+        statusBgColor = Color(0xFF6B7280).withAlpha(25);
+        break;
+      case 'upcoming':
+        statusColor = Color(0xFF3B82F6);
+        statusBgColor = Color(0xFF3B82F6).withAlpha(25);
+        break;
+      default:
+        statusColor = Color(0xFF9CA3AF);
+        statusBgColor = Color(0xFF9CA3AF).withAlpha(25);
+    }
+
+    return Stack(
+      children: [
+        Container(
+          height: 130,
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+            ),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Color(0xFF334155).withAlpha(80), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Color(0xFF000000).withAlpha(40),
+                blurRadius: 8,
+                offset: Offset(0, 4),
+              ),
+              BoxShadow(
+                color: Color(0xFF6366F1).withAlpha(15),
+                blurRadius: 16,
+                offset: Offset(0, 0),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 120,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      bottomLeft: Radius.circular(16),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      e.bannerURL != null && e.bannerURL!.isNotEmpty
+                          ? Image.network(
+                        e.bannerURL!,
+                        width: 130,
+                        height: 130,
+                        fit: BoxFit.cover,
+                        errorBuilder: (c, o, s) => _buildImagePlaceholder(),
+                      )
+                          : _buildImagePlaceholder(),
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Color(0xFF000000).withAlpha(40)],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          flex: 3,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                e.title,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF6366F1).withAlpha(30),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Icon(Icons.schedule, size: 9, color: Color(0xFF6366F1)),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Expanded(
+                                    child: Text(
+                                      dateLine,
+                                      style: TextStyle(
+                                        color: Color(0xFFE2E8F0),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 2),
+
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFFEC4899).withAlpha(30),
+                                      borderRadius: BorderRadius.circular(3),
+                                    ),
+                                    child: Icon(
+                                      Icons.location_on,
+                                      size: 9,
+                                      color: Color(0xFFEC4899),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Expanded(
+                                    child: Text(
+                                      subtitle.isEmpty ? 'No location' : subtitle,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        color: Color(0xFFE2E8F0),
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Bottom row: category, price, action
+                        Flexible(
+                          flex: 1,
+                          child: Row(
+                            children: [
+                              if (category.isNotEmpty)
+                                Container(
+                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xFF6366F1).withAlpha(30),
+                                        Color(0xFF8B5CF6).withAlpha(30),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: Color(0xFF6366F1).withAlpha(60),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    category,
+                                    style: TextStyle(
+                                      color: Color(0xFF6366F1),
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              if (category.isNotEmpty) SizedBox(width: 6),
+
+                              Container(
+                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFEC4899).withAlpha(20),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  price,
+                                  style: TextStyle(
+                                    color: Color(0xFFEC4899),
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ),
+
+                              Spacer(),
+
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  padding: EdgeInsets.all(6),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Color(0xFF6366F1).withAlpha(60),
+                                        blurRadius: 6,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                    size: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+  Widget _buildImagePlaceholder() {
+    return Container(
+      width: 130,
+      height: 130,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF6366F1).withAlpha(30), Color(0xFF8B5CF6).withAlpha(30)],
+        ),
+      ),
+      child: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildStatsGrid(),
-            SizedBox(height: 24),
-            _buildChartsSection(),
-            SizedBox(height: 24),
-            _buildRecentEvents(),
-            SizedBox(height: 24),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Color(0xFF6366F1).withAlpha(40),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.event, color: Color(0xFF6366F1), size: 28),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Event',
+              style: TextStyle(color: Color(0xFF6366F1), fontSize: 10, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildStatsGrid() {
+  Widget _buildStatsGrid(DashboadViewModel vm) {
     return GridView.count(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
@@ -45,7 +411,7 @@ class DashboardPage extends StatelessWidget {
       children: [
         _buildStatCard(
           title: 'Total Events',
-          value: '125',
+          value: vm.events.length.toString(),
           icon: Icons.event,
           color: Color(0xFF6366F1),
           gradient: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
@@ -53,7 +419,7 @@ class DashboardPage extends StatelessWidget {
         ),
         _buildStatCard(
           title: 'Tickets Sold',
-          value: '1,234',
+          value: vm.ticketTypes.length.toString(),
           icon: Icons.confirmation_number,
           color: Color(0xFFEC4899),
           gradient: [Color(0xFFEC4899), Color(0xFFF43F5E)],
@@ -69,7 +435,7 @@ class DashboardPage extends StatelessWidget {
         ),
         _buildStatCard(
           title: 'New Users',
-          value: '89',
+          value: vm.users.length.toString(),
           icon: Icons.person_add,
           color: Color(0xFF8B5CF6),
           gradient: [Color(0xFF8B5CF6), Color(0xFFEC4899)],
@@ -283,129 +649,5 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecentEvents() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Recent Events',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: Text('View All', style: TextStyle(color: Color(0xFF6366F1))),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        Container(
-          decoration: BoxDecoration(
-            color: Color(0xFF1E293B),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFF334155)),
-          ),
-          child: Column(
-            children: [
-              _buildEventItem(
-                'Summer Music Festival 2024',
-                'Jun 15, 2024',
-                'Live',
-                Color(0xFF10B981),
-                '450/500',
-              ),
-              Divider(color: Color(0xFF334155), height: 1),
-              _buildEventItem(
-                'Tech Conference Asia',
-                'Jun 20, 2024',
-                'Upcoming',
-                Color(0xFF6366F1),
-                '320/400',
-              ),
-              Divider(color: Color(0xFF334155), height: 1),
-              _buildEventItem(
-                'Food & Wine Expo',
-                'Jun 25, 2024',
-                'Upcoming',
-                Color(0xFF6366F1),
-                '180/300',
-              ),
-              Divider(color: Color(0xFF334155), height: 1),
-              _buildEventItem(
-                'Art Gallery Opening',
-                'Jun 10, 2024',
-                'Completed',
-                Color(0xFF64748B),
-                '250/250',
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildEventItem(
-    String title,
-    String date,
-    String status,
-    Color statusColor,
-    String tickets,
-  ) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(Icons.event, color: Colors.white),
-      ),
-      title: Text(
-        title,
-        style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 14),
-      ),
-      subtitle: Padding(
-        padding: EdgeInsets.only(top: 4),
-        child: Row(
-          children: [
-            Icon(Icons.calendar_today, size: 12, color: Colors.white60),
-            SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                date,
-                style: TextStyle(color: Colors.white60, fontSize: 12),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            SizedBox(width: 8),
-            Icon(Icons.confirmation_number, size: 12, color: Colors.white60),
-            SizedBox(width: 4),
-            Flexible(
-              child: Text(
-                tickets,
-                style: TextStyle(color: Colors.white60, fontSize: 12),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-      ),
-      trailing: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: statusColor.withOpacity(0.2),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Text(
-          status,
-          style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.bold),
-        ),
-      ),
-    );
-  }
-}
+

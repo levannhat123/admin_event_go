@@ -10,6 +10,7 @@ import 'package:admin_event_go/domain/usecase/auth/register_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/reset_password_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/send_email_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/update_password_use_case.dart';
+import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthViewModel extends BaseViewModel {
@@ -20,12 +21,13 @@ class AuthViewModel extends BaseViewModel {
   final SendEmailVerificationUseCase _sendEmailVerificationUseCase;
   final AuthRepository _authRepository;
   final UpdatePasswordUseCase _updatePasswordUseCase;
+  final DashboadViewModel dashboardViewModel;
 
   User? _currentUser;
   bool _isLoading = false;
   String? _errorMessage;
 
-  AuthViewModel(
+  AuthViewModel(this.dashboardViewModel,
    {
     required LoginUseCase loginUseCase,
     required RegisterUseCase registerUseCase,
@@ -183,17 +185,11 @@ class AuthViewModel extends BaseViewModel {
     }
   }
 
-  List<ProfileModel> userList = [];
+
+  List<ProfileModel> get userList => dashboardViewModel.users;
 
   Future<void> fetchUsers() async {
-    try {
-      _setLoading(true);
-      userList = await _authRepository.getAllProfiles();
-      _setLoading(false);
-    } catch (e) {
-      _setLoading(false);
-      _setError("Lỗi khi lấy users: $e");
-    }
+   dashboardViewModel.fetchUsers();
   }
   Future<bool> deleteUser(String userId) async {
     try {
@@ -235,7 +231,5 @@ class AuthViewModel extends BaseViewModel {
     _errorMessage = null;
     notifyListeners();
   }
-  void clearError() {
-    _clearError();
-  }
+
 }

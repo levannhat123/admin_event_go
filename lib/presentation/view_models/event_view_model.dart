@@ -11,9 +11,11 @@ import 'package:admin_event_go/domain/usecase/event/delete_event_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/get_event_by_id_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/get_all_events_usecase.dart';
 import 'package:admin_event_go/domain/usecase/event/watch_all_events_usecase.dart';
+import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart';
 import 'package:flutter/material.dart';
 
 class EventViewModel extends BaseViewModel {
+  final DashboadViewModel dashboardViewModel;
   final AddEventUsecase addEventUsecase;
   final UpdateEventUsecase updateEventUsecase;
   final DeleteEventUsecase deleteEventUsecase;
@@ -21,14 +23,14 @@ class EventViewModel extends BaseViewModel {
   final GetAllEventsUsecase getAllEventsUsecase;
   final WatchAllEventsUsecase watchAllEventsUsecase;
 
-  List<EventDetailModel> _events = [];
   EventDetailModel? _selectedEvent;
   StreamSubscription<List<EventDetailModel>>? _subscription;
 
-  List<EventDetailModel> get events => _events;
+  List<EventDetailModel> get events => dashboardViewModel.events;
   EventDetailModel? get selectedEvent => _selectedEvent;
 
-  EventViewModel({
+  EventViewModel(
+    this.dashboardViewModel, {
     required this.addEventUsecase,
     required this.updateEventUsecase,
     required this.deleteEventUsecase,
@@ -72,7 +74,7 @@ class EventViewModel extends BaseViewModel {
 
     try {
       await deleteEventUsecase.call(eventId);
-      _events.removeWhere((event) => event.id == eventId);
+      events.removeWhere((event) => event.id == eventId);
       notifyListeners();
       setBusy(false);
       return true;
@@ -97,38 +99,8 @@ class EventViewModel extends BaseViewModel {
     }
   }
 
-  Future<void> getAllEvents() async {
-    setBusy(true);
-    clearError();
-
-    try {
-      _events = await getAllEventsUsecase.call();
-      setBusy(false);
-      notifyListeners();
-    } catch (e) {
-      setError('Failed to get all events: ${e.toString()}');
-      setBusy(false);
-    }
-  }
-
-
   void watchAll() {
-    _subscription?.cancel();
-    setBusy(true);
-    clearError();
-    try {
-      _subscription = watchAllEventsUsecase.call().listen((list) {
-        _events = list;
-        setBusy(false);
-        notifyListeners();
-      }, onError: (err) {
-        setError('Failed to watch events: ${err.toString()}');
-        setBusy(false);
-      });
-    } catch (e) {
-      setError('Failed to start watching events: ${e.toString()}');
-      setBusy(false);
-    }
+    dashboardViewModel.watchAll();
   }
 
   void clearSelectedEvent() {
