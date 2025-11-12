@@ -2,7 +2,6 @@ import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart';
-import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -39,7 +38,7 @@ class DashboardPage extends StatelessWidget {
               children: [
                 _buildStatsGrid(vm),
                 SizedBox(height: 24),
-                _buildChartsSection(),
+                _buildChartsSection(vm),
                 SizedBox(height: 24),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,7 +91,7 @@ class DashboardPage extends StatelessWidget {
       return da.compareTo(db);
     });
     final recent = sorted.take(5).toList();
-        return Column(children: recent.map((e) => _buildRecentCard(e)).toList());
+    return Column(children: recent.map((e) => _buildRecentCard(e)).toList());
   }
 
   Widget _buildRecentCard(EventDetailModel e) {
@@ -400,254 +399,269 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-  Widget _buildStatsGrid(DashboadViewModel vm) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      mainAxisSpacing: 16,
-      crossAxisSpacing: 16,
-      childAspectRatio: 1.5,
-      children: [
-        _buildStatCard(
-          title: 'Total Events',
-          value: vm.events.length.toString(),
-          icon: Icons.event,
-          color: Color(0xFF6366F1),
-          gradient: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-          trend: '+12%',
-        ),
-        _buildStatCard(
-          title: 'Tickets Sold',
-          value: vm.ticketTypes.length.toString(),
-          icon: Icons.confirmation_number,
-          color: Color(0xFFEC4899),
-          gradient: [Color(0xFFEC4899), Color(0xFFF43F5E)],
-          trend: '+23%',
-        ),
-        _buildStatCard(
-          title: 'Revenue',
-          value: '\$45.2K',
-          icon: Icons.attach_money,
-          color: Color(0xFFF59E0B),
-          gradient: [Color(0xFFF59E0B), Color(0xFFEF4444)],
-          trend: '+18%',
-        ),
-        _buildStatCard(
-          title: 'New Users',
-          value: vm.users.length.toString(),
-          icon: Icons.person_add,
-          color: Color(0xFF8B5CF6),
-          gradient: [Color(0xFF8B5CF6), Color(0xFFEC4899)],
-          trend: '+8%',
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStatCard({
-    required String title,
-    required String value,
-    required IconData icon,
-    required Color color,
-    required List<Color> gradient,
-    required String trend,
-  }) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: gradient,
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 10, offset: Offset(0, 5))],
+// HÀM ĐÃ ĐƯỢC CẬP NHẬT
+Widget _buildStatsGrid(DashboadViewModel vm) {
+  return GridView.count(
+    shrinkWrap: true,
+    physics: NeverScrollableScrollPhysics(),
+    crossAxisCount: 2,
+    mainAxisSpacing: 16,
+    crossAxisSpacing: 16,
+    childAspectRatio: 1.5,
+    children: [
+      _buildStatCard(
+        title: 'Total Events',
+        value: vm.events.length.toString(),
+        icon: Icons.event,
+        color: Color(0xFF6366F1),
+        gradient: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+        trend: '+12%',
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -10,
-            bottom: -10,
-            child: Icon(icon, color: Colors.white.withOpacity(0.2), size: 80),
-          ),
-          Padding(
-            padding: EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(icon, color: Colors.white, size: 24),
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        trend,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+      _buildStatCard(
+        title: 'Total Orders', // <-- Đã thay đổi
+        value: vm.totalOrdersString, // <-- Đã thay đổi
+        icon: Icons.confirmation_number,
+        color: Color(0xFFEC4899),
+        gradient: [Color(0xFFEC4899), Color(0xFFF43F5E)],
+        trend: '+23%',
+      ),
+      _buildStatCard(
+        title: 'Revenue',
+        value: vm.totalRevenueString, // <-- Đã thay đổi
+        icon: Icons.attach_money,
+        color: Color(0xFFF59E0B),
+        gradient: [Color(0xFFF59E0B), Color(0xFFEF4444)],
+        trend: '+18%',
+      ),
+      _buildStatCard(
+        title: 'New Users',
+        value: vm.users.length.toString(),
+        icon: Icons.person_add,
+        color: Color(0xFF8B5CF6),
+        gradient: [Color(0xFF8B5CF6), Color(0xFFEC4899)],
+        trend: '+8%',
+      ),
+    ],
+  );
+}
+
+Widget _buildStatCard({
+  required String title,
+  required String value,
+  required IconData icon,
+  required Color color,
+  required List<Color> gradient,
+  required String trend,
+}) {
+  return Container(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: gradient,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      ),
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 10, offset: Offset(0, 5))],
+    ),
+    child: Stack(
+      children: [
+        Positioned(
+          right: -10,
+          bottom: -10,
+          child: Icon(icon, color: Colors.white.withOpacity(0.2), size: 80),
+        ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Icon(icon, color: Colors.white, size: 24),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      value,
+                    child: Text(
+                      trend,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 4),
-                    Text(
-                      title,
-                      style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    value,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    title,
+                    style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildChartsSection(DashboadViewModel vm) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        'Analytics',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+      SizedBox(height: 16),
+      Row(
+        children: [
+          Expanded(
+            flex: 2,
+            child: _buildChartCard(
+                title: 'Tickets Sold (Last 7 Days)',
+                child: _buildLineChart(vm)
             ),
           ),
         ],
       ),
-    );
-  }
+    ],
+  );
+}
 
-  Widget _buildChartsSection() {
-    return Column(
+Widget _buildChartCard({required String title, required Widget child}) {
+  return Container(
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Color(0xFF1E293B),
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: Color(0xFF334155), width: 1),
+    ),
+    child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Analytics',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          title,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
         ),
         SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
-              child: _buildChartCard(title: 'Tickets Sold (Last 7 Days)', child: _buildLineChart()),
-            ),
-          ],
-        ),
+        SizedBox(height: 200, child: child),
       ],
-    );
+    ),
+  );
+}
+
+Widget _buildLineChart(DashboadViewModel vm) {
+
+  if (vm.dailyTicketSpots.isEmpty) {
+    if (vm.isBusy) {
+      return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+    }
+    return const Center(
+        child: Text('No ticket data yet', style: TextStyle(color: Colors.white60)));
   }
 
-  Widget _buildChartCard({required String title, required Widget child}) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color(0xFF334155), width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
-          ),
-          SizedBox(height: 16),
-          SizedBox(height: 200, child: child),
-        ],
-      ),
-    );
+  final double maxY = vm.maxDailyTickets;
+  double interval;
+  if (maxY <= 10) {
+    interval = 2;
+  } else if (maxY <= 50) {
+    interval = 10;
+  } else if (maxY <= 100) {
+    interval = 25;
+  } else {
+    interval = (maxY / 4).ceilToDouble();
   }
+  if (interval == 0) interval = 1;
 
-  Widget _buildLineChart() {
-    return LineChart(
-      LineChartData(
-        gridData: FlGridData(
-          show: true,
-          drawVerticalLine: false,
-          horizontalInterval: 50,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(color: Color(0xFF334155), strokeWidth: 1);
-          },
-        ),
-        titlesData: FlTitlesData(
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                if (value.toInt() >= 0 && value.toInt() < days.length) {
-                  return Text(
-                    days[value.toInt()],
-                    style: TextStyle(color: Colors.white60, fontSize: 10),
-                  );
-                }
-                return Text('');
-              },
-            ),
-          ),
-          leftTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              interval: 50,
-              getTitlesWidget: (value, meta) {
+  return LineChart(
+    LineChartData(
+      gridData: FlGridData(
+        show: true,
+        drawVerticalLine: false,
+        horizontalInterval: interval,
+        getDrawingHorizontalLine: (value) {
+          return FlLine(color: Color(0xFF334155), strokeWidth: 1);
+        },
+      ),
+      titlesData: FlTitlesData(
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            getTitlesWidget: (value, meta) {
+              final int index = value.toInt();
+              if (index >= 0 && index < vm.dayLabels.length) {
                 return Text(
-                  value.toInt().toString(),
+                  vm.dayLabels[index],
                   style: TextStyle(color: Colors.white60, fontSize: 10),
                 );
-              },
-              reservedSize: 40,
-            ),
+              }
+              return Text('');
+            },
           ),
-          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         ),
-        borderData: FlBorderData(show: false),
-        lineBarsData: [
-          LineChartBarData(
-            spots: [
-              FlSpot(0, 80),
-              FlSpot(1, 120),
-              FlSpot(2, 100),
-              FlSpot(3, 150),
-              FlSpot(4, 140),
-              FlSpot(5, 180),
-              FlSpot(6, 160),
-            ],
-            isCurved: true,
-            gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
-            barWidth: 3,
-            dotData: FlDotData(
-              show: true,
-              getDotPainter: (spot, percent, barData, index) {
-                return FlDotCirclePainter(
-                  radius: 4,
-                  color: Colors.white,
-                  strokeWidth: 2,
-                  strokeColor: Color(0xFF6366F1),
-                );
-              },
-            ),
-            belowBarData: BarAreaData(
-              show: true,
-              gradient: LinearGradient(
-                colors: [Color(0xFF6366F1).withOpacity(0.3), Color(0xFF6366F1).withOpacity(0.0)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
+        leftTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true,
+            interval: interval,
+            getTitlesWidget: (value, meta) {
+              return Text(
+                value.toInt().toString(),
+                style: TextStyle(color: Colors.white60, fontSize: 10),
+              );
+            },
+            reservedSize: 40,
+          ),
+        ),
+        rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      ),
+      borderData: FlBorderData(show: false),
+      lineBarsData: [
+        LineChartBarData(
+          spots: vm.dailyTicketSpots,
+          isCurved: true,
+          gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
+          barWidth: 3,
+          dotData: FlDotData(
+            show: true,
+            getDotPainter: (spot, percent, barData, index) {
+              return FlDotCirclePainter(
+                radius: 4,
+                color: Colors.white,
+                strokeWidth: 2,
+                strokeColor: Color(0xFF6366F1),
+              );
+            },
+          ),
+          belowBarData: BarAreaData(
+            show: true,
+            gradient: LinearGradient(
+              colors: [Color(0xFF6366F1).withOpacity(0.3), Color(0xFF6366F1).withOpacity(0.0)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-
-
+        ),
+      ],
+    ),
+  );
+}

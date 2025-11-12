@@ -1,4 +1,9 @@
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/presentation/view_models/order_view_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({Key? key}) : super(key: key);
@@ -13,7 +18,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -24,74 +29,100 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF0F172A),
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Color(0xFF1E293B),
-        title: Text(
-          'Orders',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Color(0xFF6366F1),
-          labelColor: Color(0xFF6366F1),
-          unselectedLabelColor: Colors.white60,
-          tabs: [
-            Tab(text: 'All'),
-            Tab(text: 'Pending'),
-            Tab(text: 'Completed'),
-            Tab(text: 'Cancelled'),
-          ],
-        ),
-      ),
-      body: Column(
-        children: [
-          // Stats Cards
-          Container(
-            padding: EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: _buildStatCard(
-                    'Total Orders',
-                    '1,234',
-                    Icons.shopping_cart,
-                    Color(0xFF6366F1),
-                    [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-                  ),
-                ),
-                SizedBox(width: 12),
-                Expanded(
-                  child: _buildStatCard(
-                    'Revenue',
-                    '\$45.2K',
-                    Icons.attach_money,
-                    Color(0xFF10B981),
-                    [Color(0xFF10B981), Color(0xFF06B6D4)],
-                  ),
-                ),
-              ],
+    return BaseView<OrderViewModel>(
+      viewModelBuilder: () => getIt<OrderViewModel>(),
+      autoDispose: false,
+      padding: false,
+      onModelReady: (viewModel) {
+        viewModel.init();
+      },
+      builder: (context, viewModel, child) {
+        return Scaffold(
+          backgroundColor: const Color(0xFF0F172A),
+          appBar: AppBar(
+            centerTitle: true,
+            elevation: 0,
+            backgroundColor: const Color(0xFF1E293B),
+            title: const Text(
+              'Orders',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
-          ),
-
-          // Orders List
-          Expanded(
-            child: TabBarView(
+            bottom: TabBar(
               controller: _tabController,
-              children: [
-                _buildOrdersList('all'),
-                _buildOrdersList('pending'),
-                _buildOrdersList('completed'),
-                _buildOrdersList('cancelled'),
+              indicatorColor: const Color(0xFF6366F1),
+              labelColor: const Color(0xFF6366F1),
+              unselectedLabelColor: Colors.white60,
+              tabs: const [
+                Tab(text: 'All'),
+                Tab(text: 'Completed'),
+                Tab(text: 'Cancelled'),
               ],
             ),
+          ),
+          body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: viewModel.ordersStream,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return _buildEmptyState("Error", "Error loading orders: ${snapshot.error}");
+              }
+              if (!snapshot.hasData) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+                }
+                return _buildEmptyState("All", "No orders found.");
+              }
+
+              final allOrders = snapshot.data!.docs;
+              return Column(
+                children: [
+                  _buildDynamicStats(allOrders),
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildOrdersList(allOrders, 'all'),
+                        _buildOrdersList(allOrders, 'completed'),
+                        _buildOrdersList(allOrders, 'cancelled'),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDynamicStats(List<QueryDocumentSnapshot<Map<String, dynamic>>> allOrders) {
+    String totalOrdersStr = allOrders.length.toString();
+    double totalRevenue = 0.0;
+    for (var doc in allOrders) {
+      final data = doc.data();
+      if (data['paymentStatus'] == 'completed') {
+        totalRevenue += (data['totalAmount'] as num?)?.toDouble() ?? 0.0;
+      }
+    }
+    var totalRevenueStr = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(totalRevenue);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          _buildStatCard(
+            'Total Orders',
+            totalOrdersStr,
+            Icons.shopping_cart,
+            const Color(0xFF6366F1),
+            const [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          ),
+          const SizedBox(height: 12),
+          _buildStatCard(
+            'Revenue',
+            totalRevenueStr,
+            Icons.attach_money,
+            const Color(0xFF10B981),
+            const [Color(0xFF10B981), Color(0xFF06B6D4)],
           ),
         ],
       ),
@@ -106,7 +137,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
     List<Color> gradient,
   ) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: gradient,
@@ -115,37 +146,27 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
-          BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 10,
-            offset: Offset(0, 5),
-          ),
+          BoxShadow(color: color.withOpacity(0.3), blurRadius: 10, offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
         children: [
           Icon(icon, color: Colors.white, size: 32),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   value,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 12,
-                  ),
-                ),
+                const SizedBox(height: 4),
+                Text(title, style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12)),
               ],
             ),
           ),
@@ -154,149 +175,116 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildOrdersList(String filter) {
-    final orders = _getFilteredOrders(filter);
+  Widget _buildOrdersList(
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> allOrders,
+    String filter,
+  ) {
+    if (allOrders.isEmpty) {
+      return _buildEmptyState(filter, "No orders found.");
+    }
 
-    if (orders.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.receipt_long, size: 64, color: Colors.white24),
-            SizedBox(height: 16),
-            Text(
-              'No ${filter == 'all' ? '' : filter} orders',
-              style: TextStyle(color: Colors.white60, fontSize: 16),
-            ),
-          ],
-        ),
-      );
+    final List<DocumentSnapshot<Map<String, dynamic>>> filteredOrders;
+
+    if (filter == 'all') {
+      filteredOrders = allOrders;
+    } else {
+      filteredOrders = allOrders.where((doc) {
+        final status = (doc.data()['paymentStatus'] as String?)?.toLowerCase();
+        return status == filter;
+      }).toList();
+    }
+
+    if (filteredOrders.isEmpty) {
+      return _buildEmptyState(filter, null);
     }
 
     return ListView.builder(
-      padding: EdgeInsets.all(16),
-      itemCount: orders.length,
+      padding: const EdgeInsets.all(16),
+      itemCount: filteredOrders.length,
       itemBuilder: (context, index) {
-        final order = orders[index];
-        return _buildOrderCard(order);
+        final orderDoc = filteredOrders[index];
+        final orderData = orderDoc.data();
+        orderData!['id'] = orderDoc.id;
+        return _buildOrderCard(orderData);
       },
     );
   }
 
-  List<Map<String, dynamic>> _getFilteredOrders(String filter) {
-    final allOrders = [
-      {
-        'id': '#ORD-001',
-        'customerName': 'John Doe',
-        'customerEmail': 'john.doe@example.com',
-        'eventName': 'Summer Music Festival 2024',
-        'tickets': '2x VIP Tickets',
-        'amount': '\$250.00',
-        'status': 'completed',
-        'date': 'Jun 15, 2024',
-        'time': '10:30 AM',
-      },
-      {
-        'id': '#ORD-002',
-        'customerName': 'Jane Smith',
-        'customerEmail': 'jane.smith@example.com',
-        'eventName': 'Tech Conference Asia',
-        'tickets': '1x Regular Ticket',
-        'amount': '\$80.00',
-        'status': 'pending',
-        'date': 'Jun 16, 2024',
-        'time': '2:15 PM',
-      },
-      {
-        'id': '#ORD-003',
-        'customerName': 'Mike Johnson',
-        'customerEmail': 'mike.j@example.com',
-        'eventName': 'Food & Wine Expo',
-        'tickets': '4x Standard Tickets',
-        'amount': '\$320.00',
-        'status': 'completed',
-        'date': 'Jun 14, 2024',
-        'time': '11:00 AM',
-      },
-      {
-        'id': '#ORD-004',
-        'customerName': 'Sarah Williams',
-        'customerEmail': 'sarah.w@example.com',
-        'eventName': 'Art Gallery Opening',
-        'tickets': '2x Early Bird',
-        'amount': '\$120.00',
-        'status': 'cancelled',
-        'date': 'Jun 13, 2024',
-        'time': '9:45 AM',
-      },
-      {
-        'id': '#ORD-005',
-        'customerName': 'David Brown',
-        'customerEmail': 'david.b@example.com',
-        'eventName': 'Sports Championship',
-        'tickets': '3x VIP Tickets',
-        'amount': '\$450.00',
-        'status': 'pending',
-        'date': 'Jun 17, 2024',
-        'time': '3:30 PM',
-      },
-    ];
-
-    if (filter == 'all') return allOrders;
-    return allOrders.where((order) => order['status'] == filter).toList();
+  Widget _buildEmptyState(String filter, String? message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.receipt_long, size: 64, color: Colors.white24),
+          const SizedBox(height: 16),
+          Text(
+            message ?? 'No ${filter == 'all' ? '' : filter} orders',
+            style: const TextStyle(color: Colors.white60, fontSize: 16),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildOrderCard(Map<String, dynamic> order) {
-    final statusColor = _getStatusColor(order['status'] as String);
-    final statusIcon = _getStatusIcon(order['status'] as String);
+    final String status = order['paymentStatus'] as String? ?? 'unknown';
+    final statusColor = _getStatusColor(status);
+    final statusIcon = _getStatusIcon(status);
+    final orderDate = (order['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now();
+    final String dateStr = DateFormat('MMM dd, yyyy').format(orderDate);
+    final String timeStr = DateFormat('h:mm a').format(orderDate);
+
+    final double amount = (order['totalAmount'] as num?)?.toDouble() ?? 0.0;
+    final String amountStr = NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(amount);
+    final ticketsList = (order['tickets'] as List<dynamic>?) ?? [];
+    final int totalTickets = ticketsList.fold<int>(
+      0,
+      (sum, item) => sum + (item['quantity'] as int? ?? 0),
+    );
+    final String ticketsStr = '$totalTickets ${totalTickets > 1 ? 'tickets' : 'ticket'}';
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Color(0xFF1E293B),
+        color: const Color(0xFF1E293B),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: statusColor.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: statusColor.withOpacity(0.3), width: 1),
       ),
       child: Column(
         children: [
-          // Order Header
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Container(
-                  padding: EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: statusColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
-                    Icons.receipt_long,
-                    color: statusColor,
-                    size: 24,
-                  ),
+                  child: Icon(Icons.receipt_long, color: statusColor, size: 24),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Text(
-                            order['id'] as String,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                          Expanded(
+                            child: Text(
+                              '${order['id'] as String}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          Spacer(),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: statusColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
@@ -305,9 +293,9 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(statusIcon, size: 14, color: statusColor),
-                                SizedBox(width: 4),
+                                const SizedBox(width: 4),
                                 Text(
-                                  (order['status'] as String).toUpperCase(),
+                                  status.toUpperCase(),
                                   style: TextStyle(
                                     color: statusColor,
                                     fontSize: 11,
@@ -319,21 +307,21 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                           ),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.calendar_today, size: 12, color: Colors.white60),
-                          SizedBox(width: 4),
+                          const Icon(Icons.calendar_today, size: 12, color: Colors.white60),
+                          const SizedBox(width: 4),
                           Text(
-                            order['date'] as String,
-                            style: TextStyle(color: Colors.white60, fontSize: 12),
+                            dateStr,
+                            style: const TextStyle(color: Colors.white60, fontSize: 12),
                           ),
-                          SizedBox(width: 12),
-                          Icon(Icons.access_time, size: 12, color: Colors.white60),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 12),
+                          const Icon(Icons.access_time, size: 12, color: Colors.white60),
+                          const SizedBox(width: 4),
                           Text(
-                            order['time'] as String,
-                            style: TextStyle(color: Colors.white60, fontSize: 12),
+                            timeStr,
+                            style: const TextStyle(color: Colors.white60, fontSize: 12),
                           ),
                         ],
                       ),
@@ -343,82 +331,62 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
               ],
             ),
           ),
-
-          Divider(color: Color(0xFF334155), height: 1),
-
-          // Order Details
+          const Divider(color: Color(0xFF334155), height: 1),
           Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Customer Info
                 Row(
                   children: [
-                    Icon(Icons.person, size: 16, color: Color(0xFF6366F1)),
-                    SizedBox(width: 8),
+                    const Icon(Icons.person, size: 16, color: Color(0xFF6366F1)),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            order['customerName'] as String,
-                            style: TextStyle(
+                            order['userEmail'] as String? ?? 'N/A',
+                            style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
                             ),
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            order['customerEmail'] as String,
-                            style: TextStyle(color: Colors.white60, fontSize: 12),
-                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
-
-                // Event Info
+                const SizedBox(height: 12),
                 Row(
                   children: [
-                    Icon(Icons.event, size: 16, color: Color(0xFFEC4899)),
-                    SizedBox(width: 8),
+                    const Icon(Icons.event, size: 16, color: Color(0xFFEC4899)),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        order['eventName'] as String,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 14,
-                        ),
+                        order['eventName'] as String? ?? 'N/A',
+                        style: const TextStyle(color: Colors.white, fontSize: 14),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
-
-                // Tickets & Amount
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.confirmation_number, size: 16, color: Color(0xFFF59E0B)),
-                        SizedBox(width: 8),
-                        Text(
-                          order['tickets'] as String,
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
+                        const Icon(Icons.confirmation_number, size: 16, color: Color(0xFFF59E0B)),
+                        const SizedBox(width: 8),
+                        Text(ticketsStr, style: const TextStyle(color: Colors.white, fontSize: 14)),
                       ],
                     ),
                     Text(
-                      order['amount'] as String,
-                      style: TextStyle(
+                      amountStr,
+                      style: const TextStyle(
                         color: Color(0xFF10B981),
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -430,44 +398,6 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
             ),
           ),
 
-          // Actions
-          Container(
-            decoration: BoxDecoration(
-              color: Color(0xFF0F172A),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(16),
-                bottomRight: Radius.circular(16),
-              ),
-            ),
-            padding: EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.visibility, size: 16),
-                    label: Text('View Details'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: Color(0xFF6366F1),
-                      side: BorderSide(color: Color(0xFF6366F1)),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 8),
-                Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: () {},
-                    icon: Icon(Icons.print, size: 16),
-                    label: Text('Print'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF6366F1),
-                      foregroundColor: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -476,13 +406,14 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
   Color _getStatusColor(String status) {
     switch (status) {
       case 'completed':
-        return Color(0xFF10B981);
+        return const Color(0xFF10B981);
       case 'pending':
-        return Color(0xFFF59E0B);
+        return const Color(0xFFF59E0B);
       case 'cancelled':
-        return Color(0xFFEF4444);
+      case 'failed':
+        return const Color(0xFFEF4444);
       default:
-        return Color(0xFF64748B);
+        return const Color(0xFF64748B);
     }
   }
 
@@ -493,6 +424,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
       case 'pending':
         return Icons.access_time;
       case 'cancelled':
+      case 'failed':
         return Icons.cancel;
       default:
         return Icons.info;
