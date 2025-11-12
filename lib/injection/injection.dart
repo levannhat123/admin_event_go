@@ -28,6 +28,7 @@ import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart
 import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
 import 'package:admin_event_go/data/services/supabase_storage_service.dart';
+import 'package:admin_event_go/presentation/view_models/order_view_model.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
@@ -103,5 +104,8 @@ void setupDependencies(GoRouter router) {
       watchAllCategoriesUsecase: getIt<WatchAllCategoriesUsecase>(),
     ),
   );
-  getIt.registerSingleton(DashboadViewModel(getIt<WatchAllEventsUsecase>(), getIt<AuthRepository>()));
+  getIt.registerSingleton(
+    DashboadViewModel(getIt<WatchAllEventsUsecase>(), getIt<AuthRepository>()),
+  );
+  getIt.registerSingleton(OrderViewModel());
 }
