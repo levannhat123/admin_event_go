@@ -111,6 +111,15 @@ class TicketTypeItemWidget extends StatelessWidget {
                   color: Colors.blue,
                 ),
 
+              if (ticketType.totalQuantity != null) ...{
+                // Số lượng vé
+                _buildInfoChip(
+                  icon: Icons.confirmation_num,
+                  label: 'TotalQuantity: ${ticketType.totalQuantity}',
+                  color: Colors.teal,
+                ),
+
+              }  ,
               // Số lượng min
               if (ticketType.minQtyPerOrder != null)
                 _buildInfoChip(

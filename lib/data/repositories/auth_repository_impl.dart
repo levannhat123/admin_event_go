@@ -57,7 +57,7 @@ class AuthRepositoryImpl implements AuthRepository {
     final response = await _supabase
         .from('profiles')
         .select()
-        .eq('role', 'user');
+        .eq('role', 'staff');
     return (response as List)
         .map((e) => ProfileModel.fromJson(e))
         .toList();

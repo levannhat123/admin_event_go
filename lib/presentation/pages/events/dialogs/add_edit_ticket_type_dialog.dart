@@ -24,6 +24,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
   final priceController = TextEditingController();
   final maxQtyController = TextEditingController();
   final minQtyController = TextEditingController();
+  final totalQuantity= TextEditingController();
 
   bool isFree = false;
   String? status = 'ACTIVE';
@@ -39,6 +40,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
       priceController.text = widget.ticketType!.price?.toString() ?? '';
       maxQtyController.text = widget.ticketType!.maxQtyPerOrder?.toString() ?? '';
       minQtyController.text = widget.ticketType!.minQtyPerOrder?.toString() ?? '';
+      totalQuantity.text = widget.ticketType!.totalQuantity?.toString() ?? '';
       isFree = widget.ticketType!.isFree ?? false;
       status = widget.ticketType!.status ?? 'ACTIVE';
       startTime = widget.ticketType!.startTime;
@@ -53,6 +55,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
     priceController.dispose();
     maxQtyController.dispose();
     minQtyController.dispose();
+    totalQuantity.dispose();
     super.dispose();
   }
 
@@ -193,6 +196,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
       price: isFree ? 0 : (int.tryParse(priceController.text.trim()) ?? 0),
       maxQtyPerOrder: int.tryParse(maxQtyController.text.trim()),
       minQtyPerOrder: int.tryParse(minQtyController.text.trim()),
+      totalQuantity: int.tryParse(totalQuantity.text.trim()),
       status: status,
       startTime: startTime,
       endTime: endTime,
@@ -297,6 +301,15 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       controller: priceController,
                       borderColor: Colors.grey.shade300,
                       fillColor: isFree ? Colors.grey.shade200 : Colors.grey.shade100,
+                      focusedBorderColor: const Color(0xFF4257b4),
+                      enabledBorderColor: Colors.grey.shade300,
+                      shadowColor: AppColors.transparent,
+                    ),
+                    const SizedBox(height: 12),
+                    AppTextField(
+                      lableText: 'Tổng số lượng vé',
+                      controller: totalQuantity,
+                      borderColor: Colors.grey.shade300,
                       focusedBorderColor: const Color(0xFF4257b4),
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,

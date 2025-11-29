@@ -12,6 +12,7 @@ import 'package:admin_event_go/data/services/supabase_storage_service.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
+import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -306,7 +307,7 @@ class _AddEventPageState extends State<AddEventPage> {
         actions: [
           TextButton(
             onPressed: () {
-              context.pop();
+             context.push(RouterPath.events);
             },
             child: const Text('OK'),
           ),

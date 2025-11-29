@@ -219,6 +219,83 @@ class AuthViewModel extends BaseViewModel {
       print("Error refreshing profiles: $e");
     }
   }
+  Future<bool> createStaff({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String role,
+    String? avatarUrl,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      final res = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: "123456789",
+      );
+
+      if (res.user == null) {
+        _setError("Không thể tạo tài khoản nhân viên");
+        _setLoading(false);
+        return false;
+      }
+
+      final uid = res.user!.id;
+
+      await Supabase.instance.client.from('profiles').insert({
+        'id': uid,
+        'full_name': fullName,
+        'email': email,
+        'phone': phone,
+        'avatar_url': avatarUrl ?? "",
+        'role': role,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      await fetchUsers();
+      _setLoading(false);
+      return true;
+
+    } catch (e) {
+      _setLoading(false);
+      _setError("Lỗi tạo nhân viên: $e");
+      return false;
+    }
+  }
+
+  Future<bool> updateStaff({
+    required String id,
+    required String fullName,
+    required String email,
+    required String phone,
+    required String role,
+    String? avatarUrl,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      await Supabase.instance.client.from('profiles').update({
+        'full_name': fullName,
+        'email': email,
+        'phone': phone,
+        'avatar_url': avatarUrl ?? "",
+        'role': role,
+      }).eq('id', id);
+
+      await fetchUsers();
+      _setLoading(false);
+      return true;
+    } catch (e, s) {
+      print("❌ ERROR CREATE STAFF:");
+      print(e);
+      print(s);
+      _setError("Lỗi tạo nhân viên: $e");
+      _setLoading(false);
+      return false;
+    }
+  }
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
