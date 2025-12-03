@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +80,7 @@ class _UserScreenState extends State<UserScreen> {
                 backgroundColor: const Color(0xFFEF4444),
                 foregroundColor: Colors.white,
                 icon: Icons.delete_outline,
-                label: 'Delete',
+                label: AppStrings.deleteLabel,
               ),
             ],
           ),
@@ -124,7 +125,7 @@ class _UserScreenState extends State<UserScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.email ?? "No email",
+                          user.email ?? AppStrings.noEmail,
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
@@ -153,8 +154,8 @@ class _UserScreenState extends State<UserScreen> {
                                   ),
                                   SizedBox(width: 4),
                                   Text(
-                                    'Active',
-                                    style: TextStyle(
+                                    AppStrings.activeStatus,
+                                    style: const TextStyle(
                                       color: Color(0xFF10B981),
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
@@ -165,7 +166,7 @@ class _UserScreenState extends State<UserScreen> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'ID: ${user.id.substring(0, 8)}...',
+                              '${AppStrings.categoryIdPrefix}${user.id.substring(0, 8)}...',
                               style: const TextStyle(
                                 color: Colors.white60,
                                 fontSize: 11,
@@ -205,17 +206,19 @@ class _UserScreenState extends State<UserScreen> {
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            'Delete User',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            AppStrings.deleteUserDialogTitle,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           content: Text(
-            'Are you sure you want to delete $email?',
-            style: TextStyle(color: Colors.white70),
+            '${AppStrings.deleteUserDialogContentPrefix}$email'
+            '${AppStrings.deleteUserDialogContentSuffix}',
+            style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.white60)),
+              child: Text(AppStrings.cancelButton,
+                  style: const TextStyle(color: Colors.white60)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -226,7 +229,8 @@ class _UserScreenState extends State<UserScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFEF4444),
               ),
-              child: Text('Delete', style: TextStyle(color: Colors.white)),
+              child: Text(AppStrings.deleteButton,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ],
         );

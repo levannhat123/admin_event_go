@@ -1,7 +1,8 @@
-import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/core/base/base_view.dart';
-import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/event_detail_model.dart';
+import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -21,8 +22,8 @@ class _EventsListPageState extends State<EventsListPage> {
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Color(0xFF1E293B),
-        title: Text(
-          'Events',
+        title: const Text(
+          AppStrings.eventsTitle,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         leading: IconButton(
@@ -39,8 +40,8 @@ class _EventsListPageState extends State<EventsListPage> {
             return const Center(child: CircularProgressIndicator());
           }
           if (vm.events.isEmpty) {
-            return Center(
-              child: Text('No events', style: TextStyle(color: Colors.white70)),
+            return const Center(
+              child: Text(AppStrings.eventsNoEvents, style: TextStyle(color: Colors.white70)),
             );
           }
           return ListView.builder(
@@ -56,8 +57,8 @@ class _EventsListPageState extends State<EventsListPage> {
         },
         backgroundColor: Color(0xFF6366F1),
         icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'Add Event',
+        label: const Text(
+          AppStrings.eventsAddEvent,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
@@ -121,12 +122,17 @@ class _EventsListPageState extends State<EventsListPage> {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: Text('Xác nhận xóa'),
-                        content: Text('Bạn có chắc chắn muốn xóa sự kiện "${event.title}"?'),
+                        content: Text(AppStrings.deleteCategoryContentPrefix +
+                            event.title +
+                            AppStrings.deleteCategoryContentSuffix),
                         actions: [
-                          TextButton(onPressed: () => context.pop(false), child: Text('Hủy')),
+                          TextButton(
+                              onPressed: () => context.pop(false),
+                              child: const Text(AppStrings.ticketTypeDeleteCancel)),
                           TextButton(
                             onPressed: () => context.pop(true),
-                            child: Text('Xóa', style: TextStyle(color: Colors.red)),
+                            child: const Text(AppStrings.ticketTypeDeleteConfirm,
+                                style: TextStyle(color: Colors.red)),
                           ),
                         ],
                       ),
@@ -136,9 +142,8 @@ class _EventsListPageState extends State<EventsListPage> {
                 if (confirmed) {
                   final success = await vm.deleteEvent(event.id);
                   if (!success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(vm.errorMessage ?? 'Failed to delete event')),
-                    );
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text(vm.errorMessage ?? AppStrings.eventSaveFailed)));
                   }
                 }
               },

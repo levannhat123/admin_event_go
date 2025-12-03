@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/order_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
@@ -46,7 +47,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
             elevation: 0,
             backgroundColor: const Color(0xFF1E293B),
             title: const Text(
-              'Orders',
+              AppStrings.ordersTitle,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
             ),
             bottom: TabBar(
@@ -55,9 +56,9 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
               labelColor: const Color(0xFF6366F1),
               unselectedLabelColor: Colors.white60,
               tabs: const [
-                Tab(text: 'All'),
-                Tab(text: 'Completed'),
-                Tab(text: 'Cancelled'),
+                Tab(text: AppStrings.ordersTabAll),
+                Tab(text: AppStrings.ordersTabCompleted),
+                Tab(text: AppStrings.ordersTabCancelled),
               ],
             ),
           ),
@@ -65,13 +66,16 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
             stream: viewModel.ordersStream,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
-                return _buildEmptyState("Error", "Error loading orders: ${snapshot.error}");
+                return _buildEmptyState(
+                    AppStrings.ordersErrorTitle,
+                    "${AppStrings.ordersErrorLoading}: ${snapshot.error}");
               }
               if (!snapshot.hasData) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+                  return const Center(
+                      child: CircularProgressIndicator(color: Color(0xFF6366F1)));
                 }
-                return _buildEmptyState("All", "No orders found.");
+                return _buildEmptyState(AppStrings.ordersTabAll, AppStrings.ordersEmpty);
               }
 
               final allOrders = snapshot.data!.docs;
@@ -182,7 +186,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
     String filter,
   ) {
     if (allOrders.isEmpty) {
-      return _buildEmptyState(filter, "No orders found.");
+      return _buildEmptyState(filter, AppStrings.ordersEmpty);
     }
 
     final List<DocumentSnapshot<Map<String, dynamic>>> filteredOrders;
@@ -220,7 +224,10 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
           const Icon(Icons.receipt_long, size: 64, color: Colors.white24),
           const SizedBox(height: 16),
           Text(
-            message ?? 'No ${filter == 'all' ? '' : filter} orders',
+            message ??
+                '${AppStrings.ordersEmptyWithFilterPrefix}'
+                '${filter == 'all' ? '' : filter} '
+                '${AppStrings.ordersEmptyWithFilterSuffix.trim()}',
             style: const TextStyle(color: Colors.white60, fontSize: 16),
             textAlign: TextAlign.center,
           ),

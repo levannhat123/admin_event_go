@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:flutter/material.dart';
 import '../../../core/base/base_view.dart';
@@ -18,7 +19,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
   late TextEditingController emailCtrl;
   late TextEditingController phoneCtrl;
 
-  String role = "staff";
+  String role = AppStrings.staffRoleStaff;
 
   bool get isEdit => widget.staffData != null;
 
@@ -28,7 +29,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
     nameCtrl = TextEditingController(text: widget.staffData?.fullName ?? "");
     emailCtrl = TextEditingController(text: widget.staffData?.email ?? "");
     phoneCtrl = TextEditingController(text: widget.staffData?.phone ?? "");
-    role = widget.staffData?.role ?? "staff";
+    role = widget.staffData?.role ?? AppStrings.staffRoleStaff;
   }
 
   @override
@@ -40,22 +41,26 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
           backgroundColor: const Color(0xFF0F172A),
           appBar: AppBar(
             backgroundColor: const Color(0xFF1E293B),
-            title: Text(isEdit ? "Edit Staff" : "Add Staff"),
+            title: Text(isEdit ? AppStrings.editStaffTitle : AppStrings.addStaffTitle),
           ),
 
           body: Padding(
             padding: const EdgeInsets.all(16),
             child: ListView(
               children: [
-                _input("Full Name", nameCtrl),
-                _input("Email", emailCtrl),
-                _input("Phone", phoneCtrl),
+                _input(AppStrings.fullNameLabel, nameCtrl),
+                _input(AppStrings.emailLabel, emailCtrl),
+                _input(AppStrings.phoneLabel, phoneCtrl),
 
                 DropdownButtonFormField(
                   value: role,
                   dropdownColor: const Color(0xFF1E293B),
-                  decoration: _decor("Role"),
-                  items: ["staff", "admin", "user"]
+                  decoration: _decor(AppStrings.roleLabel),
+                  items: [
+                    AppStrings.staffRoleStaff,
+                    AppStrings.staffRoleAdmin,
+                    AppStrings.staffRoleUser
+                  ]
                       .map((e) => DropdownMenuItem(
                     value: e,
                     child: Text(e,
@@ -72,7 +77,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(vertical: 14)),
                   child: Text(
-                    isEdit ? "Save Changes" : "Add Staff",
+                    isEdit ? AppStrings.saveChangesButton : AppStrings.addStaffButton,
                     style: const TextStyle(fontSize: 18),
                   ),
                   onPressed: () async {

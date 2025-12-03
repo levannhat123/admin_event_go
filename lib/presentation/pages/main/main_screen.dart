@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/constants/app_svg.dart';
 import 'package:admin_event_go/core/widgets/custom_navbottom_bar.dart';
 import 'package:admin_event_go/data/models/navbar/nav_item.dart';
@@ -14,23 +15,23 @@ class MainScreen extends StatefulWidget {
   static List<NavItem> navItems(BuildContext context) => [
     NavItem(
       icon: AppSvg.home,
-      label: 'Dashboard',
+      label: AppStrings.navDashboard,
       route: RouterPath.dashboard,
     ),
     NavItem(
       icon: AppSvg.event,
-      label: 'Events',
+      label: AppStrings.navEvents,
       route: RouterPath.events,
     ),
     NavItem(
       icon: AppSvg.order,
-      label: 'Orders',
+      label: AppStrings.navOrders,
       route: RouterPath.orders,
       isCenter: true,
     ),
     NavItem(
       icon: AppSvg.user,
-      label: 'Users',
+      label: AppStrings.navUsers,
       route: RouterPath.users,
     ),
   ];

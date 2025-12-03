@@ -1,10 +1,11 @@
 import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
-import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -18,8 +19,8 @@ class DashboardPage extends StatelessWidget {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Color(0xFF1E293B),
-        title: Text(
-          'Dashboard',
+        title: const Text(
+          AppStrings.dashboardTitle,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
@@ -46,8 +47,8 @@ class DashboardPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Recent Events',
+                        const Text(
+                          AppStrings.recentEvents,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -58,8 +59,10 @@ class DashboardPage extends StatelessWidget {
                           onPressed: () {
                             context.push(RouterPath.eventsList);
                           },
-                          icon: Icon(Icons.arrow_forward, color: Color(0xFF6366F1), size: 16),
-                          label: Text('View All', style: TextStyle(color: Color(0xFF6366F1))),
+                          icon: const Icon(Icons.arrow_forward,
+                              color: Color(0xFF6366F1), size: 16),
+                          label: const Text(AppStrings.viewAll,
+                              style: TextStyle(color: Color(0xFF6366F1))),
                         ),
                       ],
                     ),
@@ -76,10 +79,12 @@ class DashboardPage extends StatelessWidget {
     );
   }
   Widget _buildRecentEventsList(DashboadViewModel vm) {
-    if (vm.isBusy && vm.events.isEmpty) return Center(child: CircularProgressIndicator());
+    if (vm.isBusy && vm.events.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
     if (vm.events.isEmpty) {
-      return Center(
-        child: Text('No events', style: TextStyle(color: Colors.white60)),
+      return const Center(
+        child: Text(AppStrings.eventsNoEvents, style: TextStyle(color: Colors.white60)),
       );
     }
 
@@ -410,7 +415,7 @@ Widget _buildStatsGrid(DashboadViewModel vm) {
     childAspectRatio: 1.5,
     children: [
       _buildStatCard(
-        title: 'Total Events',
+        title: AppStrings.totalEvents,
         value: vm.events.length.toString(),
         icon: Icons.event,
         color: Color(0xFF6366F1),
@@ -418,7 +423,7 @@ Widget _buildStatsGrid(DashboadViewModel vm) {
         trend: '+12%',
       ),
       _buildStatCard(
-        title: 'Total Orders', // <-- Đã thay đổi
+        title: AppStrings.totalOrders,
         value: vm.totalOrdersString, // <-- Đã thay đổi
         icon: Icons.confirmation_number,
         color: Color(0xFFEC4899),
@@ -426,7 +431,7 @@ Widget _buildStatsGrid(DashboadViewModel vm) {
         trend: '+23%',
       ),
       _buildStatCard(
-        title: 'Revenue',
+        title: AppStrings.revenue,
         value: vm.totalRevenueString, // <-- Đã thay đổi
         icon: Icons.attach_money,
         color: Color(0xFFF59E0B),
@@ -434,7 +439,7 @@ Widget _buildStatsGrid(DashboadViewModel vm) {
         trend: '+18%',
       ),
       _buildStatCard(
-        title: 'New Users',
+        title: AppStrings.newUsers,
         value: vm.users.length.toString(),
         icon: Icons.person_add,
         color: Color(0xFF8B5CF6),
@@ -527,8 +532,8 @@ Widget _buildChartsSection(DashboadViewModel vm) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      Text(
-        'Analytics',
+      const Text(
+        AppStrings.analyticsTitle,
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
       ),
       SizedBox(height: 16),
@@ -537,9 +542,7 @@ Widget _buildChartsSection(DashboadViewModel vm) {
           Expanded(
             flex: 2,
             child: _buildChartCard(
-                title: 'Tickets Sold (Last 7 Days)',
-                child: _buildLineChart(vm)
-            ),
+                title: AppStrings.ticketsSoldLast7Days, child: _buildLineChart(vm)),
           ),
         ],
       ),
@@ -573,10 +576,12 @@ Widget _buildLineChart(DashboadViewModel vm) {
 
   if (vm.dailyTicketSpots.isEmpty) {
     if (vm.isBusy) {
-      return const Center(child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+      return const Center(
+          child: CircularProgressIndicator(color: Color(0xFF6366F1)));
     }
     return const Center(
-        child: Text('No ticket data yet', style: TextStyle(color: Colors.white60)));
+        child: Text(AppStrings.noTicketDataYet,
+            style: TextStyle(color: Colors.white60)));
   }
 
   final double maxY = vm.maxDailyTickets;

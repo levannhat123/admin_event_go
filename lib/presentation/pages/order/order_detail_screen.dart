@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +14,8 @@ class OrderDetailScreen extends StatelessWidget {
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E293B),
-        title: const Text("Order Detail", style: TextStyle(color: Colors.white)),
+        title:
+            const Text(AppStrings.orderDetailTitle, style: TextStyle(color: Colors.white)),
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
@@ -27,7 +29,7 @@ class OrderDetailScreen extends StatelessWidget {
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
             return const Center(
-              child: Text("Order not found",
+              child: Text(AppStrings.orderNotFound,
                   style: TextStyle(color: Colors.white)),
             );
           }
@@ -48,57 +50,57 @@ class OrderDetailScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
                 _infoSection(
-                  title: "User Information",
+                  title: AppStrings.orderUserInformation,
                   icon: Icons.person,
                   children: [
-                    _infoRow("Email", order["userEmail"]),
+                    _infoRow(AppStrings.emailLabel, order["userEmail"]),
                   ],
                 ),
 
                 const SizedBox(height: 20),
                 _infoSection(
-                  title: "Event Information",
+                  title: AppStrings.orderEventInformation,
                   icon: Icons.event,
                   children: [
-                    _infoRow("Event Name", order["eventName"]),
-                    _infoRow("Venue", order["venue"]),
+                    _infoRow(AppStrings.eventNameLabel, order["eventName"]),
+                    _infoRow(AppStrings.venueLabel, order["venue"]),
                   ],
                 ),
 
                 const SizedBox(height: 20),
                 _infoSection(
-                  title: "Order Info",
+                  title: AppStrings.orderInfo,
                   icon: Icons.receipt_long,
                   children: [
                     _infoRow(
-                      "Total Amount",
+                      AppStrings.orderTotalAmount,
                       NumberFormat.currency(locale: 'vi_VN', symbol: 'đ')
                           .format(order["totalAmount"]),
                     ),
-                    _infoRow("Payment Method", order["paymentMethod"]),
-                    _infoRow("Payment Status", order["paymentStatus"]),
+                    _infoRow(AppStrings.orderPaymentMethod, order["paymentMethod"]),
+                    _infoRow(AppStrings.orderPaymentStatus, order["paymentStatus"]),
                     _infoRow(
-                      "Created At",
+                      AppStrings.orderCreatedAt,
                       createdAt != null
                           ? DateFormat('dd/MM/yyyy HH:mm').format(createdAt)
-                          : "N/A",
+                          : AppStrings.notAvailableShort,
                     ),
                   ],
                 ),
 
                 const SizedBox(height: 20),
                 _infoSection(
-                  title: "Check-in Status",
+                  title: AppStrings.orderCheckinStatusTitle,
                   icon: Icons.qr_code_scanner,
                   children: [
-                    _infoRow("Check-in Status", order["checkinStatus"]),
-                    _infoRow("Checked In", "${order["checkedIn"]} người"),
+                    _infoRow(AppStrings.orderCheckinStatus, order["checkinStatus"]),
+                    _infoRow(AppStrings.orderCheckedIn, "${order["checkedIn"]} người"),
                     _infoRow(
-                      "Check-in Time",
+                      AppStrings.orderCheckinTime,
                       checkinTimestamp != null
                           ? DateFormat('dd/MM/yyyy HH:mm')
                           .format(checkinTimestamp)
-                          : "Chưa check-in",
+                          : AppStrings.orderCheckinTimeNotYet,
                     ),
                   ],
                 ),
@@ -197,7 +199,7 @@ class OrderDetailScreen extends StatelessWidget {
             children: const [
               Icon(Icons.confirmation_number, color: Color(0xFFF59E0B)),
               SizedBox(width: 8),
-              Text("Tickets",
+              Text(AppStrings.orderTickets,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -216,7 +218,7 @@ class OrderDetailScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(t["name"] ?? "Unknown",
+                  Text(t["name"] ?? AppStrings.unknownText,
                       style:
                       const TextStyle(color: Colors.white, fontSize: 16)),
                   Text("x${t["quantity"]}",
@@ -241,7 +243,7 @@ class OrderDetailScreen extends StatelessWidget {
           Text(label, style: const TextStyle(color: Colors.white70)),
           Flexible(
             child: Text(
-              value ?? "N/A",
+              value ?? AppStrings.notAvailableShort,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w600,

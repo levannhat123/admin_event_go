@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/widgets/app_elevated_button.dart';
 import 'package:admin_event_go/core/widgets/custom_dropdown.dart';
 import 'package:admin_event_go/core/widgets/custom_switch.dart';
@@ -160,7 +161,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                   Text(
                     dateTime != null
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
-                        : 'Chưa chọn',
+                        : AppStrings.notAvailableShort,
                     style: TextStyle(
                       fontSize: 14,
                       color: dateTime != null ? Colors.black87 : Colors.grey.shade400,
@@ -179,12 +180,12 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
 
   void _saveTicketType() {
     if (nameController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập tên loại vé');
+      _showErrorDialog(AppStrings.ticketTypeNameRequired);
       return;
     }
 
     if (!isFree && priceController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập giá vé hoặc chọn miễn phí');
+      _showErrorDialog(AppStrings.ticketTypePriceRequired);
       return;
     }
 
@@ -209,9 +210,13 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Lỗi'),
+        title: const Text(AppStrings.errorTitle),
         content: Text(message),
-        actions: [TextButton(onPressed: () => context.pop(), child: const Text('Đóng'))],
+        actions: [
+          TextButton(
+              onPressed: () => context.pop(),
+              child: const Text(AppStrings.closeButton))
+        ],
       ),
     );
   }
@@ -241,7 +246,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      widget.ticketType == null ? 'Thêm loại vé mới' : 'Sửa loại vé',
+                      widget.ticketType == null
+                          ? AppStrings.ticketTypeDialogTitleAdd
+                          : AppStrings.ticketTypeDialogTitleEdit,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -265,7 +272,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppTextField(
-                      lableText: 'Tên loại vé *',
+                      lableText: AppStrings.ticketTypeNameLabel,
                       controller: nameController,
                       borderColor: Colors.grey.shade300,
                       fillColor: Colors.grey.shade100,
@@ -275,7 +282,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 12),
                     AppTextField(
-                      lableText: 'Mô tả',
+                      lableText: AppStrings.ticketTypeDescriptionLabel,
                       controller: descController,
                       maxLines: 3,
                       borderColor: Colors.grey.shade300,
@@ -286,7 +293,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 12),
                     CustomSwitch(
-                      label: 'Vé miễn phí',
+                      label: AppStrings.ticketTypeFreeLabel,
                       value: isFree,
                       onChanged: (v) => setState(() {
                         isFree = v;
@@ -297,7 +304,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 12),
                     AppTextField(
-                      lableText: 'Giá vé (VNĐ) *',
+                      lableText: AppStrings.ticketTypePriceLabel,
                       controller: priceController,
                       borderColor: Colors.grey.shade300,
                       fillColor: isFree ? Colors.grey.shade200 : Colors.grey.shade100,
@@ -307,7 +314,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 12),
                     AppTextField(
-                      lableText: 'Tổng số lượng vé',
+                      lableText: AppStrings.ticketTypeTotalQuantityLabel,
                       controller: totalQuantity,
                       borderColor: Colors.grey.shade300,
                       focusedBorderColor: const Color(0xFF4257b4),
@@ -319,7 +326,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       children: [
                         Expanded(
                           child: AppTextField(
-                            lableText: 'SL tối thiểu/đơn',
+                            lableText: AppStrings.ticketTypeMinPerOrderLabel,
                             controller: minQtyController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -331,7 +338,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: AppTextField(
-                            lableText: 'SL tối đa/đơn',
+                            lableText: AppStrings.ticketTypeMaxPerOrderLabel,
                             controller: maxQtyController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -344,17 +351,17 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 12),
                     CustomDropdown<String>(
-                      label: 'Trạng thái',
+                      label: AppStrings.ticketTypeStatusLabel,
                       items: ['ACTIVE', 'INACTIVE', 'SOLD_OUT'],
                       value: status,
                       getLabel: (v) {
                         switch (v) {
                           case 'ACTIVE':
-                            return 'Đang bán';
+                            return AppStrings.ticketTypeStatusActive;
                           case 'INACTIVE':
-                            return 'Tạm dừng';
+                            return AppStrings.ticketTypeStatusInactive;
                           case 'SOLD_OUT':
-                            return 'Hết vé';
+                            return AppStrings.ticketTypeStatusSoldOut;
                           default:
                             return v;
                         }
@@ -363,7 +370,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 12),
                     const Text(
-                      'Thời gian bán vé',
+                      AppStrings.ticketTypeSaleTimeTitle,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -372,14 +379,14 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     ),
                     const SizedBox(height: 8),
                     _buildDateTimeField(
-                      label: 'Bắt đầu bán',
+                      label: AppStrings.ticketTypeSaleStartLabel,
                       dateTime: startTime,
                       onTap: () => _selectDateTime(context, true),
                       icon: Icons.access_time,
                     ),
                     const SizedBox(height: 8),
                     _buildDateTimeField(
-                      label: 'Kết thúc bán',
+                      label: AppStrings.ticketTypeSaleEndLabel,
                       dateTime: endTime,
                       onTap: () => _selectDateTime(context, false),
                       icon: Icons.event_available,
@@ -399,7 +406,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                   Expanded(
                     child: AppElevatedButton(
                       onPressed: () => context.pop(),
-                      text: 'Hủy',
+                      text: AppStrings.ticketTypeDialogCancel,
                       borderColor: Colors.grey.shade300,
                       color: Colors.white,
                       textColor: Colors.black87,
@@ -409,7 +416,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                   Expanded(
                     child: AppElevatedButton(
                       onPressed: _saveTicketType,
-                      text: widget.ticketType == null ? 'Thêm' : 'Cập nhật',
+                      text: widget.ticketType == null
+                          ? AppStrings.ticketTypeDialogAdd
+                          : AppStrings.ticketTypeDialogUpdate,
                       borderColor: const Color(0xFF4257b4),
                       color: const Color(0xFF4257b4),
                       textColor: Colors.white,

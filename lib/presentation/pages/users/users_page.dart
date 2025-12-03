@@ -1,5 +1,6 @@
 import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/widgets/custom_no_data.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/pages/users/staff_screen.dart';
@@ -25,7 +26,10 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    tabs = [Tab(text: 'Users'), Tab(text: 'Staff')];
+    tabs = [
+      const Tab(text: AppStrings.usersTabUsers),
+      const Tab(text: AppStrings.usersTabStaff)
+    ];
     _tabController = TabController(
       length: tabs.length,
       vsync: this,
@@ -41,8 +45,8 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Color(0xFF1E293B),
-        title: Text(
-          "Users Management",
+        title: const Text(
+          AppStrings.usersManagementTitle,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

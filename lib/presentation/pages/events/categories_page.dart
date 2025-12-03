@@ -1,11 +1,12 @@
-import 'package:admin_event_go/core/constants/app_colors.dart';
-import 'package:admin_event_go/core/widgets/custom_no_data.dart';
-import 'package:admin_event_go/routers/router_name.dart';
-import 'package:flutter/material.dart';
-import 'package:admin_event_go/data/models/category/category_model.dart';
 import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
+import 'package:admin_event_go/core/widgets/custom_no_data.dart';
+import 'package:admin_event_go/data/models/category/category_model.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
+import 'package:admin_event_go/routers/router_name.dart';
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CategoriesPage extends StatefulWidget {
@@ -24,8 +25,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
         elevation: 0,
         backgroundColor: Color(0xFF1E293B),
         centerTitle: true,
-        title: Text(
-          'Danh mục',
+        title: const Text(
+          AppStrings.categoriesNavTitle,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         leading: IconButton(
@@ -60,8 +61,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
         onPressed: () => _openEditPage(),
         backgroundColor: Color(0xFFF59E0B),
         icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(
-          'Add Category',
+        label: const Text(
+          AppStrings.addCategoryButton,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
@@ -97,8 +98,8 @@ class _CategoriesPageState extends State<CategoriesPage> {
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
-            'ID: ${category.id}',
-            style: TextStyle(fontSize: 14, color: Color.fromRGBO(255, 255, 255, 0.6)),
+            '${AppStrings.categoryIdPrefix}${category.id}',
+            style: const TextStyle(fontSize: 14, color: Color.fromRGBO(255, 255, 255, 0.6)),
           ),
         ),
         trailing: Row(
@@ -136,16 +137,19 @@ class _CategoriesPageState extends State<CategoriesPage> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Color(0xFF0F172A),
-        title: Text('Delete category', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text(AppStrings.deleteCategoryTitle,
+            style: TextStyle(color: Colors.white)),
         content: Text(
-          'Are you sure you want to delete "${category.name}"?',
-          style: TextStyle(color: Colors.white70),
+          '${AppStrings.deleteCategoryContentPrefix}${category.name}'
+          '${AppStrings.deleteCategoryContentSuffix}',
+          style: const TextStyle(color: Colors.white70),
         ),
         actions: [
           TextButton(
             onPressed: () => context.pop(),
-            child: Text('Cancel', style: TextStyle(color: Colors.white70)),
+            child: const Text(AppStrings.cancelButton,
+                style: TextStyle(color: Colors.white70)),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -153,11 +157,13 @@ class _CategoriesPageState extends State<CategoriesPage> {
               context.pop();
               final success = await vm.delete(category.id);
               if (!success) {
-                final message = vm.errorMessage ?? 'Failed to delete category';
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+                final message = vm.errorMessage ?? AppStrings.deleteCategoryFailed;
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text(message)));
               }
             },
-            child: Text('Delete', style: TextStyle(color: Colors.white)),
+            child: const Text(AppStrings.deleteButton,
+                style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

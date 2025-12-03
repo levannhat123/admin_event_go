@@ -1,10 +1,11 @@
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
+import 'package:admin_event_go/data/models/event/event_detail_model.dart';
+import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:admin_event_go/core/base/base_view.dart';
-import 'package:admin_event_go/injection/injection.dart';
-import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 
 class EventsPage extends StatefulWidget {
   const EventsPage({Key? key}) : super(key: key);
@@ -16,14 +17,14 @@ class EventsPage extends StatefulWidget {
 class _EventsPageState extends State<EventsPage> {
   final modules = [
     {
-      "title": "Events",
+      "title": AppStrings.eventsTitle,
       "icon": Icons.event,
       "color": Color(0xFF6366F1),
       "gradient": [Color(0xFF6366F1), Color(0xFF8B5CF6)],
       "route": RouterPath.eventsList,
     },
     {
-      "title": "Categories",
+      "title": AppStrings.categoriesTitle,
       "icon": Icons.category,
       "color": Color(0xFFF59E0B),
       "gradient": [Color(0xFFF59E0B), Color(0xFFEF4444)],
@@ -39,8 +40,8 @@ class _EventsPageState extends State<EventsPage> {
         centerTitle: true,
         elevation: 0,
         backgroundColor: Color(0xFF1E293B),
-        title: Text(
-          "Event Management",
+        title: const Text(
+          AppStrings.eventManagementTitle,
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
@@ -57,21 +58,23 @@ class _EventsPageState extends State<EventsPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Recent Events',
+                      const Text(
+                        AppStrings.recentEvents,
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),
-                      TextButton.icon(
-                        onPressed: () {
-                          context.push(RouterPath.eventsList);
-                        },
-                        icon: Icon(Icons.arrow_forward, color: Color(0xFF6366F1), size: 16),
-                        label: Text('View All', style: TextStyle(color: Color(0xFF6366F1))),
-                      ),
+                        TextButton.icon(
+                          onPressed: () {
+                            context.push(RouterPath.eventsList);
+                          },
+                          icon: const Icon(Icons.arrow_forward,
+                              color: Color(0xFF6366F1), size: 16),
+                          label: const Text(AppStrings.viewAll,
+                              style: TextStyle(color: Color(0xFF6366F1))),
+                        ),
                     ],
                   ),
                   SizedBox(height: 16),
@@ -108,10 +111,12 @@ class _EventsPageState extends State<EventsPage> {
       viewModelBuilder: () => getIt<EventViewModel>(),
       onModelReady: (vm) => vm.watchAll(),
       builder: (context, vm, child) {
-        if (vm.isBusy && vm.events.isEmpty) return Center(child: CircularProgressIndicator());
+        if (vm.isBusy && vm.events.isEmpty) {
+          return const Center(child: CircularProgressIndicator());
+        }
         if (vm.events.isEmpty)
-          return Center(
-            child: Text('No events', style: TextStyle(color: Colors.white60)),
+          return const Center(
+            child: Text(AppStrings.eventsNoEvents, style: TextStyle(color: Colors.white60)),
           );
 
         final now = DateTime.now();

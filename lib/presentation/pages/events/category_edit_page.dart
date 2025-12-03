@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/widgets/app_elevated_button.dart';
 import 'package:admin_event_go/core/widgets/text_field.dart';
 import 'package:flutter/material.dart';
@@ -48,7 +49,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
         backgroundColor: const Color(0xFF1E293B),
         centerTitle: true,
         title: Text(
-          isEdit ? 'Sửa danh mục' : 'Thêm danh mục',
+          isEdit ? AppStrings.categoryEditTitle : AppStrings.categoryAddTitle,
           style: const TextStyle(color: Colors.white),
         ),
         leading: IconButton(
@@ -63,7 +64,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
             Form(
               key: _formKey,
               child: AppTextField(
-                hintText: 'Nhập tên danh mục',
+                hintText: AppStrings.categoryNameHint,
                 controller: _nameController,
                 borderColor: Colors.grey.shade300,
                 fillColor: Colors.grey.shade100,
@@ -72,7 +73,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                 shadowColor: AppColors.transparent,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Vui lòng nhập tên danh mục';
+                    return AppStrings.categoryNameRequired;
                   }
                   return null;
                 },
@@ -85,7 +86,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                 Expanded(
                   child: AppElevatedButton(
                     onPressed: () => context.pop(),
-                    text: 'Hủy',
+                    text: AppStrings.cancelShort,
                     borderColor: Colors.grey.shade300,
                     color: Colors.white,
                     textColor: Colors.black87,
@@ -95,7 +96,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                 Expanded(
                   child: AppElevatedButton(
                     onPressed: _onSave,
-                    text: isEdit ? 'Lưu' : 'Thêm',
+                    text: isEdit ? AppStrings.saveShort : AppStrings.addShort,
                     borderColor: AppColors.primary,
                     color: AppColors.primary,
                     textColor: Colors.white,

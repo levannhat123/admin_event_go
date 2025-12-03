@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -38,7 +39,7 @@ class StaffScreen extends StatelessWidget {
               : staffList.isEmpty
               ? const Center(
                   child: Text(
-                    "No staff found",
+                    AppStrings.noStaffFound,
                     style: TextStyle(color: Colors.white38),
                   ),
                 )
@@ -63,7 +64,7 @@ class StaffScreen extends StatelessWidget {
             motion: const BehindMotion(),
             children: [
               SlidableAction(
-                label: "Edit",
+                label: AppStrings.editLabel,
                 backgroundColor: Colors.blue,
                 icon: Icons.edit,
                 onPressed: (_) async {
@@ -79,7 +80,7 @@ class StaffScreen extends StatelessWidget {
               ),
 
               SlidableAction(
-                label: "Delete",
+                label: AppStrings.deleteLabel,
                 backgroundColor: Colors.red,
                 icon: Icons.delete,
                 onPressed: (_) async {
@@ -175,17 +176,19 @@ class StaffScreen extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           title: Text(
-            'Delete User',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            AppStrings.deleteUserDialogTitle,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           content: Text(
-            'Are you sure you want to delete $email?',
-            style: TextStyle(color: Colors.white70),
+            '${AppStrings.deleteUserDialogContentPrefix}$email'
+            '${AppStrings.deleteUserDialogContentSuffix}',
+            style: const TextStyle(color: Colors.white70),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.white60)),
+              child: Text(AppStrings.cancelButton,
+                  style: const TextStyle(color: Colors.white60)),
             ),
             ElevatedButton(
               onPressed: () {
@@ -196,7 +199,8 @@ class StaffScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFEF4444),
               ),
-              child: Text('Delete', style: TextStyle(color: Colors.white)),
+              child: Text(AppStrings.deleteButton,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ],
         );

@@ -18,6 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
 import 'dialogs/add_edit_ticket_type_dialog.dart';
 
 class AddEventPage extends StatefulWidget {
@@ -130,7 +131,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   Text(
                     dateTime != null
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
-                        : 'Chưa chọn',
+                        : AppStrings.notAvailableShort,
                     style: TextStyle(
                       fontSize: 16,
                       color: dateTime != null ? Colors.black87 : Colors.grey.shade400,
@@ -166,42 +167,44 @@ class _AddEventPageState extends State<AddEventPage> {
 
   void _saveEvent(EventViewModel vm) async {
     if (vm.titleController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập tiêu đề sự kiện');
+      _showErrorDialog(AppStrings.eventTitleRequired);
       return;
     }
     if (vm.descController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập mô tả sự kiện');
+      _showErrorDialog(AppStrings.eventDescriptionRequired);
       return;
     }
     if (vm.locationController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập địa điểm tổ chức');
+      _showErrorDialog(AppStrings.eventVenueRequired);
       return;
     }
     if (vm.startTime == null) {
-      _showErrorDialog('Vui lòng chọn thời gian bắt đầu');
+      _showErrorDialog(AppStrings.eventStartTimeRequired);
       return;
     }
     if (vm.endTime == null) {
-      _showErrorDialog('Vui lòng chọn thời gian kết thúc');
+      _showErrorDialog(AppStrings.eventEndTimeRequired);
       return;
     }
     if (vm.endTime!.isBefore(vm.startTime!)) {
-      _showErrorDialog('Thời gian kết thúc phải sau thời gian bắt đầu');
+      _showErrorDialog(AppStrings.eventEndTimeAfterStart);
       return;
     }
     if (vm.bannerImageFile == null &&
-        !(isEdit && vm.existingBannerUrl != null && vm.existingBannerUrl!.isNotEmpty)) {
-      _showErrorDialog('Vui lòng chọn ảnh banner');
+        !(isEdit &&
+            vm.existingBannerUrl != null &&
+            vm.existingBannerUrl!.isNotEmpty)) {
+      _showErrorDialog(AppStrings.eventBannerRequired);
       return;
     }
 
     if (vm.status == null) {
-      _showErrorDialog('Vui lòng chọn trạng thái');
+      _showErrorDialog(AppStrings.eventStatusRequired);
       return;
     }
 
     if (vm.selectedCategory == null) {
-      _showErrorDialog('Vui lòng chọn danh mục');
+      _showErrorDialog(AppStrings.eventCategoryRequired);
       return;
     }
 
@@ -276,14 +279,15 @@ class _AddEventPageState extends State<AddEventPage> {
       context.pop();
 
       if (success) {
-        _showSuccessDialog('Lưu sự kiện thành công!');
+        _showSuccessDialog(AppStrings.eventSaveSuccess);
       } else {
-        _showErrorDialog(eventViewModel.errorMessage ?? 'Có lỗi xảy ra khi lưu sự kiện');
+        _showErrorDialog(
+            eventViewModel.errorMessage ?? AppStrings.eventSaveFailed);
       }
     } catch (e) {
       if (!mounted) return;
       context.pop();
-      _showErrorDialog('Có lỗi xảy ra: ${e.toString()}');
+      _showErrorDialog('${AppStrings.genericErrorPrefix}${e.toString()}');
     }
   }
 
@@ -291,9 +295,13 @@ class _AddEventPageState extends State<AddEventPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Lỗi'),
+        title: const Text(AppStrings.errorTitle),
         content: Text(message),
-        actions: [TextButton(onPressed: () => context.pop(), child: const Text('Đóng'))],
+        actions: [
+          TextButton(
+              onPressed: () => context.pop(),
+              child: const Text(AppStrings.closeButton))
+        ],
       ),
     );
   }
@@ -302,14 +310,14 @@ class _AddEventPageState extends State<AddEventPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Thành công'),
+        title: const Text(AppStrings.successTitle),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () {
              context.push(RouterPath.events);
             },
-            child: const Text('OK'),
+            child: const Text(AppStrings.dialogOkButton),
           ),
         ],
       ),
@@ -337,16 +345,19 @@ class _AddEventPageState extends State<AddEventPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: const Text('Bạn có chắc chắn muốn xóa loại vé này?'),
+        title: const Text(AppStrings.ticketTypeDeleteConfirmTitle),
+        content: const Text(AppStrings.ticketTypeDeleteConfirmContent),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(AppStrings.ticketTypeDeleteCancel)),
           TextButton(
             onPressed: () {
               vm.deleteTicketType(id);
               context.pop();
             },
-            child: const Text('Xóa', style: TextStyle(color: Colors.red)),
+            child: const Text(AppStrings.ticketTypeDeleteConfirm,
+                style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -366,7 +377,8 @@ class _AddEventPageState extends State<AddEventPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
-        title: Text(isEdit ? 'Chỉnh sửa sự kiện' : 'Thêm sự kiện mới'),
+        title:
+            Text(isEdit ? AppStrings.eventEditTitle : AppStrings.eventAddTitle),
         centerTitle: true,
         leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
       ),
@@ -391,9 +403,9 @@ class _AddEventPageState extends State<AddEventPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildSectionTitle('📋 Thông tin cơ bản'),
+                          _buildSectionTitle(AppStrings.eventBasicInfoSection),
                           AppTextField(
-                            lableText: 'Tiêu đề',
+                            lableText: AppStrings.eventTitleLabel,
                             controller: vm.titleController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -405,7 +417,7 @@ class _AddEventPageState extends State<AddEventPage> {
 
                           // Ảnh banner
                           ImagePickerWidget(
-                            label: 'Ảnh banner sự kiện',
+                            label: AppStrings.eventBannerLabel,
                             imageFile: vm.bannerImageFile,
                             imageUrl: vm.existingBannerUrl,
                             height: 180,
@@ -416,7 +428,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           const SizedBox(height: 10),
 
                           AppTextField(
-                            lableText: 'Mô tả sự kiện',
+                            lableText: AppStrings.eventDescriptionLabel,
                             controller: vm.descController,
                             maxLines: 4,
                             borderColor: Colors.grey.shade300,
@@ -428,17 +440,17 @@ class _AddEventPageState extends State<AddEventPage> {
                           const SizedBox(height: 10),
 
                           CustomDropdown<String>(
-                            label: 'Trạng thái',
+                            label: AppStrings.eventStatusLabel,
                             items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
                             value: vm.status,
                             getLabel: (v) {
                               switch (v) {
                                 case 'ACTIVE':
-                                  return 'Đang hoạt động';
+                                  return AppStrings.eventStatusActive;
                                 case 'INACTIVE':
-                                  return 'Tạm dừng';
+                                  return AppStrings.eventStatusInactive;
                                 case 'COMPLETED':
-                                  return 'Đã kết thúc';
+                                  return AppStrings.eventStatusCompleted;
                                 default:
                                   return v;
                               }
@@ -466,7 +478,7 @@ class _AddEventPageState extends State<AddEventPage> {
                               }
 
                               return CustomDropdown<CategoryModel>(
-                                label: 'Danh mục',
+                                label: AppStrings.eventCategoryLabel,
                                 items: catVm.categories,
                                 value: vm.selectedCategory,
                                 getLabel: (c) => c.name,
@@ -476,9 +488,9 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
 
                           _buildDivider(),
-                          _buildSectionTitle('📍 Địa điểm tổ chức'),
+                          _buildSectionTitle(AppStrings.eventLocationSection),
                           AppTextField(
-                            lableText: 'Địa điểm tổ chức (Venue)',
+                            lableText: AppStrings.eventVenueLabel,
                             controller: vm.locationController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -488,7 +500,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
                           const SizedBox(height: 10),
                           AppTextField(
-                            lableText: 'Địa chỉ chi tiết',
+                            lableText: AppStrings.eventAddressLabel,
                             controller: vm.addressController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -499,7 +511,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           const SizedBox(height: 10),
 
                           AppTextField(
-                            lableText: 'ID địa điểm',
+                            lableText: AppStrings.eventLocationIdLabel,
                             controller: vm.idLocationController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -508,9 +520,9 @@ class _AddEventPageState extends State<AddEventPage> {
                             shadowColor: AppColors.transparent,
                           ),
                           _buildDivider(),
-                          _buildSectionTitle('🕒 Thời gian'),
+                          _buildSectionTitle(AppStrings.eventTimeSection),
                           _buildDateTimeField(
-                            label: 'Thời gian bắt đầu',
+                            label: AppStrings.eventStartTimeLabel,
                             dateTime: vm.startTime,
                             onTap: () => _selectDateTime(context, true, vm),
                             icon: Icons.access_time,
@@ -518,15 +530,15 @@ class _AddEventPageState extends State<AddEventPage> {
                           const SizedBox(height: 10),
 
                           _buildDateTimeField(
-                            label: 'Thời gian kết thúc',
+                            label: AppStrings.eventEndTimeLabel,
                             dateTime: vm.endTime,
                             onTap: () => _selectDateTime(context, false, vm),
                             icon: Icons.event_available,
                           ),
                           _buildDivider(),
-                          _buildSectionTitle('💰 Thông tin giá vé'),
+                          _buildSectionTitle(AppStrings.eventPriceSection),
                           AppTextField(
-                            lableText: 'Giá vé tối thiểu (VNĐ)',
+                            lableText: AppStrings.eventMinPriceLabel,
                             controller: vm.minPriceController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -536,12 +548,12 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
                           const SizedBox(height: 10),
                           CustomSwitch(
-                            label: 'Sự kiện miễn phí',
+                            label: AppStrings.eventIsFreeLabel,
                             value: vm.isFree,
                             onChanged: (v) => vm.setIsFree(v),
                           ),
                           _buildDivider(),
-                          _buildSectionTitle('🎫 Quản lý loại vé'),
+                          _buildSectionTitle(AppStrings.eventTicketTypeSection),
                           InkWell(
                             onTap: () => _showAddEditTicketTypeDialog(vm),
                             child: Container(
@@ -568,7 +580,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   const SizedBox(width: 12),
                                   const Text(
-                                    'Thêm loại vé mới',
+                                    AppStrings.eventAddTicketTypeButton,
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -597,7 +609,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
-                                    'Chưa có loại vé nào',
+                                    AppStrings.eventNoTicketType,
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.grey.shade600,
@@ -606,8 +618,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'Nhấn nút "Thêm loại vé mới" để bắt đầu',
-                                    style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+                                    AppStrings.eventAddTicketTypeGuide,
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.grey.shade500),
                                   ),
                                 ],
                               ),
@@ -623,9 +636,9 @@ class _AddEventPageState extends State<AddEventPage> {
                               );
                             }),
                           _buildDivider(),
-                          _buildSectionTitle('🏢 Thông tin tổ chức'),
+                          _buildSectionTitle(AppStrings.eventOrgSection),
                           ImagePickerWidget(
-                            label: 'Logo tổ chức',
+                            label: AppStrings.eventOrgLogoLabel,
                             imageFile: vm.logoImageFile,
                             imageUrl: vm.existingLogoUrl,
                             height: 120,
@@ -635,7 +648,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
                           const SizedBox(height: 10),
                           AppTextField(
-                            lableText: 'Tên tổ chức',
+                            lableText: AppStrings.eventOrgNameLabel,
                             controller: vm.orgNameController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
@@ -645,7 +658,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
                           const SizedBox(height: 10),
                           AppTextField(
-                            lableText: 'Mô tả tổ chức',
+                            lableText: AppStrings.eventOrgDescLabel,
                             controller: vm.orgDescController,
                             maxLines: 3,
                             borderColor: Colors.grey.shade300,
@@ -655,9 +668,9 @@ class _AddEventPageState extends State<AddEventPage> {
                             shadowColor: AppColors.transparent,
                           ),
                           _buildDivider(),
-                          _buildSectionTitle('⚙️ Tùy chọn khác'),
+                          _buildSectionTitle(AppStrings.eventOtherOptionsSection),
                           CustomSwitch(
-                            label: 'Sự kiện nổi bật',
+                            label: AppStrings.eventIsHotLabel,
                             value: vm.isHot,
                             onChanged: (v) => vm.setIsHot(v),
                           ),
@@ -684,7 +697,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       Expanded(
                         child: AppElevatedButton(
                           onPressed: () => context.pop(),
-                          text: 'Hủy',
+                          text: AppStrings.eventCancelButton,
                           borderColor: Colors.grey.shade300,
                           color: Colors.white,
                           textColor: Colors.black87,
@@ -694,7 +707,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       Expanded(
                         child: AppElevatedButton(
                           onPressed: () => _saveEvent(vm),
-                          text: 'Lưu sự kiện',
+                          text: AppStrings.eventSaveButton,
                           borderColor: const Color(0xFF4257b4),
                           color: const Color(0xFF4257b4),
                           textColor: Colors.white,

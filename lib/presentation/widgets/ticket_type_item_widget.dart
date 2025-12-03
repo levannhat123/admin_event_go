@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -55,7 +56,7 @@ class TicketTypeItemWidget extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'Miễn phí',
+                    AppStrings.ticketTypeFreeBadge,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.green.shade700,
@@ -107,7 +108,8 @@ class TicketTypeItemWidget extends StatelessWidget {
               if (ticketType.price != null)
                 _buildInfoChip(
                   icon: Icons.attach_money,
-                  label: '${NumberFormat('#,###').format(ticketType.price)} VNĐ',
+                  label:
+                      '${NumberFormat('#,###').format(ticketType.price)} VNĐ',
                   color: Colors.blue,
                 ),
 
@@ -115,7 +117,8 @@ class TicketTypeItemWidget extends StatelessWidget {
                 // Số lượng vé
                 _buildInfoChip(
                   icon: Icons.confirmation_num,
-                  label: 'TotalQuantity: ${ticketType.totalQuantity}',
+                  label:
+                      '${AppStrings.ticketTypeTotalQuantityPrefix}${ticketType.totalQuantity}',
                   color: Colors.teal,
                 ),
 
@@ -124,7 +127,8 @@ class TicketTypeItemWidget extends StatelessWidget {
               if (ticketType.minQtyPerOrder != null)
                 _buildInfoChip(
                   icon: Icons.arrow_downward,
-                  label: 'Min: ${ticketType.minQtyPerOrder}',
+                  label:
+                      '${AppStrings.ticketTypeMinPrefix}${ticketType.minQtyPerOrder}',
                   color: Colors.orange,
                 ),
 
@@ -132,7 +136,8 @@ class TicketTypeItemWidget extends StatelessWidget {
               if (ticketType.maxQtyPerOrder != null)
                 _buildInfoChip(
                   icon: Icons.arrow_upward,
-                  label: 'Max: ${ticketType.maxQtyPerOrder}',
+                  label:
+                      '${AppStrings.ticketTypeMaxPrefix}${ticketType.maxQtyPerOrder}',
                   color: Colors.purple,
                 ),
 
@@ -217,11 +222,11 @@ class TicketTypeItemWidget extends StatelessWidget {
   String _getStatusLabel(String status) {
     switch (status.toUpperCase()) {
       case 'ACTIVE':
-        return 'Đang bán';
+        return AppStrings.ticketTypeStatusActive;
       case 'INACTIVE':
-        return 'Tạm dừng';
+        return AppStrings.ticketTypeStatusInactive;
       case 'SOLD_OUT':
-        return 'Hết vé';
+        return AppStrings.ticketTypeStatusSoldOut;
       default:
         return status;
     }
@@ -243,11 +248,15 @@ class TicketTypeItemWidget extends StatelessWidget {
   String _getTimeRangeText() {
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     if (ticketType.startTime != null && ticketType.endTime != null) {
-      return 'Bán từ ${formatter.format(ticketType.startTime!)} - ${formatter.format(ticketType.endTime!)}';
+      return '${AppStrings.ticketTypeSaleRangePrefix}'
+          '${formatter.format(ticketType.startTime!)} - '
+          '${formatter.format(ticketType.endTime!)}';
     } else if (ticketType.startTime != null) {
-      return 'Bắt đầu bán: ${formatter.format(ticketType.startTime!)}';
+      return '${AppStrings.ticketTypeSaleStartPrefix}'
+          '${formatter.format(ticketType.startTime!)}';
     } else if (ticketType.endTime != null) {
-      return 'Kết thúc: ${formatter.format(ticketType.endTime!)}';
+      return '${AppStrings.ticketTypeSaleEndPrefix}'
+          '${formatter.format(ticketType.endTime!)}';
     }
     return '';
   }
