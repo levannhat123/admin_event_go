@@ -7,6 +7,8 @@ import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_sizes.dart';
+
 class EventsListPage extends StatefulWidget {
   const EventsListPage({Key? key}) : super(key: key);
 
@@ -24,7 +26,10 @@ class _EventsListPageState extends State<EventsListPage> {
         backgroundColor: Color(0xFF1E293B),
         title: const Text(
           AppStrings.eventsTitle,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -96,13 +101,18 @@ class _EventsListPageState extends State<EventsListPage> {
               ),
         title: Text(
           event.title,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             event.categories?.name ?? '',
-            style: TextStyle(fontSize: 14, color: Color.fromRGBO(255, 255, 255, 0.6)),
+            style: TextStyle(
+                fontSize: AppSizes.size14,
+                color: Color.fromRGBO(255, 255, 255, 0.6)),
           ),
         ),
         trailing: Row(

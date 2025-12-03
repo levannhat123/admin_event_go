@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +110,7 @@ class StaffScreen extends StatelessWidget {
                   backgroundColor: Colors.blueAccent,
                   child: Text(
                     staff.fullName.substring(0, 1).toUpperCase(),
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                    style: const TextStyle(fontSize: AppSizes.size20, color: Colors.white),
                   ),
                 ),
 
@@ -123,7 +124,7 @@ class StaffScreen extends StatelessWidget {
                         staff.fullName,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 17,
+                          fontSize: AppSizes.size17,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

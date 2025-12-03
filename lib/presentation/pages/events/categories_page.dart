@@ -1,5 +1,6 @@
 import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/widgets/custom_no_data.dart';
 import 'package:admin_event_go/data/models/category/category_model.dart';
@@ -27,7 +28,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
         centerTitle: true,
         title: const Text(
           AppStrings.categoriesNavTitle,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -93,13 +97,18 @@ class _CategoriesPageState extends State<CategoriesPage> {
         ),
         title: Text(
           category.name,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             '${AppStrings.categoryIdPrefix}${category.id}',
-            style: const TextStyle(fontSize: 14, color: Color.fromRGBO(255, 255, 255, 0.6)),
+            style: const TextStyle(
+                fontSize: AppSizes.size14,
+                color: Color.fromRGBO(255, 255, 255, 0.6)),
           ),
         ),
         trailing: Row(

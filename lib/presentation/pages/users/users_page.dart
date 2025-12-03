@@ -1,5 +1,6 @@
 import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/widgets/custom_no_data.dart';
 import 'package:admin_event_go/injection/injection.dart';
@@ -48,7 +49,7 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
         title: const Text(
           AppStrings.usersManagementTitle,
           style: TextStyle(
-            fontSize: 24,
+            fontSize: AppSizes.size24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),

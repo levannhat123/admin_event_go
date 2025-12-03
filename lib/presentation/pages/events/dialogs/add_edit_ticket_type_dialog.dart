@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/widgets/app_elevated_button.dart';
 import 'package:admin_event_go/core/widgets/custom_dropdown.dart';
@@ -152,7 +153,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 11,
+                      fontSize: AppSizes.size11,
                       color: Colors.grey.shade600,
                       fontWeight: FontWeight.w500,
                     ),
@@ -163,8 +164,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
                         : AppStrings.notAvailableShort,
                     style: TextStyle(
-                      fontSize: 14,
-                      color: dateTime != null ? Colors.black87 : Colors.grey.shade400,
+                      fontSize: AppSizes.size14,
+                      color:
+                          dateTime != null ? Colors.black87 : Colors.grey.shade400,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -250,7 +252,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                           ? AppStrings.ticketTypeDialogTitleAdd
                           : AppStrings.ticketTypeDialogTitleEdit,
                       style: const TextStyle(
-                        fontSize: 20,
+                        fontSize: AppSizes.size20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
@@ -372,7 +374,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     const Text(
                       AppStrings.ticketTypeSaleTimeTitle,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: AppSizes.size14,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF0F172A),
                       ),

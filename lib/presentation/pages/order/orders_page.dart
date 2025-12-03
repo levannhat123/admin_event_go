@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:admin_event_go/presentation/view_models/order_view_model.dart';
@@ -48,7 +49,10 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
             backgroundColor: const Color(0xFF1E293B),
             title: const Text(
               AppStrings.ordersTitle,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+              style: TextStyle(
+                  fontSize: AppSizes.size24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             bottom: TabBar(
               controller: _tabController,
@@ -116,7 +120,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
       child: Column(
         children: [
           _buildStatCard(
-            'Total Orders',
+            AppStrings.totalOrders,
             totalOrdersStr,
             Icons.shopping_cart,
             const Color(0xFF6366F1),
@@ -124,7 +128,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 12),
           _buildStatCard(
-            'Revenue',
+            AppStrings.revenue,
             totalRevenueStr,
             Icons.attach_money,
             const Color(0xFF10B981),
@@ -167,12 +171,15 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                   value,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: AppSizes.size20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(title, style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12)),
+                Text(title,
+                    style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: AppSizes.size12)),
               ],
             ),
           ),
@@ -228,7 +235,8 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                 '${AppStrings.ordersEmptyWithFilterPrefix}'
                 '${filter == 'all' ? '' : filter} '
                 '${AppStrings.ordersEmptyWithFilterSuffix.trim()}',
-            style: const TextStyle(color: Colors.white60, fontSize: 16),
+            style: const TextStyle(
+                color: Colors.white60, fontSize: AppSizes.size16),
             textAlign: TextAlign.center,
           ),
         ],
@@ -291,7 +299,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 14,
+                                  fontSize: AppSizes.size14,
                                 ),
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -311,7 +319,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                                     status.toUpperCase(),
                                     style: TextStyle(
                                       color: statusColor,
-                                      fontSize: 11,
+                                      fontSize: AppSizes.size11,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -327,14 +335,16 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                             const SizedBox(width: 4),
                             Text(
                               dateStr,
-                              style: const TextStyle(color: Colors.white60, fontSize: 12),
+                              style: const TextStyle(
+                                  color: Colors.white60, fontSize: AppSizes.size12),
                             ),
                             const SizedBox(width: 12),
                             const Icon(Icons.access_time, size: 12, color: Colors.white60),
                             const SizedBox(width: 4),
                             Text(
                               timeStr,
-                              style: const TextStyle(color: Colors.white60, fontSize: 12),
+                              style: const TextStyle(
+                                  color: Colors.white60, fontSize: AppSizes.size12),
                             ),
                           ],
                         ),
@@ -363,7 +373,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 14,
+                                fontSize: AppSizes.size14,
                               ),
                             ),
                           ],
@@ -379,7 +389,8 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                       Expanded(
                         child: Text(
                           order['eventName'] as String? ?? 'N/A',
-                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: AppSizes.size14),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -394,14 +405,16 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
                         children: [
                           const Icon(Icons.confirmation_number, size: 16, color: Color(0xFFF59E0B)),
                           const SizedBox(width: 8),
-                          Text(ticketsStr, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                          Text(ticketsStr,
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: AppSizes.size14)),
                         ],
                       ),
                       Text(
                         amountStr,
                         style: const TextStyle(
                           color: Color(0xFF10B981),
-                          fontSize: 18,
+                          fontSize: AppSizes.size18,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

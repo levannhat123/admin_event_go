@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/injection/injection.dart';
 import 'package:flutter/material.dart';
@@ -78,7 +79,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14)),
                   child: Text(
                     isEdit ? AppStrings.saveChangesButton : AppStrings.addStaffButton,
-                    style: const TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: AppSizes.size18),
                   ),
                   onPressed: () async {
                     if (isEdit) {

@@ -1,4 +1,6 @@
 import 'package:admin_event_go/core/constants/app_strings.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -42,7 +44,7 @@ class TicketTypeItemWidget extends StatelessWidget {
                 child: Text(
                   ticketType.name,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: AppSizes.size16,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF0F172A),
                   ),
@@ -58,7 +60,7 @@ class TicketTypeItemWidget extends StatelessWidget {
                   child: Text(
                     AppStrings.ticketTypeFreeBadge,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppSizes.size12,
                       color: Colors.green.shade700,
                       fontWeight: FontWeight.w600,
                     ),
@@ -89,7 +91,7 @@ class TicketTypeItemWidget extends StatelessWidget {
             Text(
               ticketType.description!,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppSizes.size14,
                 color: Colors.grey.shade600,
               ),
               maxLines: 2,
@@ -172,7 +174,7 @@ class TicketTypeItemWidget extends StatelessWidget {
                     child: Text(
                       _getTimeRangeText(),
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppSizes.size13,
                         color: Colors.grey.shade700,
                       ),
                     ),
@@ -209,7 +211,7 @@ class TicketTypeItemWidget extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: AppSizes.size12,
               color: color,
               fontWeight: FontWeight.w600,
             ),

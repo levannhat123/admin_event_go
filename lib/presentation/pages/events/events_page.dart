@@ -1,4 +1,5 @@
 import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 import 'package:admin_event_go/injection/injection.dart';
@@ -42,7 +43,10 @@ class _EventsPageState extends State<EventsPage> {
         backgroundColor: Color(0xFF1E293B),
         title: const Text(
           AppStrings.eventManagementTitle,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
       ),
       body: SingleChildScrollView(
@@ -61,7 +65,7 @@ class _EventsPageState extends State<EventsPage> {
                       const Text(
                         AppStrings.recentEvents,
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: AppSizes.size20,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
@@ -250,7 +254,7 @@ class _EventsPageState extends State<EventsPage> {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13,
+                                  fontSize: AppSizes.size13,
                                   fontWeight: FontWeight.w700,
                                   height: 1.1,
                                 ),
@@ -272,7 +276,7 @@ class _EventsPageState extends State<EventsPage> {
                                       dateLine,
                                       style: TextStyle(
                                         color: Color(0xFFE2E8F0),
-                                        fontSize: 10,
+                                        fontSize: AppSizes.size10,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -303,7 +307,7 @@ class _EventsPageState extends State<EventsPage> {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: Color(0xFFE2E8F0),
-                                        fontSize: 10,
+                                        fontSize: AppSizes.size10,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -339,7 +343,7 @@ class _EventsPageState extends State<EventsPage> {
                                     category,
                                     style: TextStyle(
                                       color: Color(0xFF6366F1),
-                                      fontSize: 10,
+                                      fontSize: AppSizes.size10,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -357,7 +361,7 @@ class _EventsPageState extends State<EventsPage> {
                                   style: TextStyle(
                                     color: Color(0xFFEC4899),
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 11,
+                                    fontSize: AppSizes.size11,
                                   ),
                                 ),
                               ),
@@ -452,7 +456,7 @@ class _EventsPageState extends State<EventsPage> {
                   Text(
                     module['title'] as String,
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: AppSizes.size18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -461,7 +465,7 @@ class _EventsPageState extends State<EventsPage> {
                   Text(
                     'Manage ${module['title']}',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppSizes.size12,
                       color: Colors.white.withAlpha((0.8 * 255).round()),
                     ),
                   ),
@@ -500,7 +504,10 @@ class _EventsPageState extends State<EventsPage> {
             SizedBox(height: 4),
             Text(
               'Event',
-              style: TextStyle(color: Color(0xFF6366F1), fontSize: 10, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                  color: Color(0xFF6366F1),
+                  fontSize: AppSizes.size10,
+                  fontWeight: FontWeight.w600),
             ),
           ],
         ),

@@ -8,6 +8,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/constants/app_sizes.dart';
+
 class DashboardPage extends StatelessWidget {
   const DashboardPage({Key? key}) : super(key: key);
 
@@ -21,7 +23,10 @@ class DashboardPage extends StatelessWidget {
         backgroundColor: Color(0xFF1E293B),
         title: const Text(
           AppStrings.dashboardTitle,
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size24,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
         ),
       ),
       body: BaseView<DashboadViewModel>(
@@ -50,7 +55,7 @@ class DashboardPage extends StatelessWidget {
                         const Text(
                           AppStrings.recentEvents,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: AppSizes.size20,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),
@@ -217,7 +222,7 @@ class DashboardPage extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 13,
+                                  fontSize: AppSizes.size13,
                                   fontWeight: FontWeight.w700,
                                   height: 1.1,
                                 ),
@@ -239,7 +244,7 @@ class DashboardPage extends StatelessWidget {
                                       dateLine,
                                       style: TextStyle(
                                         color: Color(0xFFE2E8F0),
-                                        fontSize: 10,
+                                        fontSize: AppSizes.size10,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -270,7 +275,7 @@ class DashboardPage extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
                                         color: Color(0xFFE2E8F0),
-                                        fontSize: 10,
+                                        fontSize: AppSizes.size10,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
@@ -306,7 +311,7 @@ class DashboardPage extends StatelessWidget {
                                     category,
                                     style: TextStyle(
                                       color: Color(0xFF6366F1),
-                                      fontSize: 10,
+                                      fontSize: AppSizes.size10,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -324,7 +329,7 @@ class DashboardPage extends StatelessWidget {
                                   style: TextStyle(
                                     color: Color(0xFFEC4899),
                                     fontWeight: FontWeight.w700,
-                                    fontSize: 11,
+                                    fontSize: AppSizes.size11,
                                   ),
                                 ),
                               ),
@@ -394,8 +399,11 @@ class DashboardPage extends StatelessWidget {
             ),
             SizedBox(height: 4),
             Text(
-              'Event',
-              style: TextStyle(color: Color(0xFF6366F1), fontSize: 10, fontWeight: FontWeight.w600),
+              AppStrings.eventLabel,
+              style: TextStyle(
+                  color: Color(0xFF6366F1),
+                  fontSize: AppSizes.size10,
+                  fontWeight: FontWeight.w600),
             ),
           ],
         ),
@@ -495,7 +503,7 @@ Widget _buildStatCard({
                       trend,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: AppSizes.size12,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -509,14 +517,16 @@ Widget _buildStatCard({
                     value,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24,
+                      fontSize: AppSizes.size24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   SizedBox(height: 4),
                   Text(
                     title,
-                    style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12),
+                    style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: AppSizes.size12),
                   ),
                 ],
               ),
@@ -534,7 +544,10 @@ Widget _buildChartsSection(DashboadViewModel vm) {
     children: [
       const Text(
         AppStrings.analyticsTitle,
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+        style: TextStyle(
+            fontSize: AppSizes.size20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white),
       ),
       SizedBox(height: 16),
       Row(
@@ -563,7 +576,10 @@ Widget _buildChartCard({required String title, required Widget child}) {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(
+              fontSize: AppSizes.size14,
+              fontWeight: FontWeight.w600,
+              color: Colors.white),
         ),
         SizedBox(height: 16),
         SizedBox(height: 200, child: child),
@@ -616,7 +632,8 @@ Widget _buildLineChart(DashboadViewModel vm) {
               if (index >= 0 && index < vm.dayLabels.length) {
                 return Text(
                   vm.dayLabels[index],
-                  style: TextStyle(color: Colors.white60, fontSize: 10),
+                  style: TextStyle(
+                      color: Colors.white60, fontSize: AppSizes.size10),
                 );
               }
               return Text('');
@@ -630,7 +647,8 @@ Widget _buildLineChart(DashboadViewModel vm) {
             getTitlesWidget: (value, meta) {
               return Text(
                 value.toInt().toString(),
-                style: TextStyle(color: Colors.white60, fontSize: 10),
+                style: TextStyle(
+                    color: Colors.white60, fontSize: AppSizes.size10),
               );
             },
             reservedSize: 40,

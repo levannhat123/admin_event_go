@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +137,7 @@ class OrderDetailScreen extends StatelessWidget {
               order["id"],
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: AppSizes.size20,
                 fontWeight: FontWeight.bold,
               ),
               maxLines: 1,
@@ -170,7 +171,7 @@ class OrderDetailScreen extends StatelessWidget {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: AppSizes.size18,
                   color: Colors.white,
                   fontWeight: FontWeight.w600,
                 ),
@@ -196,15 +197,15 @@ class OrderDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            children: const [
-              Icon(Icons.confirmation_number, color: Color(0xFFF59E0B)),
-              SizedBox(width: 8),
-              Text(AppStrings.orderTickets,
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600)),
-            ],
+              children: const [
+                Icon(Icons.confirmation_number, color: Color(0xFFF59E0B)),
+                SizedBox(width: 8),
+                Text(AppStrings.orderTickets,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: AppSizes.size18,
+                        fontWeight: FontWeight.w600)),
+              ],
           ),
           const SizedBox(height: 12),
           ...tickets.map((t) {
@@ -219,11 +220,11 @@ class OrderDetailScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(t["name"] ?? AppStrings.unknownText,
-                      style:
-                      const TextStyle(color: Colors.white, fontSize: 16)),
+                      style: const TextStyle(
+                          color: Colors.white, fontSize: AppSizes.size16)),
                   Text("x${t["quantity"]}",
-                      style:
-                      const TextStyle(color: Colors.white70, fontSize: 14)),
+                      style: const TextStyle(
+                          color: Colors.white70, fontSize: AppSizes.size14)),
                 ],
               ),
             );

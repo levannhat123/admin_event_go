@@ -1,3 +1,4 @@
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -110,7 +111,7 @@ class _UserScreenState extends State<UserScreen> {
                         (user.email ?? 'U')[0].toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: AppSizes.size20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -129,7 +130,7 @@ class _UserScreenState extends State<UserScreen> {
                           style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
-                            fontSize: 15,
+                            fontSize: AppSizes.size15,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -157,7 +158,7 @@ class _UserScreenState extends State<UserScreen> {
                                     AppStrings.activeStatus,
                                     style: const TextStyle(
                                       color: Color(0xFF10B981),
-                                      fontSize: 11,
+                                      fontSize: AppSizes.size11,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -169,7 +170,7 @@ class _UserScreenState extends State<UserScreen> {
                               '${AppStrings.categoryIdPrefix}${user.id.substring(0, 8)}...',
                               style: const TextStyle(
                                 color: Colors.white60,
-                                fontSize: 11,
+                                fontSize: AppSizes.size11,
                               ),
                             ),
                           ],

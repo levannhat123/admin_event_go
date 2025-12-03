@@ -16,6 +16,7 @@ import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../core/constants/app_sizes.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
@@ -122,7 +123,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppSizes.size12,
                       color: Colors.grey.shade600,
                       fontWeight: FontWeight.w500,
                     ),
@@ -133,8 +134,9 @@ class _AddEventPageState extends State<AddEventPage> {
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
                         : AppStrings.notAvailableShort,
                     style: TextStyle(
-                      fontSize: 16,
-                      color: dateTime != null ? Colors.black87 : Colors.grey.shade400,
+                      fontSize: AppSizes.size16,
+                      color:
+                          dateTime != null ? Colors.black87 : Colors.grey.shade400,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -153,7 +155,10 @@ class _AddEventPageState extends State<AddEventPage> {
       padding: const EdgeInsets.only(bottom: 12, top: 8),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF0F172A)),
+        style: const TextStyle(
+            fontSize: AppSizes.size18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF0F172A)),
       ),
     );
   }
@@ -582,7 +587,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                   const Text(
                                     AppStrings.eventAddTicketTypeButton,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: AppSizes.size16,
                                       fontWeight: FontWeight.bold,
                                       color: Color(0xFF4257b4),
                                     ),
@@ -611,7 +616,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                   Text(
                                     AppStrings.eventNoTicketType,
                                     style: TextStyle(
-                                      fontSize: 16,
+                                      fontSize: AppSizes.size16,
                                       color: Colors.grey.shade600,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -620,7 +625,8 @@ class _AddEventPageState extends State<AddEventPage> {
                                   Text(
                                     AppStrings.eventAddTicketTypeGuide,
                                     style: TextStyle(
-                                        fontSize: 14, color: Colors.grey.shade500),
+                                        fontSize: AppSizes.size14,
+                                        color: Colors.grey.shade500),
                                   ),
                                 ],
                               ),
