@@ -8,6 +8,7 @@ class RouterPath {
   static const String categories = '/events/categories';
   static const String ticketTypes = '/events/ticket-types';
   static const String orders = '/orders';
+  static const String orders_detail = '/orders_detail';
   static const String users = '/users';
   static const String editCategory = '/editCategory';
 

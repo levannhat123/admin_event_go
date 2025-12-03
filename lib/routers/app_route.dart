@@ -8,6 +8,7 @@ import 'package:admin_event_go/presentation/pages/events/events_list_page.dart';
 import 'package:admin_event_go/presentation/pages/events/add_event_page.dart';
 import 'package:admin_event_go/presentation/pages/events/categories_page.dart';
 import 'package:admin_event_go/presentation/pages/main/main_screen.dart';
+import 'package:admin_event_go/presentation/pages/order/order_detail_screen.dart';
 import 'package:admin_event_go/presentation/pages/order/orders_page.dart';
 import 'package:admin_event_go/presentation/pages/users/users_page.dart';
 import 'package:admin_event_go/presentation/view_models/auth_change_notifier.dart';
@@ -51,6 +52,14 @@ class AppRouter {
               return CategoryEditPage(category: category);
             },
           ),
+          GoRoute(
+            path: RouterPath.orders_detail,
+            builder: (context, state) {
+              final orderId = state.extra as String;
+              return OrderDetailScreen(orderId: orderId);
+            },
+          ),
+
           ShellRoute(
             routes: [
               GoRoute(
