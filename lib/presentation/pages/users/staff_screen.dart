@@ -89,7 +89,7 @@ class StaffScreen extends StatelessWidget {
                     context,
                     vm,
                     originalIndex,
-                    staff.email ?? 'this users',
+                    staff.email ?? AppStrings.fallbackUserEmail,
                   );
                 },
               ),

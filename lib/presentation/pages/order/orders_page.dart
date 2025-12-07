@@ -259,7 +259,8 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
       0,
       (sum, item) => sum + (item['quantity'] as int? ?? 0),
     );
-    final String ticketsStr = '$totalTickets ${totalTickets > 1 ? 'tickets' : 'ticket'}';
+    final String ticketsStr = '$totalTickets '
+        '${totalTickets > 1 ? AppStrings.ticketPlural : AppStrings.ticketSingular}';
 
     return GestureDetector(
       onTap: () {

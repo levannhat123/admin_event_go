@@ -73,7 +73,7 @@ class _UserScreenState extends State<UserScreen> {
                     context,
                     vm,
                     originalIndex,
-                    user.email ?? 'this users',
+                    user.email ?? AppStrings.fallbackUserEmail,
                   );
 
                   // TODO: Delete
@@ -108,7 +108,8 @@ class _UserScreenState extends State<UserScreen> {
                     ),
                     child: Center(
                       child: Text(
-                        (user.email ?? 'U')[0].toUpperCase(),
+                        (user.email ?? AppStrings.fallbackUserInitial)[0]
+                            .toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: AppSizes.size20,

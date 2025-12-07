@@ -264,6 +264,25 @@ class AppStrings {
   static const String navOrders = "Orders";
   static const String navUsers = "Users";
 
+  // Validators
+  static const String validatorFieldRequired = "This field is required";
+  static const String validatorPasswordMin6 =
+      "Password must be at least 6 digits long";
+  static const String validatorEnterValidEmail =
+      "Enter a valid email address";
+  static const String validatorEnterValidPhone =
+      "Enter a valid phone address";
+  static const String validatorConfirmPasswordNotMatch =
+      "Confirm password is not match";
+
+  // Generic UI texts
+  static const String noData = "No Data";
+
+  // Image picker
+  static const String imagePickerTapToChange = "Nhấn để thay đổi";
+  static const String imagePickerTapToSelect = "Nhấn để chọn ảnh";
+  static const String imagePickerFromGallery = "Từ thư viện";
+
   // Error messages
   static const String signUpFailed = "Đăng ký thất bại";
   static const String loginFailed = "Đăng nhập thất bại";
@@ -305,4 +324,29 @@ class AppStrings {
   static const String accountNotFound = "Không tìm thấy tài khoản với email này";
   static const String tooManyRequests = "Quá nhiều yêu cầu, vui lòng thử lại sau";
   static const String errorOccurred = "Đã xảy ra lỗi: ";
+
+  // Admin / staff management errors
+  static const String noAdminAccess = "Bạn không có quyền truy cập Admin";
+  static const String deleteUsersErrorWithDetails = "Lỗi khi xóa users: ";
+  static const String createStaffFailed = "Không thể tạo tài khoản nhân viên";
+  static const String createStaffErrorWithDetails = "Lỗi tạo nhân viên: ";
+  static const String fetchUsersErrorWithDetails = "Lỗi khi lấy users: ";
+
+  // Tickets & orders labels
+  static const String ticketSingular = "ticket";
+  static const String ticketPlural = "tickets";
+  static const String freeLabel = "Free";
+
+  // Fallback user labels
+  static const String fallbackUserEmail = "this users";
+  static const String fallbackUserInitial = "U";
+
+  // Dashboard event watching errors
+  static const String watchEventsFailed =
+      "Failed to watch events: ";
+  static const String startWatchingEventsFailed =
+      "Failed to start watching events: ";
+
+  // Dialog titles
+  static const String confirmDeleteTitle = "Xác nhận xóa";
 }

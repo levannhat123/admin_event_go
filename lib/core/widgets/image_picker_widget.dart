@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -111,7 +112,7 @@ class ImagePickerWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Nhấn để thay đổi',
+                AppStrings.imagePickerTapToChange,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 14,
@@ -145,7 +146,7 @@ class ImagePickerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Nhấn để chọn ảnh',
+            AppStrings.imagePickerTapToSelect,
             style: TextStyle(
               color: Colors.grey.shade600,
               fontSize: 13,
@@ -154,7 +155,7 @@ class ImagePickerWidget extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            'Từ thư viện',
+            AppStrings.imagePickerFromGallery,
             style: TextStyle(
               color: Colors.grey.shade400,
               fontSize: 11,

@@ -71,7 +71,7 @@ class AuthViewModel extends BaseViewModel {
           return true;
         } else {
           await logout();
-          _setError("Bạn không có quyền truy cập Admin");
+          _setError(AppStrings.noAdminAccess);
           return false;
         }
       } else {
@@ -207,7 +207,7 @@ class AuthViewModel extends BaseViewModel {
       return true;
     } catch (e) {
       _setLoading(false);
-      _setError("Lỗi khi xóa users: $e");
+      _setError("${AppStrings.deleteUsersErrorWithDetails}$e");
       print("Lỗi khi xóa users: $e");
       return false;
     }
@@ -236,7 +236,7 @@ class AuthViewModel extends BaseViewModel {
       );
 
       if (res.user == null) {
-        _setError("Không thể tạo tài khoản nhân viên");
+        _setError(AppStrings.createStaffFailed);
         _setLoading(false);
         return false;
       }
@@ -259,7 +259,7 @@ class AuthViewModel extends BaseViewModel {
 
     } catch (e) {
       _setLoading(false);
-      _setError("Lỗi tạo nhân viên: $e");
+      _setError("${AppStrings.createStaffErrorWithDetails}$e");
       return false;
     }
   }
@@ -291,7 +291,7 @@ class AuthViewModel extends BaseViewModel {
       print("❌ ERROR CREATE STAFF:");
       print(e);
       print(s);
-      _setError("Lỗi tạo nhân viên: $e");
+      _setError("${AppStrings.createStaffErrorWithDetails}$e");
       _setLoading(false);
       return false;
     }

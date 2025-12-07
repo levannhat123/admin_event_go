@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 import 'package:admin_event_go/core/base/base_view_model.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:admin_event_go/data/models/profile_model.dart';
@@ -59,12 +60,13 @@ class DashboadViewModel extends BaseViewModel {
           notifyListeners();
         },
         onError: (err) {
-          setError('Failed to watch events: ${err.toString()}');
+          setError('${AppStrings.watchEventsFailed}${err.toString()}');
           setBusy(false);
         },
       );
     } catch (e) {
-      setError('Failed to start watching events: ${e.toString()}');
+      setError(
+          '${AppStrings.startWatchingEventsFailed}${e.toString()}');
       setBusy(false);
     }
 
@@ -157,7 +159,7 @@ class DashboadViewModel extends BaseViewModel {
       _setLoading(false);
     } catch (e) {
       _setLoading(false);
-      _setError("Lỗi khi lấy users: $e");
+      _setError("${AppStrings.fetchUsersErrorWithDetails}$e");
     }
   }
 

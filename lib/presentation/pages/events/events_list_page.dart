@@ -131,14 +131,17 @@ class _EventsListPageState extends State<EventsListPage> {
                     await showDialog<bool>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text('Xác nhận xóa'),
-                        content: Text(AppStrings.deleteCategoryContentPrefix +
-                            event.title +
-                            AppStrings.deleteCategoryContentSuffix),
+                        title: const Text(AppStrings.confirmDeleteTitle),
+                        content: Text(
+                          AppStrings.deleteCategoryContentPrefix +
+                              event.title +
+                              AppStrings.deleteCategoryContentSuffix,
+                        ),
                         actions: [
                           TextButton(
                               onPressed: () => context.pop(false),
-                              child: const Text(AppStrings.ticketTypeDeleteCancel)),
+                              child:
+                                  const Text(AppStrings.ticketTypeDeleteCancel)),
                           TextButton(
                             onPressed: () => context.pop(true),
                             child: const Text(AppStrings.ticketTypeDeleteConfirm,

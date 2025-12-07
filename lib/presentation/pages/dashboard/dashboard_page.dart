@@ -118,7 +118,7 @@ class DashboardPage extends StatelessWidget {
     final subtitle = e.venue ?? e.orgName ?? e.address ?? '';
     final category = e.categories?.name ?? '';
     final price = e.isFree == true
-        ? 'Free'
+        ? AppStrings.freeLabel
         : (e.minTicketPrice != null ? '${e.minTicketPrice}đ' : '-');
 
     Color statusColor;
