@@ -34,6 +34,7 @@ class DashboardPage extends StatelessWidget {
         onModelReady: (vm) {
           vm.watchAll();
           vm.fetchUsers();
+          vm.fetchStaff();
         },
         autoDispose: false,
         builder: (context, vm, child) {
@@ -484,7 +485,7 @@ Widget _buildStatCard({
           child: Icon(icon, color: Colors.white.withOpacity(0.2), size: 80),
         ),
         Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -517,7 +518,7 @@ Widget _buildStatCard({
                     value,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: AppSizes.size24,
+                      fontSize: AppSizes.size18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -526,7 +527,7 @@ Widget _buildStatCard({
                     title,
                     style: TextStyle(
                         color: Colors.white.withOpacity(0.9),
-                        fontSize: AppSizes.size12),
+                        fontSize: AppSizes.size10),
                   ),
                 ],
               ),

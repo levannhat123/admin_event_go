@@ -14,10 +14,10 @@ class StaffScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseView<AuthViewModel>(
       onModelReady: (vm) {
-        vm.fetchUsers();
+        vm.fetchStaff();
       },
       builder: (context, vm, child) {
-        final staffList = vm.userList.where((e) => e.role == "staff").toList();
+        final staffList = vm.staffList.where((e) => e.role == "staff").toList();
         print("STAFF LIST LENGTH: ${staffList.length}");
         return Scaffold(
           backgroundColor: const Color(0xFF0F172A),
@@ -29,7 +29,7 @@ class StaffScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const AddEditStaffScreen()),
               );
 
-              if (result == true) vm.fetchUsers();
+              if (result == true) vm.fetchStaff();
             },
             backgroundColor: Colors.blue,
             child: const Icon(Icons.add),

@@ -187,9 +187,12 @@ class AuthViewModel extends BaseViewModel {
 
 
   List<ProfileModel> get userList => dashboardViewModel.users;
+  List<ProfileModel> get staffList => dashboardViewModel.staff;
 
   Future<void> fetchUsers() async {
    dashboardViewModel.fetchUsers();
+  } Future<void> fetchStaff() async {
+   dashboardViewModel.fetchStaff();
   }
   Future<bool> deleteUser(String userId) async {
     try {

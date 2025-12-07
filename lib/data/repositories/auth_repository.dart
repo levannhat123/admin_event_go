@@ -8,6 +8,7 @@ abstract class AuthRepository {
 
   Future<User?> signInWithEmailAndPassword(String email, String password);
   Future<List<ProfileModel>> getAllProfiles();
+  Future<List<ProfileModel>> getAllStaff();
   Future<User?> createUserWithEmailAndPassword(String email, String password);
   Future<void> signOut();
   Future<void> resetPassword(String email);

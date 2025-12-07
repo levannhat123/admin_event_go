@@ -36,6 +36,8 @@ class DashboadViewModel extends BaseViewModel {
 
   List<ProfileModel> userList = [];
   List<ProfileModel> get users => userList;
+  List<ProfileModel> staffList = [];
+  List<ProfileModel> get staff => staffList;
 
   bool _isLoading = false;
   String? _errorMessage;
@@ -156,6 +158,15 @@ class DashboadViewModel extends BaseViewModel {
     try {
       _setLoading(true);
       userList = await _authRepository.getAllProfiles();
+      _setLoading(false);
+    } catch (e) {
+      _setLoading(false);
+      _setError("${AppStrings.fetchUsersErrorWithDetails}$e");
+    }
+  }Future<void> fetchStaff() async {
+    try {
+      _setLoading(true);
+      staffList = await _authRepository.getAllStaff();
       _setLoading(false);
     } catch (e) {
       _setLoading(false);
