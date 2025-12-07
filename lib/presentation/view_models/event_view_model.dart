@@ -141,15 +141,15 @@ class EventViewModel extends BaseViewModel {
     idLocationController.text = e.locationId ?? '';
     status = e.status ?? 'ACTIVE';
     selectedCategory = e.categories;
-    ticketTypes = List.from(e.ticketType ?? []); // Tạo list mới
+    ticketTypes = List.from(e.ticketType ?? []);
     isFree = e.isFree ?? false;
     isHot = e.isHot ?? false;
     startTime = e.startTime;
     endTime = e.endTime;
     existingBannerUrl = e.bannerURL;
     existingLogoUrl = e.orgLogoURL;
-    bannerImageFile = null; // Reset file khi load
-    logoImageFile = null; // Reset file khi load
+    bannerImageFile = null;
+    logoImageFile = null;
     notifyListeners();
   }
 
@@ -234,7 +234,6 @@ class EventViewModel extends BaseViewModel {
 
   @override
   void dispose() {
-    // <<< NEW: Rất quan trọng, dispose các controller
     titleController.dispose();
     descController.dispose();
     locationController.dispose();

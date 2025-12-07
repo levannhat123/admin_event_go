@@ -76,7 +76,6 @@ class _UserScreenState extends State<UserScreen> {
                     user.email ?? AppStrings.fallbackUserEmail,
                   );
 
-                  // TODO: Delete
                 },
                 backgroundColor: const Color(0xFFEF4444),
                 foregroundColor: Colors.white,

@@ -24,9 +24,10 @@ class DashboardPage extends StatelessWidget {
         title: const Text(
           AppStrings.dashboardTitle,
           style: TextStyle(
-              fontSize: AppSizes.size24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white),
+            fontSize: AppSizes.size24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
       body: BaseView<DashboadViewModel>(
@@ -65,10 +66,15 @@ class DashboardPage extends StatelessWidget {
                           onPressed: () {
                             context.push(RouterPath.eventsList);
                           },
-                          icon: const Icon(Icons.arrow_forward,
-                              color: Color(0xFF6366F1), size: 16),
-                          label: const Text(AppStrings.viewAll,
-                              style: TextStyle(color: Color(0xFF6366F1))),
+                          icon: const Icon(
+                            Icons.arrow_forward,
+                            color: Color(0xFF6366F1),
+                            size: 16,
+                          ),
+                          label: const Text(
+                            AppStrings.viewAll,
+                            style: TextStyle(color: Color(0xFF6366F1)),
+                          ),
                         ),
                       ],
                     ),
@@ -84,13 +90,17 @@ class DashboardPage extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildRecentEventsList(DashboadViewModel vm) {
     if (vm.isBusy && vm.events.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
     if (vm.events.isEmpty) {
       return const Center(
-        child: Text(AppStrings.eventsNoEvents, style: TextStyle(color: Colors.white60)),
+        child: Text(
+          AppStrings.eventsNoEvents,
+          style: TextStyle(color: Colors.white60),
+        ),
       );
     }
 
@@ -154,7 +164,10 @@ class DashboardPage extends StatelessWidget {
               colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
             ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFF334155).withAlpha(80), width: 1),
+            border: Border.all(
+              color: Color(0xFF334155).withAlpha(80),
+              width: 1,
+            ),
             boxShadow: [
               BoxShadow(
                 color: Color(0xFF000000).withAlpha(40),
@@ -185,19 +198,23 @@ class DashboardPage extends StatelessWidget {
                     children: [
                       e.bannerURL != null && e.bannerURL!.isNotEmpty
                           ? Image.network(
-                        e.bannerURL!,
-                        width: 130,
-                        height: 130,
-                        fit: BoxFit.cover,
-                        errorBuilder: (c, o, s) => _buildImagePlaceholder(),
-                      )
+                              e.bannerURL!,
+                              width: 130,
+                              height: 130,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, o, s) =>
+                                  _buildImagePlaceholder(),
+                            )
                           : _buildImagePlaceholder(),
                       Container(
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Color(0xFF000000).withAlpha(40)],
+                            colors: [
+                              Colors.transparent,
+                              Color(0xFF000000).withAlpha(40),
+                            ],
                           ),
                         ),
                       ),
@@ -206,7 +223,10 @@ class DashboardPage extends StatelessWidget {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +257,11 @@ class DashboardPage extends StatelessWidget {
                                       color: Color(0xFF6366F1).withAlpha(30),
                                       borderRadius: BorderRadius.circular(3),
                                     ),
-                                    child: Icon(Icons.schedule, size: 9, color: Color(0xFF6366F1)),
+                                    child: Icon(
+                                      Icons.schedule,
+                                      size: 9,
+                                      color: Color(0xFF6366F1),
+                                    ),
                                   ),
                                   const SizedBox(width: 3),
                                   Expanded(
@@ -271,7 +295,9 @@ class DashboardPage extends StatelessWidget {
                                   const SizedBox(width: 3),
                                   Expanded(
                                     child: Text(
-                                      subtitle.isEmpty ? 'No location' : subtitle,
+                                      subtitle.isEmpty
+                                          ? 'No location'
+                                          : subtitle,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -286,15 +312,16 @@ class DashboardPage extends StatelessWidget {
                             ],
                           ),
                         ),
-
-                        // Bottom row: category, price, action
                         Flexible(
                           flex: 1,
                           child: Row(
                             children: [
                               if (category.isNotEmpty)
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 3,
+                                  ),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
@@ -320,7 +347,10 @@ class DashboardPage extends StatelessWidget {
                               if (category.isNotEmpty) SizedBox(width: 6),
 
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 3,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Color(0xFFEC4899).withAlpha(20),
                                   borderRadius: BorderRadius.circular(6),
@@ -343,7 +373,10 @@ class DashboardPage extends StatelessWidget {
                                   padding: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                      colors: [
+                                        Color(0xFF6366F1),
+                                        Color(0xFF8B5CF6),
+                                      ],
                                     ),
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
@@ -375,6 +408,7 @@ class DashboardPage extends StatelessWidget {
       ],
     );
   }
+
   Widget _buildImagePlaceholder() {
     return Container(
       width: 130,
@@ -383,7 +417,10 @@ class DashboardPage extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF6366F1).withAlpha(30), Color(0xFF8B5CF6).withAlpha(30)],
+          colors: [
+            Color(0xFF6366F1).withAlpha(30),
+            Color(0xFF8B5CF6).withAlpha(30),
+          ],
         ),
       ),
       child: Center(
@@ -402,9 +439,10 @@ class DashboardPage extends StatelessWidget {
             Text(
               AppStrings.eventLabel,
               style: TextStyle(
-                  color: Color(0xFF6366F1),
-                  fontSize: AppSizes.size10,
-                  fontWeight: FontWeight.w600),
+                color: Color(0xFF6366F1),
+                fontSize: AppSizes.size10,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
@@ -413,7 +451,6 @@ class DashboardPage extends StatelessWidget {
   }
 }
 
-// HÀM ĐÃ ĐƯỢC CẬP NHẬT
 Widget _buildStatsGrid(DashboadViewModel vm) {
   return GridView.count(
     shrinkWrap: true,
@@ -433,7 +470,7 @@ Widget _buildStatsGrid(DashboadViewModel vm) {
       ),
       _buildStatCard(
         title: AppStrings.totalOrders,
-        value: vm.totalOrdersString, // <-- Đã thay đổi
+        value: vm.totalOrdersString,
         icon: Icons.confirmation_number,
         color: Color(0xFFEC4899),
         gradient: [Color(0xFFEC4899), Color(0xFFF43F5E)],
@@ -441,7 +478,7 @@ Widget _buildStatsGrid(DashboadViewModel vm) {
       ),
       _buildStatCard(
         title: AppStrings.revenue,
-        value: vm.totalRevenueString, // <-- Đã thay đổi
+        value: vm.totalRevenueString,
         icon: Icons.attach_money,
         color: Color(0xFFF59E0B),
         gradient: [Color(0xFFF59E0B), Color(0xFFEF4444)],
@@ -475,7 +512,13 @@ Widget _buildStatCard({
         end: Alignment.bottomRight,
       ),
       borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(color: color.withOpacity(0.3), blurRadius: 10, offset: Offset(0, 5))],
+      boxShadow: [
+        BoxShadow(
+          color: color.withOpacity(0.3),
+          blurRadius: 10,
+          offset: Offset(0, 5),
+        ),
+      ],
     ),
     child: Stack(
       children: [
@@ -526,8 +569,9 @@ Widget _buildStatCard({
                   Text(
                     title,
                     style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: AppSizes.size10),
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: AppSizes.size10,
+                    ),
                   ),
                 ],
               ),
@@ -546,9 +590,10 @@ Widget _buildChartsSection(DashboadViewModel vm) {
       const Text(
         AppStrings.analyticsTitle,
         style: TextStyle(
-            fontSize: AppSizes.size20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white),
+          fontSize: AppSizes.size20,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
       ),
       SizedBox(height: 16),
       Row(
@@ -556,7 +601,9 @@ Widget _buildChartsSection(DashboadViewModel vm) {
           Expanded(
             flex: 2,
             child: _buildChartCard(
-                title: AppStrings.ticketsSoldLast7Days, child: _buildLineChart(vm)),
+              title: AppStrings.ticketsSoldLast7Days,
+              child: _buildLineChart(vm),
+            ),
           ),
         ],
       ),
@@ -578,9 +625,10 @@ Widget _buildChartCard({required String title, required Widget child}) {
         Text(
           title,
           style: TextStyle(
-              fontSize: AppSizes.size14,
-              fontWeight: FontWeight.w600,
-              color: Colors.white),
+            fontSize: AppSizes.size14,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
         ),
         SizedBox(height: 16),
         SizedBox(height: 200, child: child),
@@ -590,15 +638,18 @@ Widget _buildChartCard({required String title, required Widget child}) {
 }
 
 Widget _buildLineChart(DashboadViewModel vm) {
-
   if (vm.dailyTicketSpots.isEmpty) {
     if (vm.isBusy) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF6366F1)));
+        child: CircularProgressIndicator(color: Color(0xFF6366F1)),
+      );
     }
     return const Center(
-        child: Text(AppStrings.noTicketDataYet,
-            style: TextStyle(color: Colors.white60)));
+      child: Text(
+        AppStrings.noTicketDataYet,
+        style: TextStyle(color: Colors.white60),
+      ),
+    );
   }
 
   final double maxY = vm.maxDailyTickets;
@@ -634,7 +685,9 @@ Widget _buildLineChart(DashboadViewModel vm) {
                 return Text(
                   vm.dayLabels[index],
                   style: TextStyle(
-                      color: Colors.white60, fontSize: AppSizes.size10),
+                    color: Colors.white60,
+                    fontSize: AppSizes.size10,
+                  ),
                 );
               }
               return Text('');
@@ -649,7 +702,9 @@ Widget _buildLineChart(DashboadViewModel vm) {
               return Text(
                 value.toInt().toString(),
                 style: TextStyle(
-                    color: Colors.white60, fontSize: AppSizes.size10),
+                  color: Colors.white60,
+                  fontSize: AppSizes.size10,
+                ),
               );
             },
             reservedSize: 40,
@@ -663,7 +718,9 @@ Widget _buildLineChart(DashboadViewModel vm) {
         LineChartBarData(
           spots: vm.dailyTicketSpots,
           isCurved: true,
-          gradient: LinearGradient(colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)]),
+          gradient: LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          ),
           barWidth: 3,
           dotData: FlDotData(
             show: true,
@@ -679,7 +736,10 @@ Widget _buildLineChart(DashboadViewModel vm) {
           belowBarData: BarAreaData(
             show: true,
             gradient: LinearGradient(
-              colors: [Color(0xFF6366F1).withOpacity(0.3), Color(0xFF6366F1).withOpacity(0.0)],
+              colors: [
+                Color(0xFF6366F1).withOpacity(0.3),
+                Color(0xFF6366F1).withOpacity(0.0),
+              ],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
