@@ -16,6 +16,7 @@ class StaffScreen extends StatelessWidget {
       onModelReady: (vm) {
         vm.fetchStaff();
       },
+      autoDispose: false,
       builder: (context, vm, child) {
         final staffList = vm.staffList.where((e) => e.role == "staff").toList();
         print("STAFF LIST LENGTH: ${staffList.length}");
@@ -58,7 +59,7 @@ class StaffScreen extends StatelessWidget {
       itemBuilder: (context, index) {
         final staff = staffList[index];
         print("ROLE: ${staff.role}");
-        final originalIndex = vm.userList.indexOf(staff);
+        final originalIndex = vm.staffList.indexOf(staff);
         return Slidable(
           key: ValueKey(staff.id),
           endActionPane: ActionPane(
@@ -76,10 +77,9 @@ class StaffScreen extends StatelessWidget {
                     ),
                   );
 
-                  if (updated == true) vm.fetchUsers();
+                  if (updated == true) vm.fetchStaff();
                 },
               ),
-
               SlidableAction(
                 label: AppStrings.deleteLabel,
                 backgroundColor: Colors.red,
@@ -88,7 +88,7 @@ class StaffScreen extends StatelessWidget {
                   _showDeleteDialog(
                     context,
                     vm,
-                    originalIndex,
+                    staff.id,
                     staff.email ?? AppStrings.fallbackUserEmail,
                   );
                 },
@@ -110,7 +110,10 @@ class StaffScreen extends StatelessWidget {
                   backgroundColor: Colors.blueAccent,
                   child: Text(
                     staff.fullName.substring(0, 1).toUpperCase(),
-                    style: const TextStyle(fontSize: AppSizes.size20, color: Colors.white),
+                    style: const TextStyle(
+                      fontSize: AppSizes.size20,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
 
@@ -165,7 +168,7 @@ class StaffScreen extends StatelessWidget {
   void _showDeleteDialog(
     BuildContext context,
     AuthViewModel vm,
-    int index,
+      String staffId,
     String email,
   ) {
     showDialog(
@@ -178,7 +181,10 @@ class StaffScreen extends StatelessWidget {
           ),
           title: Text(
             AppStrings.deleteUserDialogTitle,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           content: Text(
             '${AppStrings.deleteUserDialogContentPrefix}$email'
@@ -188,20 +194,23 @@ class StaffScreen extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(AppStrings.cancelButton,
-                  style: const TextStyle(color: Colors.white60)),
+              child: Text(
+                AppStrings.cancelButton,
+                style: const TextStyle(color: Colors.white60),
+              ),
             ),
             ElevatedButton(
-              onPressed: () {
-                vm.deleteUser(vm.userList[index].id);
-                vm.userList.removeAt(index);
+              onPressed: () async {
+                await vm.deleteStaff(staffId); // chỉ xóa bằng ID
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFFEF4444),
               ),
-              child: Text(AppStrings.deleteButton,
-                  style: const TextStyle(color: Colors.white)),
+              child: Text(
+                AppStrings.deleteButton,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         );

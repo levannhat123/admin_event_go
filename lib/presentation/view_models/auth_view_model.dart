@@ -192,7 +192,8 @@ class AuthViewModel extends BaseViewModel {
   Future<void> fetchUsers() async {
    dashboardViewModel.fetchUsers();
   } Future<void> fetchStaff() async {
-   dashboardViewModel.fetchStaff();
+  await dashboardViewModel.fetchStaff();
+  notifyListeners();
   }
   Future<bool> deleteUser(String userId) async {
     try {
@@ -206,6 +207,27 @@ class AuthViewModel extends BaseViewModel {
   await Supabase.instance.client
           .rpc('delete_auth_user', params: {'user_id': userId});
       await fetchUsers();
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setLoading(false);
+      _setError("${AppStrings.deleteUsersErrorWithDetails}$e");
+      print("Lỗi khi xóa users: $e");
+      return false;
+    }
+  }
+  Future<bool> deleteStaff(String userId) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      await Supabase.instance.client
+          .from('profiles')
+          .delete()
+          .eq('id', userId);
+      await Supabase.instance.client
+          .rpc('delete_auth_user', params: {'user_id': userId});
+      await fetchStaff();
       _setLoading(false);
       return true;
     } catch (e) {
@@ -256,7 +278,7 @@ class AuthViewModel extends BaseViewModel {
         'created_at': DateTime.now().toIso8601String(),
       });
 
-      await fetchUsers();
+      await fetchStaff();
       _setLoading(false);
       return true;
 
@@ -287,7 +309,7 @@ class AuthViewModel extends BaseViewModel {
         'role': role,
       }).eq('id', id);
 
-      await fetchUsers();
+      await fetchStaff();
       _setLoading(false);
       return true;
     } catch (e, s) {
