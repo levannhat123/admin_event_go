@@ -22,14 +22,17 @@ class AppRouter {
         initialLocation: RouterPath.dashboard,
         debugLogDiagnostics: true,
         routes: [
-          GoRoute(path: RouterPath.login, builder: (context, state) => LoginScreen()),
+          GoRoute(
+            path: RouterPath.login,
+            builder: (context, state) => LoginScreen(),
+          ),
           GoRoute(
             path: RouterPath.addEvent,
             name: RouterName.addEvent,
             builder: (context, state) {
               final extra = state.extra as Map<String, dynamic>?;
               final isEditing = extra?['isEditing'] ?? false;
-              final event = extra?['event']as EventDetailModel?;
+              final event = extra?['event'] as EventDetailModel?;
               return AddEventPage(isEditing: isEditing, event: event);
             },
           ),
@@ -55,8 +58,8 @@ class AppRouter {
           GoRoute(
             path: RouterPath.orders_detail,
             builder: (context, state) {
-              final orderId = state.extra as String;
-              return OrderDetailScreen(orderId: orderId);
+              final orderData = state.extra as Map<String, dynamic>;
+              return OrderDetailScreen(orderData: orderData);
             },
           ),
 

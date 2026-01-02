@@ -35,7 +35,12 @@ class _AddEventPageState extends State<AddEventPage> {
   final _formKey = GlobalKey<FormState>();
 
   bool get isEdit => widget.isEditing ?? widget.event != null;
-  Future<void> _selectDateTime(BuildContext context, bool isStartTime, EventViewModel vm) async {
+  Future<void> _selectDateTime(
+    BuildContext context,
+    bool isStartTime,
+    EventViewModel vm,
+  ) async {
+    FocusScope.of(context).unfocus();
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: isStartTime
@@ -78,21 +83,20 @@ class _AddEventPageState extends State<AddEventPage> {
           );
         },
       );
-      if (pickedTime != null) {
-        final DateTime fullDateTime = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
-        if (mounted) {
-          if (isStartTime) {
-            vm.setStartTime(fullDateTime);
-          } else {
-            vm.setEndTime(fullDateTime);
-          }
-        }
+      if (pickedTime == null || !mounted) return;
+
+      final DateTime fullDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
+
+      if (isStartTime) {
+        vm.setStartTime(fullDateTime);
+      } else {
+        vm.setEndTime(fullDateTime);
       }
     }
   }
@@ -135,8 +139,9 @@ class _AddEventPageState extends State<AddEventPage> {
                         : AppStrings.notAvailableShort,
                     style: TextStyle(
                       fontSize: AppSizes.size16,
-                      color:
-                          dateTime != null ? Colors.black87 : Colors.grey.shade400,
+                      color: dateTime != null
+                          ? Colors.black87
+                          : Colors.grey.shade400,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -156,9 +161,10 @@ class _AddEventPageState extends State<AddEventPage> {
       child: Text(
         title,
         style: const TextStyle(
-            fontSize: AppSizes.size18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF0F172A)),
+          fontSize: AppSizes.size18,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF0F172A),
+        ),
       ),
     );
   }
@@ -177,6 +183,10 @@ class _AddEventPageState extends State<AddEventPage> {
     }
     if (vm.descController.text.trim().isEmpty) {
       _showErrorDialog(AppStrings.eventDescriptionRequired);
+      return;
+    }
+    if (vm.selectedCategory == null) {
+      _showErrorDialog(AppStrings.eventCategoryRequired);
       return;
     }
     if (vm.locationController.text.trim().isEmpty) {
@@ -208,10 +218,7 @@ class _AddEventPageState extends State<AddEventPage> {
       return;
     }
 
-    if (vm.selectedCategory == null) {
-      _showErrorDialog(AppStrings.eventCategoryRequired);
-      return;
-    }
+
 
     if (!mounted) return;
     showDialog(
@@ -287,8 +294,10 @@ class _AddEventPageState extends State<AddEventPage> {
         _showSuccessDialog(AppStrings.eventSaveSuccess);
       } else {
         _showErrorDialog(
-            eventViewModel.errorMessage ?? AppStrings.eventSaveFailed);
+          eventViewModel.errorMessage ?? AppStrings.eventSaveFailed,
+        );
       }
+    } catch (e) {
     } catch (e) {
       if (!mounted) return;
       context.pop();
@@ -297,36 +306,80 @@ class _AddEventPageState extends State<AddEventPage> {
   }
 
   void _showErrorDialog(String message) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text(AppStrings.errorTitle),
-        content: Text(message),
-        actions: [
-          TextButton(
-              onPressed: () => context.pop(),
-              child: const Text(AppStrings.closeButton))
-        ],
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: const BoxDecoration(
+          color: Colors.white, // Hoặc AppColors.background
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
+                const SizedBox(width: 12),
+                const Text(
+                  AppStrings.errorTitle,
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              message,
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black, // Nút đen ngầu
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(AppStrings.closeButton),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void _showSuccessDialog(String message) {
-    showDialog(
+  void _showSuccessDialog(String message) async {
+    await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text(AppStrings.successTitle),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () {
-             context.push(RouterPath.events);
+              FocusScope.of(context).unfocus();
+              dialogContext.pop();
             },
             child: const Text(AppStrings.dialogOkButton),
           ),
         ],
       ),
     );
+
+    if (mounted) {
+      context.go(RouterPath.events);
+    }
   }
 
   Future<void> _showAddEditTicketTypeDialog(
@@ -354,15 +407,18 @@ class _AddEventPageState extends State<AddEventPage> {
         content: const Text(AppStrings.ticketTypeDeleteConfirmContent),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text(AppStrings.ticketTypeDeleteCancel)),
+            onPressed: () => Navigator.pop(context),
+            child: const Text(AppStrings.ticketTypeDeleteCancel),
+          ),
           TextButton(
             onPressed: () {
               vm.deleteTicketType(id);
               context.pop();
             },
-            child: const Text(AppStrings.ticketTypeDeleteConfirm,
-                style: TextStyle(color: Colors.red)),
+            child: const Text(
+              AppStrings.ticketTypeDeleteConfirm,
+              style: TextStyle(color: Colors.red),
+            ),
           ),
         ],
       ),
@@ -371,7 +427,6 @@ class _AddEventPageState extends State<AddEventPage> {
 
   @override
   void dispose() {
-
     getIt<EventViewModel>().clearForm();
     super.dispose();
   }
@@ -382,10 +437,14 @@ class _AddEventPageState extends State<AddEventPage> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
-        title:
-            Text(isEdit ? AppStrings.eventEditTitle : AppStrings.eventAddTitle),
+        title: Text(
+          isEdit ? AppStrings.eventEditTitle : AppStrings.eventAddTitle,
+        ),
         centerTitle: true,
-        leading: IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => context.pop()),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: BaseView<EventViewModel>(
         viewModelBuilder: () => getIt<EventViewModel>(),
@@ -444,24 +503,24 @@ class _AddEventPageState extends State<AddEventPage> {
                           ),
                           const SizedBox(height: 10),
 
-                          CustomDropdown<String>(
-                            label: AppStrings.eventStatusLabel,
-                            items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
-                            value: vm.status,
-                            getLabel: (v) {
-                              switch (v) {
-                                case 'ACTIVE':
-                                  return AppStrings.eventStatusActive;
-                                case 'INACTIVE':
-                                  return AppStrings.eventStatusInactive;
-                                case 'COMPLETED':
-                                  return AppStrings.eventStatusCompleted;
-                                default:
-                                  return v;
-                              }
-                            },
-                            onChanged: (v) => vm.setStatus(v!),
-                          ),
+                          // CustomDropdown<String>(
+                          //   label: AppStrings.eventStatusLabel,
+                          //   items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
+                          //   value: vm.status,
+                          //   getLabel: (v) {
+                          //     switch (v) {
+                          //       case 'ACTIVE':
+                          //         return AppStrings.eventStatusActive;
+                          //       case 'INACTIVE':
+                          //         return AppStrings.eventStatusInactive;
+                          //       case 'COMPLETED':
+                          //         return AppStrings.eventStatusCompleted;
+                          //       default:
+                          //         return v;
+                          //     }
+                          //   },
+                          //   onChanged: (v) => vm.setStatus(v!),
+                          // ),
                           const SizedBox(height: 10),
 
                           BaseView<CategoryViewModel>(
@@ -471,12 +530,16 @@ class _AddEventPageState extends State<AddEventPage> {
                             builder: (context, catVm, child) {
                               if (catVm.isBusy && catVm.categories.isEmpty) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 8.0,
+                                  ),
                                   child: Center(
                                     child: SizedBox(
                                       height: 24,
                                       width: 24,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
                                     ),
                                   ),
                                 );
@@ -564,7 +627,9 @@ class _AddEventPageState extends State<AddEventPage> {
                             child: Container(
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF4257b4).withValues(alpha: 0.1),
+                                color: const Color(
+                                  0xFF4257b4,
+                                ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
                                   color: const Color(0xFF4257b4),
@@ -581,7 +646,11 @@ class _AddEventPageState extends State<AddEventPage> {
                                       color: const Color(0xFF4257b4),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
-                                    child: const Icon(Icons.add, color: Colors.white, size: 24),
+                                    child: const Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
                                   const Text(
@@ -625,8 +694,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                   Text(
                                     AppStrings.eventAddTicketTypeGuide,
                                     style: TextStyle(
-                                        fontSize: AppSizes.size14,
-                                        color: Colors.grey.shade500),
+                                      fontSize: AppSizes.size14,
+                                      color: Colors.grey.shade500,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -635,8 +705,10 @@ class _AddEventPageState extends State<AddEventPage> {
                             ...vm.ticketTypes.map((ticketType) {
                               return TicketTypeItemWidget(
                                 ticketType: ticketType,
-                                onEdit: () =>
-                                    _showAddEditTicketTypeDialog(vm, ticketType: ticketType),
+                                onEdit: () => _showAddEditTicketTypeDialog(
+                                  vm,
+                                  ticketType: ticketType,
+                                ),
                                 onDelete: () =>
                                     _deleteTicketType(ticketType.id, vm),
                               );
@@ -674,7 +746,9 @@ class _AddEventPageState extends State<AddEventPage> {
                             shadowColor: AppColors.transparent,
                           ),
                           _buildDivider(),
-                          _buildSectionTitle(AppStrings.eventOtherOptionsSection),
+                          _buildSectionTitle(
+                            AppStrings.eventOtherOptionsSection,
+                          ),
                           CustomSwitch(
                             label: AppStrings.eventIsHotLabel,
                             value: vm.isHot,

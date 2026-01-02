@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class OrderDetailScreen extends StatelessWidget {
-  final String orderId;
-
-  const OrderDetailScreen({Key? key, required this.orderId}) : super(key: key);
+  final Map<String, dynamic> orderData;
+  const OrderDetailScreen({Key? key, required this.orderData})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,108 +15,103 @@ class OrderDetailScreen extends StatelessWidget {
       backgroundColor: const Color(0xFF0F172A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1E293B),
-        title:
-            const Text(AppStrings.orderDetailTitle, style: TextStyle(color: Colors.white)),
+        title: const Text(
+          AppStrings.orderDetailTitle,
+          style: TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-        stream: FirebaseFirestore.instance
-            .collection("tickets")
-            .doc(orderId)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Center(
-              child: Text(AppStrings.orderNotFound,
-                  style: TextStyle(color: Colors.white)),
-            );
-          }
-
-          final order = snapshot.data!.data()!;
-          order["id"] = orderId;
-
-          final tickets = order['tickets'] as List<dynamic>? ?? [];
-          final createdAt = (order['createdAt'] as Timestamp?)?.toDate();
-          final checkinTimestamp =
-          (order['checkinTimestamp'] as Timestamp?)?.toDate();
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                _headerCard(order),
-
-                const SizedBox(height: 20),
-                _infoSection(
-                  title: AppStrings.orderUserInformation,
-                  icon: Icons.person,
-                  children: [
-                    _infoRow(AppStrings.emailLabel, order["userEmail"]),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-                _infoSection(
-                  title: AppStrings.orderEventInformation,
-                  icon: Icons.event,
-                  children: [
-                    _infoRow(AppStrings.eventNameLabel, order["eventName"]),
-                    _infoRow(AppStrings.venueLabel, order["venue"]),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-                _infoSection(
-                  title: AppStrings.orderInfo,
-                  icon: Icons.receipt_long,
-                  children: [
-                    _infoRow(
-                      AppStrings.orderTotalAmount,
-                      NumberFormat.currency(locale: 'vi_VN', symbol: 'đ')
-                          .format(order["totalAmount"]),
-                    ),
-                    _infoRow(AppStrings.orderPaymentMethod, order["paymentMethod"]),
-                    _infoRow(AppStrings.orderPaymentStatus, order["paymentStatus"]),
-                    _infoRow(
-                      AppStrings.orderCreatedAt,
-                      createdAt != null
-                          ? DateFormat('dd/MM/yyyy HH:mm').format(createdAt)
-                          : AppStrings.notAvailableShort,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-                _infoSection(
-                  title: AppStrings.orderCheckinStatusTitle,
-                  icon: Icons.qr_code_scanner,
-                  children: [
-                    _infoRow(AppStrings.orderCheckinStatus, order["checkinStatus"]),
-                    _infoRow(AppStrings.orderCheckedIn, "${order["checkedIn"]} người"),
-                    _infoRow(
-                      AppStrings.orderCheckinTime,
-                      checkinTimestamp != null
-                          ? DateFormat('dd/MM/yyyy HH:mm')
-                          .format(checkinTimestamp)
-                          : AppStrings.orderCheckinTimeNotYet,
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-                _ticketSection(tickets),
-              ],
-            ),
-          );
-        },
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: _buildBodyContent(orderData),
       ),
     );
   }
 
-  // HEADER CARD
+  Widget _buildBodyContent(Map<String, dynamic> order) {
+    final tickets = order['tickets'] as List<dynamic>? ?? [];
+    DateTime? createdAt;
+    if (order['createdAt'] is Timestamp) {
+      createdAt = (order['createdAt'] as Timestamp).toDate();
+    } else if (order['createdAt'] is DateTime) {
+      createdAt = order['createdAt'];
+    }
+
+    DateTime? checkinTimestamp;
+    if (order['checkinTimestamp'] is Timestamp) {
+      checkinTimestamp = (order['checkinTimestamp'] as Timestamp).toDate();
+    }
+
+    return Column(
+      children: [
+        _headerCard(order),
+        const SizedBox(height: 20),
+        _infoSection(
+          title: AppStrings.orderUserInformation,
+          icon: Icons.person,
+          children: [_infoRow(AppStrings.emailLabel, order["userEmail"])],
+        ),
+        const SizedBox(height: 20),
+        _infoSection(
+          title: AppStrings.orderEventInformation,
+          icon: Icons.event,
+          children: [
+            _infoRow(AppStrings.eventNameLabel, order["eventName"]),
+            _infoRow(AppStrings.venueLabel, order["venue"]),
+          ],
+        ),
+        const SizedBox(height: 20),
+        _infoSection(
+          title: AppStrings.orderInfo,
+          icon: Icons.receipt_long,
+          children: [
+            _infoRow(
+              AppStrings.orderTotalAmount,
+              NumberFormat.currency(
+                locale: 'vi_VN',
+                symbol: 'đ',
+              ).format(order["totalAmount"] ?? 0),
+            ),
+            _infoRow(AppStrings.orderPaymentMethod, order["paymentMethod"]),
+            _infoRow(AppStrings.orderPaymentStatus, order["paymentStatus"]),
+            _infoRow(
+              AppStrings.orderCreatedAt,
+              createdAt != null
+                  ? DateFormat('dd/MM/yyyy HH:mm').format(createdAt)
+                  : AppStrings.notAvailableShort,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        _infoSection(
+          title: AppStrings.orderCheckinStatusTitle,
+          icon: Icons.qr_code_scanner,
+          children: [
+            _infoRow(
+              AppStrings.orderCheckinStatus,
+              order["checkinStatus"] ?? 'pending',
+            ),
+            _infoRow(
+              AppStrings.orderCheckedIn,
+              "${order["checkedIn"] ?? 0} người",
+            ),
+            _infoRow(
+              AppStrings.orderCheckinTime,
+              checkinTimestamp != null
+                  ? DateFormat('dd/MM/yyyy HH:mm').format(checkinTimestamp)
+                  : AppStrings.orderCheckinTimeNotYet,
+            ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        _ticketSection(tickets),
+      ],
+    );
+  }
+
   Widget _headerCard(Map<String, dynamic> order) {
     return Container(
       padding: const EdgeInsets.all(20),
@@ -134,7 +129,7 @@ class OrderDetailScreen extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Text(
-              order["id"],
+              order["id"]?.toString() ?? "N/A",
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: AppSizes.size20,
@@ -149,7 +144,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  // SECTION CARD
+  // ... Paste các hàm còn lại (_infoSection, _ticketSection, _infoRow) vào đây ...
   Widget _infoSection({
     required String title,
     required IconData icon,
@@ -185,7 +180,6 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  // TICKET LIST
   Widget _ticketSection(List tickets) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -197,17 +191,25 @@ class OrderDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-              children: const [
-                Icon(Icons.confirmation_number, color: Color(0xFFF59E0B)),
-                SizedBox(width: 8),
-                Text(AppStrings.orderTickets,
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: AppSizes.size18,
-                        fontWeight: FontWeight.w600)),
-              ],
+            children: const [
+              Icon(Icons.confirmation_number, color: Color(0xFFF59E0B)),
+              SizedBox(width: 8),
+              Text(
+                AppStrings.orderTickets,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: AppSizes.size18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 12),
+          if (tickets.isEmpty)
+            const Text(
+              "Không có thông tin vé",
+              style: TextStyle(color: Colors.white54),
+            ),
           ...tickets.map((t) {
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
@@ -219,12 +221,20 @@ class OrderDetailScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(t["name"] ?? AppStrings.unknownText,
-                      style: const TextStyle(
-                          color: Colors.white, fontSize: AppSizes.size16)),
-                  Text("x${t["quantity"]}",
-                      style: const TextStyle(
-                          color: Colors.white70, fontSize: AppSizes.size14)),
+                  Text(
+                    t["name"]?.toString() ?? AppStrings.unknownText,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: AppSizes.size16,
+                    ),
+                  ),
+                  Text(
+                    "x${t["quantity"]}",
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: AppSizes.size14,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -234,7 +244,6 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  // ROW ITEM
   Widget _infoRow(String label, String? value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),

@@ -17,7 +17,8 @@ class AddEditTicketTypeDialog extends StatefulWidget {
   const AddEditTicketTypeDialog({super.key, this.ticketType});
 
   @override
-  State<AddEditTicketTypeDialog> createState() => _AddEditTicketTypeDialogState();
+  State<AddEditTicketTypeDialog> createState() =>
+      _AddEditTicketTypeDialogState();
 }
 
 class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
@@ -26,7 +27,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
   final priceController = TextEditingController();
   final maxQtyController = TextEditingController();
   final minQtyController = TextEditingController();
-  final totalQuantity= TextEditingController();
+  final totalQuantity = TextEditingController();
 
   bool isFree = false;
   String? status = 'ACTIVE';
@@ -40,8 +41,10 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
       nameController.text = widget.ticketType!.name;
       descController.text = widget.ticketType!.description ?? '';
       priceController.text = widget.ticketType!.price?.toString() ?? '';
-      maxQtyController.text = widget.ticketType!.maxQtyPerOrder?.toString() ?? '';
-      minQtyController.text = widget.ticketType!.minQtyPerOrder?.toString() ?? '';
+      maxQtyController.text =
+          widget.ticketType!.maxQtyPerOrder?.toString() ?? '';
+      minQtyController.text =
+          widget.ticketType!.minQtyPerOrder?.toString() ?? '';
       totalQuantity.text = widget.ticketType!.totalQuantity?.toString() ?? '';
       isFree = widget.ticketType!.isFree ?? false;
       status = widget.ticketType!.status ?? 'ACTIVE';
@@ -105,25 +108,22 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
         },
       );
 
-      if (pickedTime != null) {
-        final DateTime fullDateTime = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
+      if (pickedTime == null || !mounted) return;
+      final DateTime fullDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
 
-        if (mounted) {
-          setState(() {
-            if (isStartTime) {
-              startTime = fullDateTime;
-            } else {
-              endTime = fullDateTime;
-            }
-          });
+      setState(() {
+        if (isStartTime) {
+          startTime = fullDateTime;
+        } else {
+          endTime = fullDateTime;
         }
-      }
+      });
     }
   }
 
@@ -165,8 +165,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                         : AppStrings.notAvailableShort,
                     style: TextStyle(
                       fontSize: AppSizes.size14,
-                      color:
-                          dateTime != null ? Colors.black87 : Colors.grey.shade400,
+                      color: dateTime != null
+                          ? Colors.black87
+                          : Colors.grey.shade400,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -194,7 +195,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
     final ticketType = TicketTypeModel(
       id: widget.ticketType?.id ?? const Uuid().v4(),
       name: nameController.text.trim(),
-      description: descController.text.trim().isEmpty ? null : descController.text.trim(),
+      description: descController.text.trim().isEmpty
+          ? null
+          : descController.text.trim(),
       isFree: isFree,
       price: isFree ? 0 : (int.tryParse(priceController.text.trim()) ?? 0),
       maxQtyPerOrder: int.tryParse(maxQtyController.text.trim()),
@@ -216,8 +219,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
         content: Text(message),
         actions: [
           TextButton(
-              onPressed: () => context.pop(),
-              child: const Text(AppStrings.closeButton))
+            onPressed: () => context.pop(),
+            child: const Text(AppStrings.closeButton),
+          ),
         ],
       ),
     );
@@ -244,7 +248,11 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.confirmation_number, color: Colors.white, size: 28),
+                  const Icon(
+                    Icons.confirmation_number,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -309,7 +317,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       lableText: AppStrings.ticketTypePriceLabel,
                       controller: priceController,
                       borderColor: Colors.grey.shade300,
-                      fillColor: isFree ? Colors.grey.shade200 : Colors.grey.shade100,
+                      fillColor: isFree
+                          ? Colors.grey.shade200
+                          : Colors.grey.shade100,
                       focusedBorderColor: const Color(0xFF4257b4),
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,
@@ -319,6 +329,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       lableText: AppStrings.ticketTypeTotalQuantityLabel,
                       controller: totalQuantity,
                       borderColor: Colors.grey.shade300,
+                      fillColor: Colors.grey.shade100,
                       focusedBorderColor: const Color(0xFF4257b4),
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,

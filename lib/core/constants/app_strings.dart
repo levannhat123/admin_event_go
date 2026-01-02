@@ -172,7 +172,7 @@ class AppStrings {
   static const String eventLocationSection = "📍 Địa điểm tổ chức";
   static const String eventVenueLabel = "Địa điểm tổ chức (Venue)";
   static const String eventAddressLabel = "Địa chỉ chi tiết";
-  static const String eventLocationIdLabel = "ID địa điểm";
+  static const String eventLocationIdLabel = "Địa điểm";
   static const String eventTimeSection = "🕒 Thời gian";
   static const String eventStartTimeLabel = "Thời gian bắt đầu";
   static const String eventEndTimeLabel = "Thời gian kết thúc";

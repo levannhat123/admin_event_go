@@ -264,7 +264,7 @@ class _OrdersPageState extends State<OrdersPage> with SingleTickerProviderStateM
 
     return GestureDetector(
       onTap: () {
-       context.push(RouterPath.orders_detail, extra: order['id']);
+        context.push(RouterPath.orders_detail, extra: order);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
