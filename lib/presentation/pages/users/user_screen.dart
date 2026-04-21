@@ -3,6 +3,7 @@ import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 import '../../../core/widgets/custom_no_data.dart';
 import '../../view_models/auth_view_model.dart';
@@ -22,14 +23,14 @@ class _UserScreenState extends State<UserScreen> {
     return Consumer<AuthViewModel>(
       builder: (context, vm, child) {
         return Scaffold(
-          backgroundColor: Color(0xFF0F172A),
+          backgroundColor: AppColors.slateDark,
           body: Column(
             children: [
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: () => vm.fetchUsers(),
-                  backgroundColor: const Color(0xFF1E293B),
-                  color: const Color(0xFF6366F1),
+                  backgroundColor: AppColors.slateCard,
+                  color: AppColors.indigoAccent,
                   child: vm.userList.isEmpty
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -56,7 +57,7 @@ class _UserScreenState extends State<UserScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.size16),
       itemCount: vm.userList.length,
       itemBuilder: (context, index) {
         final user = vm.userList[index];
@@ -77,7 +78,7 @@ class _UserScreenState extends State<UserScreen> {
                   );
 
                 },
-                backgroundColor: const Color(0xFFEF4444),
+                backgroundColor: AppColors.redAccent,
                 foregroundColor: Colors.white,
                 icon: Icons.delete_outline,
                 label: AppStrings.deleteLabel,
@@ -85,23 +86,22 @@ class _UserScreenState extends State<UserScreen> {
             ],
           ),
           child: Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: const EdgeInsets.only(bottom: AppSizes.size12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: AppColors.slateCard,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: const Color(0xFF334155), width: 1),
+              border: Border.all(color: AppColors.slateBorder, width: AppSizes.size1),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSizes.size16),
               child: Row(
                 children: [
-                  // Avatar
                   Container(
-                    width: 50,
-                    height: 50,
+                    width: AppSizes.size50,
+                    height: AppSizes.size50,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                        colors: [AppColors.indigoAccent, AppColors.violetAccent],
                       ),
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -118,9 +118,7 @@ class _UserScreenState extends State<UserScreen> {
                     ),
                   ),
 
-                  const SizedBox(width: 16),
-
-                  // User Info
+                  const SizedBox(width: AppSizes.size16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -134,16 +132,16 @@ class _UserScreenState extends State<UserScreen> {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: AppSizes.size6),
                         Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                                horizontal: AppSizes.size8,
+                                vertical: AppSizes.size4,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF10B981).withOpacity(0.2),
+                                color: AppColors.emeraldAccent.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Row(
@@ -151,13 +149,13 @@ class _UserScreenState extends State<UserScreen> {
                                   Icon(
                                     Icons.check_circle,
                                     size: 12,
-                                    color: Color(0xFF10B981),
+                                    color: AppColors.emeraldAccent,
                                   ),
-                                  SizedBox(width: 4),
+                                  SizedBox(width: AppSizes.size4),
                                   Text(
                                     AppStrings.activeStatus,
                                     style: const TextStyle(
-                                      color: Color(0xFF10B981),
+                                      color: AppColors.emeraldAccent,
                                       fontSize: AppSizes.size11,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -165,7 +163,7 @@ class _UserScreenState extends State<UserScreen> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: AppSizes.size8),
                             Text(
                               '${AppStrings.categoryIdPrefix}${user.id.substring(0, 8)}...',
                               style: const TextStyle(
@@ -202,7 +200,7 @@ class _UserScreenState extends State<UserScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color(0xFF1E293B),
+          backgroundColor: AppColors.slateCard,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -228,7 +226,7 @@ class _UserScreenState extends State<UserScreen> {
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFEF4444),
+                backgroundColor: AppColors.redAccent,
               ),
               child: Text(AppStrings.deleteButton,
                   style: const TextStyle(color: Colors.white)),

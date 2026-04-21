@@ -5,6 +5,7 @@ import 'package:admin_event_go/core/widgets/text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:admin_event_go/data/models/category/category_model.dart';
 import 'package:go_router/go_router.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 
 class CategoryEditPage extends StatefulWidget {
   final CategoryModel? category;
@@ -43,10 +44,10 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
   Widget build(BuildContext context) {
     final isEdit = widget.category != null;
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.slateDark,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: AppColors.slateCard,
         centerTitle: true,
         title: Text(
           isEdit ? AppStrings.categoryEditTitle : AppStrings.categoryAddTitle,
@@ -58,7 +59,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(AppSizes.size16),
         child: Column(
           children: [
             Form(
@@ -68,7 +69,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                 controller: _nameController,
                 borderColor: Colors.grey.shade300,
                 fillColor: Colors.grey.shade100,
-                focusedBorderColor: const Color(0xFF4257b4),
+                focusedBorderColor: AppColors.brandPrimary,
                 enabledBorderColor: Colors.grey.shade300,
                 shadowColor: AppColors.transparent,
                 validator: (value) {
@@ -79,7 +80,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                 },
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSizes.size24),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -92,7 +93,7 @@ class _CategoryEditPageState extends State<CategoryEditPage> {
                     textColor: Colors.black87,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSizes.size12),
                 Expanded(
                   child: AppElevatedButton(
                     onPressed: _onSave,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 
 class AppTextFieldPassword extends StatefulWidget {
   const AppTextFieldPassword({
@@ -52,14 +53,14 @@ class _AppTextFieldPasswordState extends State<AppTextFieldPassword> {
   @override
   Widget build(BuildContext context) {
     OutlineInputBorder outlineInputBorder(Color color) => OutlineInputBorder(
-          borderSide: BorderSide(color: color, width: 1.2),
+          borderSide: BorderSide(color: color, width: AppSizes.size1_2),
           borderRadius: const BorderRadius.all(Radius.circular(10.0)),
         );
 
     return Stack(
       children: [
         Container(
-          height: 48.6,
+          height: AppSizes.size48_6,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
             boxShadow: [
@@ -86,7 +87,7 @@ class _AppTextFieldPasswordState extends State<AppTextFieldPassword> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.6),
+                const EdgeInsets.symmetric(horizontal: AppSizes.size16, vertical: AppSizes.size12_6),
             filled: true,
             fillColor: widget.fillColor ?? Colors.pink.shade50,
             border: outlineInputBorder(widget.borderColor ?? Colors.red),

@@ -7,6 +7,7 @@ import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 class EventsPage extends StatefulWidget {
   const EventsPage({Key? key}) : super(key: key);
@@ -20,15 +21,15 @@ class _EventsPageState extends State<EventsPage> {
     {
       "title": AppStrings.eventsTitle,
       "icon": Icons.event,
-      "color": Color(0xFF6366F1),
-      "gradient": [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+      "color": AppColors.indigoAccent,
+      "gradient": [AppColors.indigoAccent, AppColors.violetAccent],
       "route": RouterPath.eventsList,
     },
     {
       "title": AppStrings.categoriesTitle,
       "icon": Icons.category,
-      "color": Color(0xFFF59E0B),
-      "gradient": [Color(0xFFF59E0B), Color(0xFFEF4444)],
+      "color": AppColors.amberAccent,
+      "gradient": [AppColors.amberAccent, AppColors.redAccent],
       "route": RouterPath.categories,
     },
   ];
@@ -36,11 +37,11 @@ class _EventsPageState extends State<EventsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF0F172A),
+      backgroundColor: AppColors.slateDark,
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Color(0xFF1E293B),
+        backgroundColor: AppColors.slateCard,
         title: const Text(
           AppStrings.eventManagementTitle,
           style: TextStyle(
@@ -53,9 +54,9 @@ class _EventsPageState extends State<EventsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 200, child: _buildModuleGrid()),
+            SizedBox(height: AppSizes.size200, child: _buildModuleGrid()),
             Padding(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(AppSizes.size24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -75,13 +76,13 @@ class _EventsPageState extends State<EventsPage> {
                             context.push(RouterPath.eventsList);
                           },
                           icon: const Icon(Icons.arrow_forward,
-                              color: Color(0xFF6366F1), size: 16),
+                              color: AppColors.indigoAccent, size: 16),
                           label: const Text(AppStrings.viewAll,
-                              style: TextStyle(color: Color(0xFF6366F1))),
+                              style: TextStyle(color: AppColors.indigoAccent)),
                         ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: AppSizes.size16),
                   _buildRecentEventsList(),
                 ],
               ),
@@ -94,7 +95,7 @@ class _EventsPageState extends State<EventsPage> {
 
   Widget _buildModuleGrid() {
     return GridView.builder(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSizes.size24),
       physics: NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
@@ -157,43 +158,43 @@ class _EventsPageState extends State<EventsPage> {
     Color statusBgColor;
     switch ((e.status ?? '').toLowerCase()) {
       case 'live':
-        statusColor = Color(0xFF10B981);
-        statusBgColor = Color(0xFF10B981).withAlpha(25);
+        statusColor = AppColors.emeraldAccent;
+        statusBgColor = AppColors.emeraldAccent.withAlpha(25);
         break;
       case 'completed':
-        statusColor = Color(0xFF6B7280);
-        statusBgColor = Color(0xFF6B7280).withAlpha(25);
+        statusColor = AppColors.grayStatus;
+        statusBgColor = AppColors.grayStatus.withAlpha(25);
         break;
       case 'upcoming':
-        statusColor = Color(0xFF3B82F6);
-        statusBgColor = Color(0xFF3B82F6).withAlpha(25);
+        statusColor = AppColors.blueStatus;
+        statusBgColor = AppColors.blueStatus.withAlpha(25);
         break;
       default:
-        statusColor = Color(0xFF9CA3AF);
-        statusBgColor = Color(0xFF9CA3AF).withAlpha(25);
+        statusColor = AppColors.grayLight;
+        statusBgColor = AppColors.grayLight.withAlpha(25);
     }
 
     return Stack(
       children: [
         Container(
-          height: 130,
-          margin: const EdgeInsets.only(bottom: 16),
+          height: AppSizes.size130,
+          margin: const EdgeInsets.only(bottom: AppSizes.size16),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF1E293B), Color(0xFF0F172A)],
+              colors: [AppColors.slateCard, AppColors.slateDark],
             ),
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Color(0xFF334155).withAlpha(80), width: 1),
+            border: Border.all(color: AppColors.slateBorder.withAlpha(80), width: AppSizes.size1),
             boxShadow: [
               BoxShadow(
-                color: Color(0xFF000000).withAlpha(40),
+                color: AppColors.black.withAlpha(40),
                 blurRadius: 8,
                 offset: Offset(0, 4),
               ),
               BoxShadow(
-                color: Color(0xFF6366F1).withAlpha(15),
+                color: AppColors.indigoAccent.withAlpha(15),
                 blurRadius: 16,
                 offset: Offset(0, 0),
               ),
@@ -204,8 +205,8 @@ class _EventsPageState extends State<EventsPage> {
             child: Row(
               children: [
                 Container(
-                  width: 120,
-                  height: 130,
+                  width: AppSizes.size120,
+                  height: AppSizes.size130,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(16),
@@ -217,8 +218,8 @@ class _EventsPageState extends State<EventsPage> {
                       e.bannerURL != null && e.bannerURL!.isNotEmpty
                           ? Image.network(
                               e.bannerURL!,
-                              width: 130,
-                              height: 130,
+                              width: AppSizes.size130,
+                              height: AppSizes.size130,
                               fit: BoxFit.cover,
                               errorBuilder: (c, o, s) => _buildImagePlaceholder(),
                             )
@@ -228,7 +229,7 @@ class _EventsPageState extends State<EventsPage> {
                           gradient: LinearGradient(
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Color(0xFF000000).withAlpha(40)],
+                            colors: [Colors.transparent, AppColors.black.withAlpha(40)],
                           ),
                         ),
                       ),
@@ -237,7 +238,7 @@ class _EventsPageState extends State<EventsPage> {
                 ),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.size14, vertical: AppSizes.size14),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,26 +257,26 @@ class _EventsPageState extends State<EventsPage> {
                                   color: Colors.white,
                                   fontSize: AppSizes.size13,
                                   fontWeight: FontWeight.w700,
-                                  height: 1.1,
+                                  height: AppSizes.size1_1,
                                 ),
                               ),
-                              const SizedBox(height: 4),
+                              const SizedBox(height: AppSizes.size4),
                               Row(
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.all(2),
+                                    padding: EdgeInsets.all(AppSizes.size2),
                                     decoration: BoxDecoration(
-                                      color: Color(0xFF6366F1).withAlpha(30),
+                                      color: AppColors.indigoAccent.withAlpha(30),
                                       borderRadius: BorderRadius.circular(3),
                                     ),
-                                    child: Icon(Icons.schedule, size: 9, color: Color(0xFF6366F1)),
+                                    child: Icon(Icons.schedule, size: 9, color: AppColors.indigoAccent),
                                   ),
-                                  const SizedBox(width: 3),
+                                  const SizedBox(width: AppSizes.size3),
                                   Expanded(
                                     child: Text(
                                       dateLine,
                                       style: TextStyle(
-                                        color: Color(0xFFE2E8F0),
+                                        color: AppColors.slateLight,
                                         fontSize: AppSizes.size10,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -283,30 +284,30 @@ class _EventsPageState extends State<EventsPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 2),
+                              const SizedBox(height: AppSizes.size2),
 
                               Row(
                                 children: [
                                   Container(
-                                    padding: EdgeInsets.all(2),
+                                    padding: EdgeInsets.all(AppSizes.size2),
                                     decoration: BoxDecoration(
-                                      color: Color(0xFFEC4899).withAlpha(30),
+                                      color: AppColors.pinkAccent.withAlpha(30),
                                       borderRadius: BorderRadius.circular(3),
                                     ),
                                     child: Icon(
                                       Icons.location_on,
                                       size: 9,
-                                      color: Color(0xFFEC4899),
+                                      color: AppColors.pinkAccent,
                                     ),
                                   ),
-                                  const SizedBox(width: 3),
+                                  const SizedBox(width: AppSizes.size3),
                                   Expanded(
                                     child: Text(
                                       subtitle.isEmpty ? 'No location' : subtitle,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
-                                        color: Color(0xFFE2E8F0),
+                                        color: AppColors.slateLight,
                                         fontSize: AppSizes.size10,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -325,41 +326,41 @@ class _EventsPageState extends State<EventsPage> {
                             children: [
                               if (category.isNotEmpty)
                                 Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                  padding: EdgeInsets.symmetric(horizontal: AppSizes.size6, vertical: AppSizes.size3),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
                                       colors: [
-                                        Color(0xFF6366F1).withAlpha(30),
-                                        Color(0xFF8B5CF6).withAlpha(30),
+                                        AppColors.indigoAccent.withAlpha(30),
+                                        AppColors.violetAccent.withAlpha(30),
                                       ],
                                     ),
                                     borderRadius: BorderRadius.circular(6),
                                     border: Border.all(
-                                      color: Color(0xFF6366F1).withAlpha(60),
-                                      width: 1,
+                                      color: AppColors.indigoAccent.withAlpha(60),
+                                      width: AppSizes.size1,
                                     ),
                                   ),
                                   child: Text(
                                     category,
                                     style: TextStyle(
-                                      color: Color(0xFF6366F1),
+                                      color: AppColors.indigoAccent,
                                       fontSize: AppSizes.size10,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ),
-                              if (category.isNotEmpty) SizedBox(width: 6),
+                              if (category.isNotEmpty) SizedBox(width: AppSizes.size6),
 
                               Container(
-                                padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                padding: EdgeInsets.symmetric(horizontal: AppSizes.size6, vertical: AppSizes.size3),
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFEC4899).withAlpha(20),
+                                  color: AppColors.pinkAccent.withAlpha(20),
                                   borderRadius: BorderRadius.circular(6),
                                 ),
                                 child: Text(
                                   price,
                                   style: TextStyle(
-                                    color: Color(0xFFEC4899),
+                                    color: AppColors.pinkAccent,
                                     fontWeight: FontWeight.w700,
                                     fontSize: AppSizes.size11,
                                   ),
@@ -371,15 +372,15 @@ class _EventsPageState extends State<EventsPage> {
                               GestureDetector(
                                 onTap: () {},
                                 child: Container(
-                                  padding: EdgeInsets.all(6),
+                                  padding: EdgeInsets.all(AppSizes.size6),
                                   decoration: BoxDecoration(
                                     gradient: LinearGradient(
-                                      colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                      colors: [AppColors.indigoAccent, AppColors.violetAccent],
                                     ),
                                     borderRadius: BorderRadius.circular(8),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Color(0xFF6366F1).withAlpha(60),
+                                        color: AppColors.indigoAccent.withAlpha(60),
                                         blurRadius: 6,
                                         offset: Offset(0, 2),
                                       ),
@@ -440,12 +441,12 @@ class _EventsPageState extends State<EventsPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSizes.size20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    padding: EdgeInsets.all(12),
+                    padding: EdgeInsets.all(AppSizes.size12),
                     decoration: BoxDecoration(
                       color: Colors.white.withAlpha((0.2 * 255).round()),
                       borderRadius: BorderRadius.circular(12),
@@ -461,7 +462,7 @@ class _EventsPageState extends State<EventsPage> {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  SizedBox(height: AppSizes.size4),
                   Text(
                     'Manage ${module['title']}',
                     style: TextStyle(
@@ -480,13 +481,13 @@ class _EventsPageState extends State<EventsPage> {
 
   Widget _buildImagePlaceholder() {
     return Container(
-      width: 130,
-      height: 130,
+      width: AppSizes.size130,
+      height: AppSizes.size130,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF6366F1).withAlpha(30), Color(0xFF8B5CF6).withAlpha(30)],
+          colors: [AppColors.indigoAccent.withAlpha(30), AppColors.violetAccent.withAlpha(30)],
         ),
       ),
       child: Center(
@@ -494,18 +495,18 @@ class _EventsPageState extends State<EventsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.all(12),
+              padding: EdgeInsets.all(AppSizes.size12),
               decoration: BoxDecoration(
-                color: Color(0xFF6366F1).withAlpha(40),
+                color: AppColors.indigoAccent.withAlpha(40),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(Icons.event, color: Color(0xFF6366F1), size: 28),
+              child: Icon(Icons.event, color: AppColors.indigoAccent, size: 28),
             ),
-            SizedBox(height: 4),
+            SizedBox(height: AppSizes.size4),
             Text(
               'Event',
               style: TextStyle(
-                  color: Color(0xFF6366F1),
+                  color: AppColors.indigoAccent,
                   fontSize: AppSizes.size10,
                   fontWeight: FontWeight.w600),
             ),

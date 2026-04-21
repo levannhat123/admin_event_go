@@ -52,7 +52,7 @@ class _AddEventPageState extends State<AddEventPage> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF4257b4),
+              primary: AppColors.brandPrimary,
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -73,7 +73,7 @@ class _AddEventPageState extends State<AddEventPage> {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: Color(0xFF4257b4),
+                primary: AppColors.brandPrimary,
                 onPrimary: Colors.white,
                 surface: Colors.white,
                 onSurface: Colors.black,
@@ -110,7 +110,7 @@ class _AddEventPageState extends State<AddEventPage> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSizes.size16),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
@@ -118,8 +118,8 @@ class _AddEventPageState extends State<AddEventPage> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF4257b4), size: 24),
-            const SizedBox(width: 12),
+            Icon(icon, color: AppColors.brandPrimary, size: 24),
+            const SizedBox(width: AppSizes.size12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +132,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSizes.size4),
                   Text(
                     dateTime != null
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
@@ -157,13 +157,13 @@ class _AddEventPageState extends State<AddEventPage> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      padding: const EdgeInsets.only(bottom: AppSizes.size12, top: AppSizes.size8),
       child: Text(
         title,
         style: const TextStyle(
           fontSize: AppSizes.size18,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF0F172A),
+          color: AppColors.slateDark,
         ),
       ),
     );
@@ -171,7 +171,7 @@ class _AddEventPageState extends State<AddEventPage> {
 
   Widget _buildDivider() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.size16),
       child: Divider(color: Colors.grey.shade300, thickness: 1),
     );
   }
@@ -298,7 +298,6 @@ class _AddEventPageState extends State<AddEventPage> {
         );
       }
     } catch (e) {
-    } catch (e) {
       if (!mounted) return;
       context.pop();
       _showErrorDialog('${AppStrings.genericErrorPrefix}${e.toString()}');
@@ -310,9 +309,9 @@ class _AddEventPageState extends State<AddEventPage> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSizes.size24),
         decoration: const BoxDecoration(
-          color: Colors.white, // Hoặc AppColors.background
+          color: Colors.white,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(24),
             topRight: Radius.circular(24),
@@ -325,27 +324,27 @@ class _AddEventPageState extends State<AddEventPage> {
             Row(
               children: [
                 const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSizes.size12),
                 const Text(
                   AppStrings.errorTitle,
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: AppSizes.size20, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSizes.size16),
             Text(
               message,
-              style: const TextStyle(fontSize: 16, color: Colors.grey),
+              style: const TextStyle(fontSize: AppSizes.size16, color: Colors.grey),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: AppSizes.size30),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () => context.pop(),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Nút đen ngầu
+                  backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  padding: const EdgeInsets.symmetric(vertical: AppSizes.size16),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                   ),
@@ -436,7 +435,7 @@ class _AddEventPageState extends State<AddEventPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.slateDark,
         title: Text(
           isEdit ? AppStrings.eventEditTitle : AppStrings.eventAddTitle,
         ),
@@ -463,7 +462,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
-                      padding: const EdgeInsets.all(20.0),
+                      padding: const EdgeInsets.all(AppSizes.size20),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -473,23 +472,21 @@ class _AddEventPageState extends State<AddEventPage> {
                             controller: vm.titleController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
-                          const SizedBox(height: 10),
-
-                          // Ảnh banner
+                          const SizedBox(height: AppSizes.size10),
                           ImagePickerWidget(
                             label: AppStrings.eventBannerLabel,
                             imageFile: vm.bannerImageFile,
                             imageUrl: vm.existingBannerUrl,
-                            height: 180,
+                            height: AppSizes.size180,
                             onImageSelected: (file) {
                               vm.setBannerImage(file);
                             },
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
 
                           AppTextField(
                             lableText: AppStrings.eventDescriptionLabel,
@@ -497,31 +494,11 @@ class _AddEventPageState extends State<AddEventPage> {
                             maxLines: 4,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
-                          const SizedBox(height: 10),
-
-                          // CustomDropdown<String>(
-                          //   label: AppStrings.eventStatusLabel,
-                          //   items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
-                          //   value: vm.status,
-                          //   getLabel: (v) {
-                          //     switch (v) {
-                          //       case 'ACTIVE':
-                          //         return AppStrings.eventStatusActive;
-                          //       case 'INACTIVE':
-                          //         return AppStrings.eventStatusInactive;
-                          //       case 'COMPLETED':
-                          //         return AppStrings.eventStatusCompleted;
-                          //       default:
-                          //         return v;
-                          //     }
-                          //   },
-                          //   onChanged: (v) => vm.setStatus(v!),
-                          // ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
 
                           BaseView<CategoryViewModel>(
                             padding: false,
@@ -531,12 +508,12 @@ class _AddEventPageState extends State<AddEventPage> {
                               if (catVm.isBusy && catVm.categories.isEmpty) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 8.0,
+                                    vertical: AppSizes.size8,
                                   ),
                                   child: Center(
                                     child: SizedBox(
-                                      height: 24,
-                                      width: 24,
+                                      height: AppSizes.size24,
+                                      width: AppSizes.size24,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                       ),
@@ -562,28 +539,28 @@ class _AddEventPageState extends State<AddEventPage> {
                             controller: vm.locationController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
                           AppTextField(
                             lableText: AppStrings.eventAddressLabel,
                             controller: vm.addressController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
 
                           AppTextField(
                             lableText: AppStrings.eventLocationIdLabel,
                             controller: vm.idLocationController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
@@ -595,7 +572,7 @@ class _AddEventPageState extends State<AddEventPage> {
                             onTap: () => _selectDateTime(context, true, vm),
                             icon: Icons.access_time,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
 
                           _buildDateTimeField(
                             label: AppStrings.eventEndTimeLabel,
@@ -610,11 +587,11 @@ class _AddEventPageState extends State<AddEventPage> {
                             controller: vm.minPriceController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
                           CustomSwitch(
                             label: AppStrings.eventIsFreeLabel,
                             value: vm.isFree,
@@ -625,15 +602,15 @@ class _AddEventPageState extends State<AddEventPage> {
                           InkWell(
                             onTap: () => _showAddEditTicketTypeDialog(vm),
                             child: Container(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(AppSizes.size16),
                               decoration: BoxDecoration(
                                 color: const Color(
                                   0xFF4257b4,
                                 ).withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: const Color(0xFF4257b4),
-                                  width: 2,
+                                  color: AppColors.brandPrimary,
+                                  width: AppSizes.size2,
                                   style: BorderStyle.solid,
                                 ),
                               ),
@@ -641,9 +618,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.all(8),
+                                    padding: const EdgeInsets.all(AppSizes.size8),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF4257b4),
+                                      color: AppColors.brandPrimary,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: const Icon(
@@ -652,23 +629,23 @@ class _AddEventPageState extends State<AddEventPage> {
                                       size: 24,
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: AppSizes.size12),
                                   const Text(
                                     AppStrings.eventAddTicketTypeButton,
                                     style: TextStyle(
                                       fontSize: AppSizes.size16,
                                       fontWeight: FontWeight.bold,
-                                      color: Color(0xFF4257b4),
+                                      color: AppColors.brandPrimary,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSizes.size16),
                           if (vm.ticketTypes.isEmpty)
                             Container(
-                              padding: const EdgeInsets.all(24),
+                              padding: const EdgeInsets.all(AppSizes.size24),
                               decoration: BoxDecoration(
                                 color: Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(12),
@@ -681,7 +658,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                     size: 48,
                                     color: Colors.grey.shade400,
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: AppSizes.size12),
                                   Text(
                                     AppStrings.eventNoTicketType,
                                     style: TextStyle(
@@ -690,7 +667,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(height: AppSizes.size4),
                                   Text(
                                     AppStrings.eventAddTicketTypeGuide,
                                     style: TextStyle(
@@ -719,29 +696,29 @@ class _AddEventPageState extends State<AddEventPage> {
                             label: AppStrings.eventOrgLogoLabel,
                             imageFile: vm.logoImageFile,
                             imageUrl: vm.existingLogoUrl,
-                            height: 120,
+                            height: AppSizes.size120,
                             onImageSelected: (file) {
                               vm.setLogoImage(file);
                             },
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
                           AppTextField(
                             lableText: AppStrings.eventOrgNameLabel,
                             controller: vm.orgNameController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: AppSizes.size10),
                           AppTextField(
                             lableText: AppStrings.eventOrgDescLabel,
                             controller: vm.orgDescController,
                             maxLines: 3,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
@@ -754,14 +731,14 @@ class _AddEventPageState extends State<AddEventPage> {
                             value: vm.isHot,
                             onChanged: (v) => vm.setIsHot(v),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppSizes.size20),
                         ],
                       ),
                     ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.all(AppSizes.size20),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -783,13 +760,13 @@ class _AddEventPageState extends State<AddEventPage> {
                           textColor: Colors.black87,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSizes.size12),
                       Expanded(
                         child: AppElevatedButton(
                           onPressed: () => _saveEvent(vm),
                           text: AppStrings.eventSaveButton,
-                          borderColor: const Color(0xFF4257b4),
-                          color: const Color(0xFF4257b4),
+                          borderColor: AppColors.brandPrimary,
+                          color: AppColors.brandPrimary,
                           textColor: Colors.white,
                         ),
                       ),

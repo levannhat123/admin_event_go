@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 
 class CustomDropdown<T> extends StatelessWidget {
   final String label;
@@ -19,7 +20,7 @@ class CustomDropdown<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.size8),
       child: InputDecorator(
         decoration: InputDecoration(
           labelText: label,

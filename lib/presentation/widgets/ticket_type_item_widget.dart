@@ -4,6 +4,7 @@ import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 class TicketTypeItemWidget extends StatelessWidget {
   final TicketTypeModel ticketType;
@@ -20,8 +21,8 @@ class TicketTypeItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: AppSizes.size12),
+      padding: const EdgeInsets.all(AppSizes.size16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -46,13 +47,13 @@ class TicketTypeItemWidget extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: AppSizes.size16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+                    color: AppColors.slateDark,
                   ),
                 ),
               ),
               if (ticketType.isFree == true)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.size8, vertical: AppSizes.size4),
                   decoration: BoxDecoration(
                     color: Colors.green.shade100,
                     borderRadius: BorderRadius.circular(4),
@@ -66,15 +67,15 @@ class TicketTypeItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSizes.size8),
               IconButton(
                 icon: const Icon(Icons.edit, size: 20),
                 onPressed: onEdit,
-                color: const Color(0xFF4257b4),
+                color: AppColors.brandPrimary,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSizes.size8),
               IconButton(
                 icon: const Icon(Icons.delete, size: 20),
                 onPressed: onDelete,
@@ -87,7 +88,7 @@ class TicketTypeItemWidget extends StatelessWidget {
 
           // Mô tả
           if (ticketType.description != null && ticketType.description!.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSizes.size8),
             Text(
               ticketType.description!,
               style: TextStyle(
@@ -99,7 +100,7 @@ class TicketTypeItemWidget extends StatelessWidget {
             ),
           ],
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.size12),
 
           // Chi tiết vé
           Wrap(
@@ -155,9 +156,9 @@ class TicketTypeItemWidget extends StatelessWidget {
 
           // Thời gian bán vé
           if (ticketType.startTime != null || ticketType.endTime != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSizes.size12),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSizes.size12),
               decoration: BoxDecoration(
                 color: Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(8),
@@ -169,7 +170,7 @@ class TicketTypeItemWidget extends StatelessWidget {
                     size: 16,
                     color: Colors.grey.shade600,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSizes.size8),
                   Expanded(
                     child: Text(
                       _getTimeRangeText(),
@@ -194,7 +195,7 @@ class TicketTypeItemWidget extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.size10, vertical: AppSizes.size6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
@@ -207,7 +208,7 @@ class TicketTypeItemWidget extends StatelessWidget {
             size: 14,
             color: color,
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSizes.size4),
           Text(
             label,
             style: TextStyle(

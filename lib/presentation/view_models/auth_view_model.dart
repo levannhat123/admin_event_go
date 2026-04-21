@@ -15,12 +15,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthViewModel extends BaseViewModel {
   final LoginUseCase _loginUseCase;
-  final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
-  final ResetPasswordUseCase _resetPasswordUseCase;
-  final SendEmailVerificationUseCase _sendEmailVerificationUseCase;
   final AuthRepository _authRepository;
-  final UpdatePasswordUseCase _updatePasswordUseCase;
   final DashboadViewModel dashboardViewModel;
 
   User? _currentUser;
@@ -37,11 +33,7 @@ class AuthViewModel extends BaseViewModel {
     required SendEmailVerificationUseCase sendEmailVerificationUseCase,
     required UpdatePasswordUseCase updatePasswordUseCase,
   }) : _loginUseCase = loginUseCase,
-       _registerUseCase = registerUseCase,
        _logoutUseCase = logoutUseCase,
-       _resetPasswordUseCase = resetPasswordUseCase,
-        _sendEmailVerificationUseCase = sendEmailVerificationUseCase,
-        _updatePasswordUseCase = updatePasswordUseCase,
        _authRepository = authRepository {
     _authRepository.authStateChanges.listen((authState) {
       _currentUser = authState.session?.user;
@@ -85,29 +77,6 @@ class AuthViewModel extends BaseViewModel {
       return false;
     }
   }
-
-  Future<bool> register(String email, String password) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _registerUseCase(email, password);
-
-      if (result.isSuccess) {
-        _currentUser = result.user;
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.signUpFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
   Future<void> logout() async {
     try {
       final result = await _logoutUseCase();
@@ -121,70 +90,6 @@ class AuthViewModel extends BaseViewModel {
       _setError(AppStrings.logoutError);
     }
   }
-  Future<bool> resetPassword(String email) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _resetPasswordUseCase(email);
-
-      if (result.isSuccess) {
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.sendEmailFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-  Future<bool> sendEmailVerification(String email, String otpCode) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _sendEmailVerificationUseCase(email, otpCode);
-
-      if (result.isSuccess) {
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.sendVerificationFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-  Future<bool> updatePassword(String newPassword) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _updatePasswordUseCase(newPassword);
-
-      if (result.isSuccess) {
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.updatePasswordFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-
 
   List<ProfileModel> get userList => dashboardViewModel.users;
   List<ProfileModel> get staffList => dashboardViewModel.staff;
@@ -259,7 +164,6 @@ class AuthViewModel extends BaseViewModel {
         email: email,
         password: "123456789",
       );
-
       if (res.user == null) {
         _setError(AppStrings.createStaffFailed);
         _setLoading(false);
@@ -313,9 +217,6 @@ class AuthViewModel extends BaseViewModel {
       _setLoading(false);
       return true;
     } catch (e, s) {
-      print("❌ ERROR CREATE STAFF:");
-      print(e);
-      print(s);
       _setError("${AppStrings.createStaffErrorWithDetails}$e");
       _setLoading(false);
       return false;

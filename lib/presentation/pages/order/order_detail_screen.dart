@@ -3,6 +3,7 @@ import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 class OrderDetailScreen extends StatelessWidget {
   final Map<String, dynamic> orderData;
@@ -12,9 +13,9 @@ class OrderDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.slateDark,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1E293B),
+        backgroundColor: AppColors.slateCard,
         title: const Text(
           AppStrings.orderDetailTitle,
           style: TextStyle(color: Colors.white),
@@ -25,7 +26,7 @@ class OrderDetailScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSizes.size16),
         child: _buildBodyContent(orderData),
       ),
     );
@@ -48,13 +49,13 @@ class OrderDetailScreen extends StatelessWidget {
     return Column(
       children: [
         _headerCard(order),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSizes.size20),
         _infoSection(
           title: AppStrings.orderUserInformation,
           icon: Icons.person,
           children: [_infoRow(AppStrings.emailLabel, order["userEmail"])],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSizes.size20),
         _infoSection(
           title: AppStrings.orderEventInformation,
           icon: Icons.event,
@@ -63,7 +64,7 @@ class OrderDetailScreen extends StatelessWidget {
             _infoRow(AppStrings.venueLabel, order["venue"]),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSizes.size20),
         _infoSection(
           title: AppStrings.orderInfo,
           icon: Icons.receipt_long,
@@ -85,7 +86,7 @@ class OrderDetailScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSizes.size20),
         _infoSection(
           title: AppStrings.orderCheckinStatusTitle,
           icon: Icons.qr_code_scanner,
@@ -106,7 +107,7 @@ class OrderDetailScreen extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSizes.size20),
         _ticketSection(tickets),
       ],
     );
@@ -114,10 +115,10 @@ class OrderDetailScreen extends StatelessWidget {
 
   Widget _headerCard(Map<String, dynamic> order) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSizes.size20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          colors: [AppColors.indigoAccent, AppColors.violetAccent],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -126,7 +127,7 @@ class OrderDetailScreen extends StatelessWidget {
       child: Row(
         children: [
           const Icon(Icons.receipt, size: 40, color: Colors.white),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSizes.size16),
           Expanded(
             child: Text(
               order["id"]?.toString() ?? "N/A",
@@ -143,17 +144,15 @@ class OrderDetailScreen extends StatelessWidget {
       ),
     );
   }
-
-  // ... Paste các hàm còn lại (_infoSection, _ticketSection, _infoRow) vào đây ...
   Widget _infoSection({
     required String title,
     required IconData icon,
     required List<Widget> children,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.size16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: AppColors.slateCard,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -161,8 +160,8 @@ class OrderDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(icon, color: const Color(0xFF6366F1)),
-              const SizedBox(width: 8),
+              Icon(icon, color: AppColors.indigoAccent),
+              const SizedBox(width: AppSizes.size8),
               Text(
                 title,
                 style: const TextStyle(
@@ -173,7 +172,7 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.size12),
           ...children,
         ],
       ),
@@ -182,9 +181,9 @@ class OrderDetailScreen extends StatelessWidget {
 
   Widget _ticketSection(List tickets) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.size16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
+        color: AppColors.slateCard,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -192,8 +191,8 @@ class OrderDetailScreen extends StatelessWidget {
         children: [
           Row(
             children: const [
-              Icon(Icons.confirmation_number, color: Color(0xFFF59E0B)),
-              SizedBox(width: 8),
+              Icon(Icons.confirmation_number, color: AppColors.amberAccent),
+              SizedBox(width: AppSizes.size8),
               Text(
                 AppStrings.orderTickets,
                 style: TextStyle(
@@ -204,7 +203,7 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.size12),
           if (tickets.isEmpty)
             const Text(
               "Không có thông tin vé",
@@ -212,10 +211,10 @@ class OrderDetailScreen extends StatelessWidget {
             ),
           ...tickets.map((t) {
             return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              padding: const EdgeInsets.all(14),
+              margin: const EdgeInsets.only(bottom: AppSizes.size10),
+              padding: const EdgeInsets.all(AppSizes.size14),
               decoration: BoxDecoration(
-                color: const Color(0xFF334155),
+                color: AppColors.slateBorder,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -246,7 +245,7 @@ class OrderDetailScreen extends StatelessWidget {
 
   Widget _infoRow(String label, String? value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.size6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

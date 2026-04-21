@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title;
@@ -42,30 +44,30 @@ class CustomDialog extends StatelessWidget {
                   title,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: AppSizes.size16,
                     color: Colors.black,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: AppSizes.size10),
                 Text(
                   message,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: AppSizes.size14,
                     color: Colors.grey,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSizes.size20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFf49415),
+                    backgroundColor: AppColors.brandWarning,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 12,
+                      horizontal: AppSizes.size40,
+                      vertical: AppSizes.size12,
                     ),
                   ),
                   onPressed: onPressed,

@@ -33,7 +33,6 @@ class CategoryRepositoryImpl implements CategoryRepository {
         final Map<String, dynamic> raw = doc.data();
         final data = {
           ...raw,
-          // ensure id field exists for the model
           'id': raw['id'] ?? doc.id,
         };
         return CategoryModel.fromJson(data);
@@ -57,7 +56,6 @@ class CategoryRepositoryImpl implements CategoryRepository {
         }).toList();
       });
     } catch (e) {
-      // If mapping fails, return an empty stream with error
       return Stream.error('Failed to watch categories: $e');
     }
   }

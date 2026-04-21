@@ -79,4 +79,24 @@ class AppColors {
   static const  lightPeach= Color(0xFF0085c3);
   static const Color yellow = Colors.yellow;
 
+  static const slateDark = Color(0xFF0F172A);
+  static const slateCard = Color(0xFF1E293B);
+  static const indigoAccent = Color(0xFF6366F1);
+  static const violetAccent = Color(0xFF8B5CF6);
+  static const emeraldAccent = Color(0xFF10B981);
+  static const cyanAccent = Color(0xFF06B6D4);
+  static const slateBorder = Color(0xFF334155);
+  static const pinkAccent = Color(0xFFEC4899);
+  static const amberAccent = Color(0xFFF59E0B);
+  static const redAccent = Color(0xFFEF4444);
+  static const slateText = Color(0xFF64748B);
+  static const grayStatus = Color(0xFF6B7280);
+  static const blueStatus = Color(0xFF3B82F6);
+  static const grayLight = Color(0xFF9CA3AF);
+  static const black = Color(0xFF000000);
+  static const slateLight = Color(0xFFE2E8F0);
+  static const roseAccent = Color(0xFFF43F5E);
+  static const brandPrimary = Color(0xFF4257B4);
+  static const brandWarning = Color(0xFFF49415);
+
 }
