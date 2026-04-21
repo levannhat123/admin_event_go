@@ -6,6 +6,8 @@ import '../constants/app_strings.dart';
 import '../constants/app_text_styles.dart';
 import 'app_elevated_button.dart';
 import 'input_verification.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 class Verification2FAWidget extends StatefulWidget {
   final bool autoFocus;
   final Function(String code) onSubmit;
@@ -93,7 +95,7 @@ class _Verification2FAWidgetState extends State<Verification2FAWidget> {
                       padding: EdgeInsets.only(top: 8.h),
                       child: Text(
                         error,
-                        style: TextStyle(color: Colors.red, fontSize: 14.sp),
+                        style: TextStyle(color: Colors.red, fontSize: AppSizes.size14.sp),
                       ),
                     );
                   },
@@ -103,8 +105,8 @@ class _Verification2FAWidgetState extends State<Verification2FAWidget> {
 
                 AppElevatedButton(
                   text: widget.buttonText ?? AppStrings.verify,
-                  borderColor: const Color(0xFFf49415),
-                  color: const Color(0xFFf49415),
+                  borderColor: AppColors.brandWarning,
+                  color: AppColors.brandWarning,
                   splashColor: AppColors.transparent,
                   highlightColor: AppColors.white,
                   onPressed: () async {

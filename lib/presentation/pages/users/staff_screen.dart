@@ -6,6 +6,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../../core/base/base_view.dart';
 import '../../view_models/auth_view_model.dart';
 import 'add_staff_screen.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 class StaffScreen extends StatelessWidget {
   const StaffScreen({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class StaffScreen extends StatelessWidget {
         final staffList = vm.staffList.where((e) => e.role == "staff").toList();
         print("STAFF LIST LENGTH: ${staffList.length}");
         return Scaffold(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: AppColors.slateDark,
 
           floatingActionButton: FloatingActionButton(
             onPressed: () async {
@@ -54,7 +55,7 @@ class StaffScreen extends StatelessWidget {
 
   Widget _buildStaffList(List staffList, AuthViewModel vm) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.size16),
       itemCount: staffList.length,
       itemBuilder: (context, index) {
         final staff = staffList[index];
@@ -97,10 +98,10 @@ class StaffScreen extends StatelessWidget {
           ),
 
           child: Container(
-            padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(AppSizes.size16),
+            margin: const EdgeInsets.only(bottom: AppSizes.size12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
+              color: AppColors.slateCard,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Row(
@@ -117,7 +118,7 @@ class StaffScreen extends StatelessWidget {
                   ),
                 ),
 
-                const SizedBox(width: 16),
+                const SizedBox(width: AppSizes.size16),
 
                 Expanded(
                   child: Column(
@@ -145,8 +146,8 @@ class StaffScreen extends StatelessWidget {
 
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    horizontal: AppSizes.size10,
+                    vertical: AppSizes.size4,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.purple.withOpacity(.3),
@@ -175,7 +176,7 @@ class StaffScreen extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Color(0xFF1E293B),
+          backgroundColor: AppColors.slateCard,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -201,11 +202,11 @@ class StaffScreen extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () async {
-                await vm.deleteStaff(staffId); // chỉ xóa bằng ID
+                await vm.deleteStaff(staffId);
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFEF4444),
+                backgroundColor: AppColors.redAccent,
               ),
               child: Text(
                 AppStrings.deleteButton,

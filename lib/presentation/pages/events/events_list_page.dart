@@ -6,6 +6,7 @@ import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 import '../../../core/constants/app_sizes.dart';
 
@@ -20,10 +21,10 @@ class _EventsListPageState extends State<EventsListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF0F172A),
+      backgroundColor: AppColors.slateDark,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF1E293B),
+        backgroundColor: AppColors.slateCard,
         title: const Text(
           AppStrings.eventsTitle,
           style: TextStyle(
@@ -50,7 +51,7 @@ class _EventsListPageState extends State<EventsListPage> {
             );
           }
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.size16),
             itemCount: vm.events.length,
             itemBuilder: (context, index) => _buildEventItem(vm, vm.events[index]),
           );
@@ -60,7 +61,7 @@ class _EventsListPageState extends State<EventsListPage> {
         onPressed: () {
           context.push(RouterPath.addEvent);
         },
-        backgroundColor: Color(0xFF6366F1),
+        backgroundColor: AppColors.indigoAccent,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           AppStrings.eventsAddEvent,
@@ -72,32 +73,32 @@ class _EventsListPageState extends State<EventsListPage> {
 
   Widget _buildEventItem(EventViewModel vm, EventDetailModel event) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSizes.size16),
       decoration: BoxDecoration(
-        color: Color(0xFF1E293B),
+        color: AppColors.slateCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color.fromRGBO(99, 102, 241, 0.3), width: 1),
+        border: Border.all(color: Color.fromRGBO(99, 102, 241, 0.3), width: AppSizes.size1),
       ),
       child: ListTile(
-        contentPadding: EdgeInsets.all(16),
+        contentPadding: EdgeInsets.all(AppSizes.size16),
         leading: event.bannerURL != null && event.bannerURL!.isNotEmpty
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   event.bannerURL!,
-                  width: 56,
-                  height: 56,
+                  width: AppSizes.size56,
+                  height: AppSizes.size56,
                   fit: BoxFit.cover,
-                  errorBuilder: (c, e, s) => Icon(Icons.event, color: Color(0xFF6366F1)),
+                  errorBuilder: (c, e, s) => Icon(Icons.event, color: AppColors.indigoAccent),
                 ),
               )
             : Container(
-                padding: EdgeInsets.all(12),
+                padding: EdgeInsets.all(AppSizes.size12),
                 decoration: BoxDecoration(
                   color: Color.fromRGBO(99, 102, 241, 0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(Icons.event, color: Color(0xFF6366F1), size: 24),
+                child: Icon(Icons.event, color: AppColors.indigoAccent, size: 24),
               ),
         title: Text(
           event.title,
@@ -107,7 +108,7 @@ class _EventsListPageState extends State<EventsListPage> {
               color: Colors.white),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: AppSizes.size8),
           child: Text(
             event.categories?.name ?? '',
             style: TextStyle(
@@ -119,7 +120,7 @@ class _EventsListPageState extends State<EventsListPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(Icons.edit, color: Color(0xFF6366F1)),
+              icon: Icon(Icons.edit, color: AppColors.indigoAccent),
               onPressed: () async {
                 await context.push(RouterPath.addEvent, extra: {'event': event, 'isEditing': true});
               },

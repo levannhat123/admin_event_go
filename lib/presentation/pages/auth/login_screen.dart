@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Positioned.fill(
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFF4257b4),
+                    color: AppColors.brandPrimary,
                     borderRadius: BorderRadius.only(
                       bottomLeft: Radius.circular(AppSizes.size40),
                       bottomRight: Radius.circular(AppSizes.size40),
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           AppStrings.loginTitle,
                           style: TextStyle(
-                            color: Color(0xFFf49415),
+                            color: AppColors.brandWarning,
                             fontSize: AppSizes.size24,
                             fontWeight: FontWeight.bold,
                           ),
@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: AppSizes.size10),
                         Text(
                           AppStrings.loginDescription,
-                          style: TextStyle(color: Color(0xFFf49415), fontSize: AppSizes.size12),
+                          style: TextStyle(color: AppColors.brandWarning, fontSize: AppSizes.size12),
                           textAlign: TextAlign.justify,
                         ),
                       ],
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.grey,
                             ),
                           ),
-                          focusedBorderColor: const Color(0xFF4257b4),
+                          focusedBorderColor: AppColors.brandPrimary,
                           enabledBorderColor: Colors.grey.shade300,
                           prefixIcon: const Icon(Icons.email),
                           shadowColor: AppColors.transparent,
@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderColor: Colors.grey.shade300,
                           validator: Validator.password,
                           fillColor: Colors.grey.shade100,
-                          focusedBorderColor: const Color(0xFF4257b4),
+                          focusedBorderColor: AppColors.brandPrimary,
                           enabledBorderColor: Colors.grey.shade300,
                           shadowColor: AppColors.transparent,
                         ),
@@ -134,7 +134,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               child: const Text(
                                 AppStrings.forgotPasswordButton,
-                                style: TextStyle(color: Color(0xFFf49415)),
+                                style: TextStyle(color: AppColors.brandWarning),
                               ),
                             ),
                           ],
@@ -143,14 +143,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         viewModel.isLoading
                             ? Center(
                                 child: LoadingAnimationWidget.hexagonDots(
-                                  color:Color(0xFFf49415),
+                                  color:AppColors.brandWarning,
                                   size: AppSizes.size50,
                                 ),
                               )
                             : AppElevatedButton(
                                 text: AppStrings.loginButton,
-                                borderColor: Color(0xFFf49415),
-                                color: Color(0xFFf49415),
+                                borderColor: AppColors.brandWarning,
+                                color: AppColors.brandWarning,
                                 splashColor: AppColors.transparent,
                                 highlightColor: AppColors.white,
                                 onPressed: () async {
@@ -195,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextSpan(
                                 text: AppStrings.signUpButton,
                                 style: TextStyle(
-                                  color: Color(0xFFf49415),
+                                  color: AppColors.brandWarning,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 recognizer: TapGestureRecognizer()

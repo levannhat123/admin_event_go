@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 
 class ImagePickerWidget extends StatelessWidget {
   final String label;
@@ -42,12 +44,12 @@ class ImagePickerWidget extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontSize: 14,
+            fontSize: AppSizes.size14,
             fontWeight: FontWeight.w600,
             color: Colors.grey.shade700,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSizes.size8),
         InkWell(
           onTap: _pickImage,
           borderRadius: BorderRadius.circular(8),
@@ -59,7 +61,7 @@ class ImagePickerWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
                 color: Colors.grey.shade300,
-                width: 2,
+                width: AppSizes.size2,
                 style: BorderStyle.solid,
               ),
               image: _getImageDecoration(),
@@ -110,16 +112,16 @@ class ImagePickerWidget extends StatelessWidget {
                 color: Colors.white,
                 size: 32,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSizes.size8),
               Text(
                 AppStrings.imagePickerTapToChange,
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 14,
+                  fontSize: AppSizes.size14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSizes.size16),
             ],
           ),
         ),
@@ -133,32 +135,32 @@ class ImagePickerWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSizes.size12),
             decoration: BoxDecoration(
-              color: const Color(0xFF4257b4).withOpacity(0.1),
+              color: AppColors.brandPrimary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.camera_alt,
-              color: const Color(0xFF4257b4),
+              color: AppColors.brandPrimary,
               size: 32,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSizes.size8),
           Text(
             AppStrings.imagePickerTapToSelect,
             style: TextStyle(
               color: Colors.grey.shade600,
-              fontSize: 13,
+              fontSize: AppSizes.size13,
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 2),
+          const SizedBox(height: AppSizes.size2),
           Text(
             AppStrings.imagePickerFromGallery,
             style: TextStyle(
               color: Colors.grey.shade400,
-              fontSize: 11,
+              fontSize: AppSizes.size11,
             ),
           ),
         ],

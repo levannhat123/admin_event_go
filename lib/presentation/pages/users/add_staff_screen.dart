@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../core/base/base_view.dart';
 import '../../view_models/auth_view_model.dart';
 import '../../../data/models/profile_model.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 class AddEditStaffScreen extends StatefulWidget {
   final ProfileModel? staffData;
@@ -39,14 +40,14 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
       viewModelBuilder: () => getIt<AuthViewModel>(),
       builder: (context, vm, child) {
         return Scaffold(
-          backgroundColor: const Color(0xFF0F172A),
+          backgroundColor: AppColors.slateDark,
           appBar: AppBar(
-            backgroundColor: const Color(0xFF1E293B),
+            backgroundColor: AppColors.slateCard,
             title: Text(isEdit ? AppStrings.editStaffTitle : AppStrings.addStaffTitle),
           ),
 
           body: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSizes.size16),
             child: ListView(
               children: [
                 _input(AppStrings.fullNameLabel, nameCtrl),
@@ -55,7 +56,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
 
                 DropdownButtonFormField(
                   value: role,
-                  dropdownColor: const Color(0xFF1E293B),
+                  dropdownColor: AppColors.slateCard,
                   decoration: _decor(AppStrings.roleLabel),
                   items: [
                     AppStrings.staffRoleStaff,
@@ -71,12 +72,12 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
                   onChanged: (v) => setState(() => role = v!),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: AppSizes.size20),
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 14)),
+                      padding: const EdgeInsets.symmetric(vertical: AppSizes.size14)),
                   child: Text(
                     isEdit ? AppStrings.saveChangesButton : AppStrings.addStaffButton,
                     style: const TextStyle(fontSize: AppSizes.size18),
@@ -114,7 +115,7 @@ class _AddEditStaffScreenState extends State<AddEditStaffScreen> {
 
   Widget _input(String label, TextEditingController controller) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: AppSizes.size12),
       child: TextField(
         controller: controller,
         style: const TextStyle(color: Colors.white),

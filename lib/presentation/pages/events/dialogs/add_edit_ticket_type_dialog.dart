@@ -76,7 +76,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF4257b4),
+              primary: AppColors.brandPrimary,
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -97,7 +97,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: Color(0xFF4257b4),
+                primary: AppColors.brandPrimary,
                 onPrimary: Colors.white,
                 surface: Colors.white,
                 onSurface: Colors.black,
@@ -136,7 +136,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(AppSizes.size12),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
@@ -144,8 +144,8 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
         ),
         child: Row(
           children: [
-            Icon(icon, color: const Color(0xFF4257b4), size: 20),
-            const SizedBox(width: 12),
+            Icon(icon, color: AppColors.brandPrimary, size: 20),
+            const SizedBox(width: AppSizes.size12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,7 +158,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSizes.size4),
                   Text(
                     dateTime != null
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
@@ -238,9 +238,9 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSizes.size20),
               decoration: BoxDecoration(
-                color: const Color(0xFF4257b4),
+                color: AppColors.brandPrimary,
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
@@ -253,7 +253,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                     color: Colors.white,
                     size: 28,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSizes.size12),
                   Expanded(
                     child: Text(
                       widget.ticketType == null
@@ -277,7 +277,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
             // Form
             Flexible(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(AppSizes.size20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -286,22 +286,22 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       controller: nameController,
                       borderColor: Colors.grey.shade300,
                       fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
+                      focusedBorderColor: AppColors.brandPrimary,
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     AppTextField(
                       lableText: AppStrings.ticketTypeDescriptionLabel,
                       controller: descController,
                       maxLines: 3,
                       borderColor: Colors.grey.shade300,
                       fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
+                      focusedBorderColor: AppColors.brandPrimary,
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     CustomSwitch(
                       label: AppStrings.ticketTypeFreeLabel,
                       value: isFree,
@@ -312,7 +312,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                         }
                       }),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     AppTextField(
                       lableText: AppStrings.ticketTypePriceLabel,
                       controller: priceController,
@@ -320,21 +320,21 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       fillColor: isFree
                           ? Colors.grey.shade200
                           : Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
+                      focusedBorderColor: AppColors.brandPrimary,
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     AppTextField(
                       lableText: AppStrings.ticketTypeTotalQuantityLabel,
                       controller: totalQuantity,
                       borderColor: Colors.grey.shade300,
                       fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
+                      focusedBorderColor: AppColors.brandPrimary,
                       enabledBorderColor: Colors.grey.shade300,
                       shadowColor: AppColors.transparent,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     Row(
                       children: [
                         Expanded(
@@ -343,26 +343,26 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                             controller: minQtyController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSizes.size12),
                         Expanded(
                           child: AppTextField(
                             lableText: AppStrings.ticketTypeMaxPerOrderLabel,
                             controller: maxQtyController,
                             borderColor: Colors.grey.shade300,
                             fillColor: Colors.grey.shade100,
-                            focusedBorderColor: const Color(0xFF4257b4),
+                            focusedBorderColor: AppColors.brandPrimary,
                             enabledBorderColor: Colors.grey.shade300,
                             shadowColor: AppColors.transparent,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     CustomDropdown<String>(
                       label: AppStrings.ticketTypeStatusLabel,
                       items: ['ACTIVE', 'INACTIVE', 'SOLD_OUT'],
@@ -381,23 +381,23 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       },
                       onChanged: (v) => setState(() => status = v),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSizes.size12),
                     const Text(
                       AppStrings.ticketTypeSaleTimeTitle,
                       style: TextStyle(
                         fontSize: AppSizes.size14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF0F172A),
+                        color: AppColors.slateDark,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSizes.size8),
                     _buildDateTimeField(
                       label: AppStrings.ticketTypeSaleStartLabel,
                       dateTime: startTime,
                       onTap: () => _selectDateTime(context, true),
                       icon: Icons.access_time,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSizes.size8),
                     _buildDateTimeField(
                       label: AppStrings.ticketTypeSaleEndLabel,
                       dateTime: endTime,
@@ -410,7 +410,7 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
             ),
             // Footer buttons
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(AppSizes.size20),
               decoration: BoxDecoration(
                 border: Border(top: BorderSide(color: Colors.grey.shade300)),
               ),
@@ -425,15 +425,15 @@ class _AddEditTicketTypeDialogState extends State<AddEditTicketTypeDialog> {
                       textColor: Colors.black87,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSizes.size12),
                   Expanded(
                     child: AppElevatedButton(
                       onPressed: _saveTicketType,
                       text: widget.ticketType == null
                           ? AppStrings.ticketTypeDialogAdd
                           : AppStrings.ticketTypeDialogUpdate,
-                      borderColor: const Color(0xFF4257b4),
-                      color: const Color(0xFF4257b4),
+                      borderColor: AppColors.brandPrimary,
+                      color: AppColors.brandPrimary,
                       textColor: Colors.white,
                     ),
                   ),

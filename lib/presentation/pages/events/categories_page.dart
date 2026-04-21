@@ -24,7 +24,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF1E293B),
+        backgroundColor: AppColors.slateCard,
         centerTitle: true,
         title: const Text(
           AppStrings.categoriesNavTitle,
@@ -51,10 +51,10 @@ class _CategoriesPageState extends State<CategoriesPage> {
           }
           return RefreshIndicator(
             onRefresh: () => vm.getAll(),
-            backgroundColor: Color(0xFF1E293B),
-            color: Color(0xFF6366F1),
+            backgroundColor: AppColors.slateCard,
+            color: AppColors.indigoAccent,
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSizes.size16),
               itemCount: vm.categories.length,
               itemBuilder: (context, index) => _buildCategoryItem(vm, vm.categories[index]),
             ),
@@ -63,7 +63,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openEditPage(),
-        backgroundColor: Color(0xFFF59E0B),
+        backgroundColor: AppColors.amberAccent,
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           AppStrings.addCategoryButton,
@@ -79,21 +79,21 @@ class _CategoriesPageState extends State<CategoriesPage> {
 
   Widget _buildCategoryItem(CategoryViewModel vm, CategoryModel category) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: AppSizes.size16),
       decoration: BoxDecoration(
-        color: Color(0xFF1E293B),
+        color: AppColors.slateCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Color.fromRGBO(245, 158, 11, 0.3), width: 1),
+        border: Border.all(color: Color.fromRGBO(245, 158, 11, 0.3), width: AppSizes.size1),
       ),
       child: ListTile(
-        contentPadding: EdgeInsets.all(16),
+        contentPadding: EdgeInsets.all(AppSizes.size16),
         leading: Container(
-          padding: EdgeInsets.all(12),
+          padding: EdgeInsets.all(AppSizes.size12),
           decoration: BoxDecoration(
             color: Color.fromRGBO(245, 158, 11, 0.2),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(Icons.category, color: Color(0xFFF59E0B), size: 24),
+          child: Icon(Icons.category, color: AppColors.amberAccent, size: 24),
         ),
         title: Text(
           category.name,
@@ -103,7 +103,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
               color: Colors.white),
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8),
+          padding: const EdgeInsets.only(top: AppSizes.size8),
           child: Text(
             '${AppStrings.categoryIdPrefix}${category.id}',
             style: const TextStyle(
@@ -115,7 +115,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-              icon: Icon(Icons.edit, color: Color(0xFFF59E0B)),
+              icon: Icon(Icons.edit, color: AppColors.amberAccent),
               onPressed: () => _openEditPage(category: category),
             ),
             IconButton(
@@ -146,7 +146,7 @@ class _CategoriesPageState extends State<CategoriesPage> {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: AppColors.slateDark,
         title: const Text(AppStrings.deleteCategoryTitle,
             style: TextStyle(color: Colors.white)),
         content: Text(

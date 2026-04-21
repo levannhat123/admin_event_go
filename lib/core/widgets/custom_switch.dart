@@ -1,5 +1,6 @@
 import 'package:admin_event_go/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
 
 class CustomSwitch extends StatelessWidget {
   final String label;
@@ -16,7 +17,7 @@ class CustomSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.size16, vertical: AppSizes.size12),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(8),
@@ -29,7 +30,7 @@ class CustomSwitch extends StatelessWidget {
             child: Text(
               label,
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: AppSizes.size16,
                 fontWeight: FontWeight.w600,
                 color: Colors.black87,
               ),
@@ -41,7 +42,7 @@ class CustomSwitch extends StatelessWidget {
               value: value,
               onChanged: onChanged,
               activeColor: Colors.white,
-              activeTrackColor: const Color(0xFF4257b4),
+              activeTrackColor: AppColors.brandPrimary,
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: Colors.grey.shade400,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,

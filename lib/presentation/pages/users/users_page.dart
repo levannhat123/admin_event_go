@@ -41,11 +41,11 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF0F172A),
+      backgroundColor: AppColors.slateDark,
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
-        backgroundColor: Color(0xFF1E293B),
+        backgroundColor: AppColors.slateCard,
         title: const Text(
           AppStrings.usersManagementTitle,
           style: TextStyle(
@@ -57,9 +57,6 @@ class _UsersPageState extends State<UsersPage> with TickerProviderStateMixin {
       ),
       body: BaseView(
         viewModelBuilder: () => getIt<AuthViewModel>(),
-        onModelReady: (viewModel) {
-          // viewModel.fetchAllUsers();
-        },
         builder: (context, viewModel, child) {
           return Column(
             children: [
