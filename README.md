@@ -106,8 +106,3 @@ flutter build appbundle --release
 flutter build ios --release
 ```
 
-## Gợi ý workflow
-
-- Tách logic theo `domain/usecase` và `presentation/view_models`.
-- Tái sử dụng hằng số UI trong `core/constants` (`AppColors`, `AppSizes`, ...).
-- Khi thêm model mới có `freezed`, chạy lại `build_runner`.
