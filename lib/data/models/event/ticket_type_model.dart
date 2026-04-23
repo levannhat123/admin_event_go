@@ -16,6 +16,7 @@ class TicketTypeModel with _$TicketTypeModel {
     String? status,
     DateTime? startTime,
     DateTime? endTime,
+    int? totalQuantity,
   }) = _TicketTypeModel;
 
   factory TicketTypeModel.fromJson(Map<String, dynamic> json) =>

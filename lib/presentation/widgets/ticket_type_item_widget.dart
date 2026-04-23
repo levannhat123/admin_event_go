@@ -1,6 +1,10 @@
+import 'package:admin_event_go/core/constants/app_strings.dart';
+import 'package:admin_event_go/core/constants/app_sizes.dart';
+import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:admin_event_go/core/constants/app_colors.dart';
 
 class TicketTypeItemWidget extends StatelessWidget {
   final TicketTypeModel ticketType;
@@ -17,8 +21,8 @@ class TicketTypeItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: AppSizes.size12),
+      padding: const EdgeInsets.all(AppSizes.size16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -41,37 +45,37 @@ class TicketTypeItemWidget extends StatelessWidget {
                 child: Text(
                   ticketType.name,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: AppSizes.size16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F172A),
+                    color: AppColors.slateDark,
                   ),
                 ),
               ),
               if (ticketType.isFree == true)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.size8, vertical: AppSizes.size4),
                   decoration: BoxDecoration(
                     color: Colors.green.shade100,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'Miễn phí',
+                    AppStrings.ticketTypeFreeBadge,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppSizes.size12,
                       color: Colors.green.shade700,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSizes.size8),
               IconButton(
                 icon: const Icon(Icons.edit, size: 20),
                 onPressed: onEdit,
-                color: const Color(0xFF4257b4),
+                color: AppColors.brandPrimary,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSizes.size8),
               IconButton(
                 icon: const Icon(Icons.delete, size: 20),
                 onPressed: onDelete,
@@ -84,11 +88,11 @@ class TicketTypeItemWidget extends StatelessWidget {
 
           // Mô tả
           if (ticketType.description != null && ticketType.description!.isNotEmpty) ...[
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSizes.size8),
             Text(
               ticketType.description!,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: AppSizes.size14,
                 color: Colors.grey.shade600,
               ),
               maxLines: 2,
@@ -96,7 +100,7 @@ class TicketTypeItemWidget extends StatelessWidget {
             ),
           ],
 
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSizes.size12),
 
           // Chi tiết vé
           Wrap(
@@ -107,15 +111,27 @@ class TicketTypeItemWidget extends StatelessWidget {
               if (ticketType.price != null)
                 _buildInfoChip(
                   icon: Icons.attach_money,
-                  label: '${NumberFormat('#,###').format(ticketType.price)} VNĐ',
+                  label:
+                      '${NumberFormat('#,###').format(ticketType.price)} VNĐ',
                   color: Colors.blue,
                 ),
 
+              if (ticketType.totalQuantity != null) ...{
+                // Số lượng vé
+                _buildInfoChip(
+                  icon: Icons.confirmation_num,
+                  label:
+                      '${AppStrings.ticketTypeTotalQuantityPrefix}${ticketType.totalQuantity}',
+                  color: Colors.teal,
+                ),
+
+              }  ,
               // Số lượng min
               if (ticketType.minQtyPerOrder != null)
                 _buildInfoChip(
                   icon: Icons.arrow_downward,
-                  label: 'Min: ${ticketType.minQtyPerOrder}',
+                  label:
+                      '${AppStrings.ticketTypeMinPrefix}${ticketType.minQtyPerOrder}',
                   color: Colors.orange,
                 ),
 
@@ -123,7 +139,8 @@ class TicketTypeItemWidget extends StatelessWidget {
               if (ticketType.maxQtyPerOrder != null)
                 _buildInfoChip(
                   icon: Icons.arrow_upward,
-                  label: 'Max: ${ticketType.maxQtyPerOrder}',
+                  label:
+                      '${AppStrings.ticketTypeMaxPrefix}${ticketType.maxQtyPerOrder}',
                   color: Colors.purple,
                 ),
 
@@ -139,9 +156,9 @@ class TicketTypeItemWidget extends StatelessWidget {
 
           // Thời gian bán vé
           if (ticketType.startTime != null || ticketType.endTime != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSizes.size12),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(AppSizes.size12),
               decoration: BoxDecoration(
                 color: Colors.grey.shade50,
                 borderRadius: BorderRadius.circular(8),
@@ -153,12 +170,12 @@ class TicketTypeItemWidget extends StatelessWidget {
                     size: 16,
                     color: Colors.grey.shade600,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSizes.size8),
                   Expanded(
                     child: Text(
                       _getTimeRangeText(),
                       style: TextStyle(
-                        fontSize: 13,
+                        fontSize: AppSizes.size13,
                         color: Colors.grey.shade700,
                       ),
                     ),
@@ -178,7 +195,7 @@ class TicketTypeItemWidget extends StatelessWidget {
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.size10, vertical: AppSizes.size6),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(6),
@@ -191,11 +208,11 @@ class TicketTypeItemWidget extends StatelessWidget {
             size: 14,
             color: color,
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: AppSizes.size4),
           Text(
             label,
             style: TextStyle(
-              fontSize: 12,
+              fontSize: AppSizes.size12,
               color: color,
               fontWeight: FontWeight.w600,
             ),
@@ -208,11 +225,11 @@ class TicketTypeItemWidget extends StatelessWidget {
   String _getStatusLabel(String status) {
     switch (status.toUpperCase()) {
       case 'ACTIVE':
-        return 'Đang bán';
+        return AppStrings.ticketTypeStatusActive;
       case 'INACTIVE':
-        return 'Tạm dừng';
+        return AppStrings.ticketTypeStatusInactive;
       case 'SOLD_OUT':
-        return 'Hết vé';
+        return AppStrings.ticketTypeStatusSoldOut;
       default:
         return status;
     }
@@ -234,11 +251,15 @@ class TicketTypeItemWidget extends StatelessWidget {
   String _getTimeRangeText() {
     final formatter = DateFormat('dd/MM/yyyy HH:mm');
     if (ticketType.startTime != null && ticketType.endTime != null) {
-      return 'Bán từ ${formatter.format(ticketType.startTime!)} - ${formatter.format(ticketType.endTime!)}';
+      return '${AppStrings.ticketTypeSaleRangePrefix}'
+          '${formatter.format(ticketType.startTime!)} - '
+          '${formatter.format(ticketType.endTime!)}';
     } else if (ticketType.startTime != null) {
-      return 'Bắt đầu bán: ${formatter.format(ticketType.startTime!)}';
+      return '${AppStrings.ticketTypeSaleStartPrefix}'
+          '${formatter.format(ticketType.startTime!)}';
     } else if (ticketType.endTime != null) {
-      return 'Kết thúc: ${formatter.format(ticketType.endTime!)}';
+      return '${AppStrings.ticketTypeSaleEndPrefix}'
+          '${formatter.format(ticketType.endTime!)}';
     }
     return '';
   }

@@ -23,6 +23,7 @@ _$TicketTypeModelImpl _$$TicketTypeModelImplFromJson(
   endTime: json['endTime'] == null
       ? null
       : DateTime.parse(json['endTime'] as String),
+  totalQuantity: (json['totalQuantity'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$$TicketTypeModelImplToJson(
@@ -38,4 +39,5 @@ Map<String, dynamic> _$$TicketTypeModelImplToJson(
   'status': instance.status,
   'startTime': instance.startTime?.toIso8601String(),
   'endTime': instance.endTime?.toIso8601String(),
+  'totalQuantity': instance.totalQuantity,
 };

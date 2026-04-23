@@ -31,6 +31,7 @@ mixin _$TicketTypeModel {
   String? get status => throw _privateConstructorUsedError;
   DateTime? get startTime => throw _privateConstructorUsedError;
   DateTime? get endTime => throw _privateConstructorUsedError;
+  int? get totalQuantity => throw _privateConstructorUsedError;
 
   /// Serializes this TicketTypeModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -60,6 +61,7 @@ abstract class $TicketTypeModelCopyWith<$Res> {
     String? status,
     DateTime? startTime,
     DateTime? endTime,
+    int? totalQuantity,
   });
 }
 
@@ -88,6 +90,7 @@ class _$TicketTypeModelCopyWithImpl<$Res, $Val extends TicketTypeModel>
     Object? status = freezed,
     Object? startTime = freezed,
     Object? endTime = freezed,
+    Object? totalQuantity = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -131,6 +134,10 @@ class _$TicketTypeModelCopyWithImpl<$Res, $Val extends TicketTypeModel>
                 ? _value.endTime
                 : endTime // ignore: cast_nullable_to_non_nullable
                       as DateTime?,
+            totalQuantity: freezed == totalQuantity
+                ? _value.totalQuantity
+                : totalQuantity // ignore: cast_nullable_to_non_nullable
+                      as int?,
           )
           as $Val,
     );
@@ -157,6 +164,7 @@ abstract class _$$TicketTypeModelImplCopyWith<$Res>
     String? status,
     DateTime? startTime,
     DateTime? endTime,
+    int? totalQuantity,
   });
 }
 
@@ -184,6 +192,7 @@ class __$$TicketTypeModelImplCopyWithImpl<$Res>
     Object? status = freezed,
     Object? startTime = freezed,
     Object? endTime = freezed,
+    Object? totalQuantity = freezed,
   }) {
     return _then(
       _$TicketTypeModelImpl(
@@ -227,6 +236,10 @@ class __$$TicketTypeModelImplCopyWithImpl<$Res>
             ? _value.endTime
             : endTime // ignore: cast_nullable_to_non_nullable
                   as DateTime?,
+        totalQuantity: freezed == totalQuantity
+            ? _value.totalQuantity
+            : totalQuantity // ignore: cast_nullable_to_non_nullable
+                  as int?,
       ),
     );
   }
@@ -246,6 +259,7 @@ class _$TicketTypeModelImpl implements _TicketTypeModel {
     this.status,
     this.startTime,
     this.endTime,
+    this.totalQuantity,
   });
 
   factory _$TicketTypeModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -271,10 +285,12 @@ class _$TicketTypeModelImpl implements _TicketTypeModel {
   final DateTime? startTime;
   @override
   final DateTime? endTime;
+  @override
+  final int? totalQuantity;
 
   @override
   String toString() {
-    return 'TicketTypeModel(id: $id, name: $name, description: $description, isFree: $isFree, price: $price, maxQtyPerOrder: $maxQtyPerOrder, minQtyPerOrder: $minQtyPerOrder, status: $status, startTime: $startTime, endTime: $endTime)';
+    return 'TicketTypeModel(id: $id, name: $name, description: $description, isFree: $isFree, price: $price, maxQtyPerOrder: $maxQtyPerOrder, minQtyPerOrder: $minQtyPerOrder, status: $status, startTime: $startTime, endTime: $endTime, totalQuantity: $totalQuantity)';
   }
 
   @override
@@ -295,7 +311,9 @@ class _$TicketTypeModelImpl implements _TicketTypeModel {
             (identical(other.status, status) || other.status == status) &&
             (identical(other.startTime, startTime) ||
                 other.startTime == startTime) &&
-            (identical(other.endTime, endTime) || other.endTime == endTime));
+            (identical(other.endTime, endTime) || other.endTime == endTime) &&
+            (identical(other.totalQuantity, totalQuantity) ||
+                other.totalQuantity == totalQuantity));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -312,6 +330,7 @@ class _$TicketTypeModelImpl implements _TicketTypeModel {
     status,
     startTime,
     endTime,
+    totalQuantity,
   );
 
   /// Create a copy of TicketTypeModel
@@ -343,6 +362,7 @@ abstract class _TicketTypeModel implements TicketTypeModel {
     final String? status,
     final DateTime? startTime,
     final DateTime? endTime,
+    final int? totalQuantity,
   }) = _$TicketTypeModelImpl;
 
   factory _TicketTypeModel.fromJson(Map<String, dynamic> json) =
@@ -368,6 +388,8 @@ abstract class _TicketTypeModel implements TicketTypeModel {
   DateTime? get startTime;
   @override
   DateTime? get endTime;
+  @override
+  int? get totalQuantity;
 
   /// Create a copy of TicketTypeModel
   /// with the given fields replaced by the non-null parameter values.

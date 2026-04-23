@@ -8,8 +8,9 @@ class RouterPath {
   static const String categories = '/events/categories';
   static const String ticketTypes = '/events/ticket-types';
   static const String orders = '/orders';
+  static const String orders_detail = '/orders_detail';
   static const String users = '/users';
-  static const String settings = '/settings';
+  static const String editCategory = '/editCategory';
 
   static const String sign_up = '/sign-up';
   static const String langding_page = '/langding_page';
@@ -47,12 +48,6 @@ class RouterName {
   static const String announcements = 'announcements';
   static const String articleDetail = 'article-detail';
   static const String profile = 'profile';
-  static const String accountSecurity = 'account-security';
-  static const String inviteFriend = 'invite-friend';
-  static const String infomation = "infomation";
-  static const String record = "record";
-  static const String withdraw = 'withdraw';
-  static const String cryptoDetail = 'crypto-detail';
-  static const String language = 'language';
-  static const String assetFee = 'asset-fee';
+  static const String editCategory = 'editCategory';
+
 }

@@ -2,6 +2,7 @@ import 'package:admin_event_go/core/base/base_view.dart';
 import 'package:admin_event_go/core/constants/app_colors.dart';
 import 'package:admin_event_go/core/constants/app_image.dart';
 import 'package:admin_event_go/core/constants/app_sizes.dart';
+import 'package:admin_event_go/core/constants/app_spacing.dart';
 import 'package:admin_event_go/core/constants/app_strings.dart';
 import 'package:admin_event_go/core/constants/app_svg.dart';
 import 'package:admin_event_go/core/utils/validator.dart';
@@ -42,30 +43,30 @@ class _LoginScreenState extends State<LoginScreen> {
               Positioned.fill(
                 child: Container(
                   decoration: const BoxDecoration(
-                    color: Color(0xFF4257b4),
+                    color: AppColors.brandPrimary,
                     borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.circular(40),
-                      bottomRight: Radius.circular(40),
+                      bottomLeft: Radius.circular(AppSizes.size40),
+                      bottomRight: Radius.circular(AppSizes.size40),
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 60),
+                    padding:  EdgeInsets.only(top: AppSpacing.space60),
                     child: Column(
                       children: [
-                        CircleAvatar(backgroundImage: AssetImage(AppImage.logo), radius: 40),
-                        SizedBox(height: 10),
+                        CircleAvatar(backgroundImage: AssetImage(AppImage.logo), radius: AppSizes.size40),
+                        SizedBox(height: AppSizes.size20),
                         Text(
                           AppStrings.loginTitle,
                           style: TextStyle(
-                            color: Color(0xFFf49415),
-                            fontSize: 24,
+                            color: AppColors.brandWarning,
+                            fontSize: AppSizes.size24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: AppSizes.size10),
                         Text(
                           AppStrings.loginDescription,
-                          style: TextStyle(color: Color(0xFFf49415), fontSize: 12),
+                          style: TextStyle(color: AppColors.brandWarning, fontSize: AppSizes.size12),
                           textAlign: TextAlign.justify,
                         ),
                       ],
@@ -78,13 +79,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  padding: const EdgeInsets.all(20.0),
-                  height: MediaQuery.of(context).size.height * 0.70,
-                  decoration: const BoxDecoration(
+                  padding:  EdgeInsets.all(AppSpacing.space20),
+                  height: MediaQuery.of(context).size.height * AppSizes.size0_7,
+                  decoration:  BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                      topLeft: Radius.circular(AppSizes.size30),
+                      topRight: Radius.circular(AppSizes.size30),
                     ),
                   ),
                   child: Form(
@@ -93,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       children: [
                         AppTextField(
                           controller: emailController,
-                          hintText: 'Email',
+                          hintText: AppStrings.emailLabel,
                           borderColor: Colors.grey.shade300,
                           fillColor: Colors.grey.shade100,
                           validator: Validator.email,
@@ -103,24 +104,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             icon: SvgPicture.asset(
                               AppSvg.close,
-                              width: 24,
-                              height: 24,
+                              width: AppSizes.size24,
+                              height: AppSizes.size24,
                               color: Colors.grey,
                             ),
                           ),
-                          focusedBorderColor: const Color(0xFF4257b4),
+                          focusedBorderColor: AppColors.brandPrimary,
                           enabledBorderColor: Colors.grey.shade300,
                           prefixIcon: const Icon(Icons.email),
                           shadowColor: AppColors.transparent,
                         ),
-                        const SizedBox(height: 20),
+                         SizedBox(height: AppSizes.size10),
                         AppTextFieldPassword(
                           controller: passwordController,
                           hintText: AppStrings.passwordHint,
                           borderColor: Colors.grey.shade300,
                           validator: Validator.password,
                           fillColor: Colors.grey.shade100,
-                          focusedBorderColor: const Color(0xFF4257b4),
+                          focusedBorderColor: AppColors.brandPrimary,
                           enabledBorderColor: Colors.grey.shade300,
                           shadowColor: AppColors.transparent,
                         ),
@@ -133,23 +134,23 @@ class _LoginScreenState extends State<LoginScreen> {
                               },
                               child: const Text(
                                 AppStrings.forgotPasswordButton,
-                                style: TextStyle(color: Color(0xFFf49415)),
+                                style: TextStyle(color: AppColors.brandWarning),
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                         SizedBox(height: AppSizes.size10),
                         viewModel.isLoading
                             ? Center(
                                 child: LoadingAnimationWidget.hexagonDots(
-                                  color:Color(0xFFf49415),
+                                  color:AppColors.brandWarning,
                                   size: AppSizes.size50,
                                 ),
                               )
                             : AppElevatedButton(
                                 text: AppStrings.loginButton,
-                                borderColor: Color(0xFFf49415),
-                                color: Color(0xFFf49415),
+                                borderColor: AppColors.brandWarning,
+                                color: AppColors.brandWarning,
                                 splashColor: AppColors.transparent,
                                 highlightColor: AppColors.white,
                                 onPressed: () async {
@@ -161,9 +162,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (success) {
                                       await showCustomDialog(
                                         context: context,
-                                        title: "ĐĂNG NHẬP THÀNH CÔNG",
-                                        message: "Bạn đã đăng nhập thành công!",
-                                        buttonText: "Okay",
+                                        title: AppStrings.loginSuccessDialogTitle,
+                                        message: AppStrings.loginSuccessDialogMessage,
+                                        buttonText: AppStrings.dialogOkButton,
                                         icon: Icons.check_circle,
                                         iconColor: Colors.green,
                                         onPressed: () {
@@ -173,10 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     } else {
                                       await showCustomDialog(
                                         context: context,
-                                        title: "ĐĂNG NHẬP THẤT BẠI",
-                                        message:
-                                            viewModel.errorMessage ?? "Sai email hoặc mật khẩu",
-                                        buttonText: "Okay",
+                                        title: AppStrings.loginFailedDialogTitle,
+                                        message: viewModel.errorMessage ??
+                                            AppStrings.loginFailedDefaultMessage,
+                                        buttonText: AppStrings.dialogOkButton,
                                         icon: Icons.error,
                                         iconColor: Colors.red,
                                         onPressed: () {},
@@ -185,16 +186,16 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                 },
                               ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: AppSizes.size20),
                         RichText(
                           text: TextSpan(
                             text: AppStrings.noAccount,
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
+                            style: TextStyle(color: Colors.grey, fontSize: AppSizes.size14),
                             children: [
                               TextSpan(
                                 text: AppStrings.signUpButton,
                                 style: TextStyle(
-                                  color: Color(0xFFf49415),
+                                  color: AppColors.brandWarning,
                                   fontWeight: FontWeight.bold,
                                 ),
                                 recognizer: TapGestureRecognizer()

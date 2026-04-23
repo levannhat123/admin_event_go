@@ -10,22 +10,20 @@ import 'package:admin_event_go/domain/usecase/auth/register_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/reset_password_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/send_email_usecase.dart';
 import 'package:admin_event_go/domain/usecase/auth/update_password_use_case.dart';
+import 'package:admin_event_go/presentation/view_models/dashboad_view_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthViewModel extends BaseViewModel {
   final LoginUseCase _loginUseCase;
-  final RegisterUseCase _registerUseCase;
   final LogoutUseCase _logoutUseCase;
-  final ResetPasswordUseCase _resetPasswordUseCase;
-  final SendEmailVerificationUseCase _sendEmailVerificationUseCase;
   final AuthRepository _authRepository;
-  final UpdatePasswordUseCase _updatePasswordUseCase;
+  final DashboadViewModel dashboardViewModel;
 
   User? _currentUser;
   bool _isLoading = false;
   String? _errorMessage;
 
-  AuthViewModel(
+  AuthViewModel(this.dashboardViewModel,
    {
     required LoginUseCase loginUseCase,
     required RegisterUseCase registerUseCase,
@@ -35,11 +33,7 @@ class AuthViewModel extends BaseViewModel {
     required SendEmailVerificationUseCase sendEmailVerificationUseCase,
     required UpdatePasswordUseCase updatePasswordUseCase,
   }) : _loginUseCase = loginUseCase,
-       _registerUseCase = registerUseCase,
        _logoutUseCase = logoutUseCase,
-       _resetPasswordUseCase = resetPasswordUseCase,
-        _sendEmailVerificationUseCase = sendEmailVerificationUseCase,
-        _updatePasswordUseCase = updatePasswordUseCase,
        _authRepository = authRepository {
     _authRepository.authStateChanges.listen((authState) {
       _currentUser = authState.session?.user;
@@ -69,35 +63,12 @@ class AuthViewModel extends BaseViewModel {
           return true;
         } else {
           await logout();
-          _setError("Bạn không có quyền truy cập Admin");
+          _setError(AppStrings.noAdminAccess);
           return false;
         }
       } else {
         _setLoading(false);
         _setError(result.errorMessage ?? AppStrings.loginFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-
-  Future<bool> register(String email, String password) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _registerUseCase(email, password);
-
-      if (result.isSuccess) {
-        _currentUser = result.user;
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.signUpFailed);
         return false;
       }
     } catch (e) {
@@ -119,81 +90,15 @@ class AuthViewModel extends BaseViewModel {
       _setError(AppStrings.logoutError);
     }
   }
-  Future<bool> resetPassword(String email) async {
-    try {
-      _setLoading(true);
-      _clearError();
 
-      final result = await _resetPasswordUseCase(email);
-
-      if (result.isSuccess) {
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.sendEmailFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-  Future<bool> sendEmailVerification(String email, String otpCode) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _sendEmailVerificationUseCase(email, otpCode);
-
-      if (result.isSuccess) {
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.sendVerificationFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-  Future<bool> updatePassword(String newPassword) async {
-    try {
-      _setLoading(true);
-      _clearError();
-
-      final result = await _updatePasswordUseCase(newPassword);
-
-      if (result.isSuccess) {
-        _setLoading(false);
-        return true;
-      } else {
-        _setLoading(false);
-        _setError(result.errorMessage ?? AppStrings.updatePasswordFailed);
-        return false;
-      }
-    } catch (e) {
-      _setLoading(false);
-      _setError(AppStrings.unknownError);
-      return false;
-    }
-  }
-
-  List<ProfileModel> userList = [];
+  List<ProfileModel> get userList => dashboardViewModel.users;
+  List<ProfileModel> get staffList => dashboardViewModel.staff;
 
   Future<void> fetchUsers() async {
-    try {
-      _setLoading(true);
-      userList = await _authRepository.getAllProfiles();
-      _setLoading(false);
-    } catch (e) {
-      _setLoading(false);
-      _setError("Lỗi khi lấy user: $e");
-    }
+   dashboardViewModel.fetchUsers();
+  } Future<void> fetchStaff() async {
+  await dashboardViewModel.fetchStaff();
+  notifyListeners();
   }
   Future<bool> deleteUser(String userId) async {
     try {
@@ -211,8 +116,29 @@ class AuthViewModel extends BaseViewModel {
       return true;
     } catch (e) {
       _setLoading(false);
-      _setError("Lỗi khi xóa user: $e");
-      print("Lỗi khi xóa user: $e");
+      _setError("${AppStrings.deleteUsersErrorWithDetails}$e");
+      print("Lỗi khi xóa users: $e");
+      return false;
+    }
+  }
+  Future<bool> deleteStaff(String userId) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      await Supabase.instance.client
+          .from('profiles')
+          .delete()
+          .eq('id', userId);
+      await Supabase.instance.client
+          .rpc('delete_auth_user', params: {'user_id': userId});
+      await fetchStaff();
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      _setLoading(false);
+      _setError("${AppStrings.deleteUsersErrorWithDetails}$e");
+      print("Lỗi khi xóa users: $e");
       return false;
     }
   }
@@ -221,6 +147,79 @@ class AuthViewModel extends BaseViewModel {
       fetchUsers();
     } catch (e) {
       print("Error refreshing profiles: $e");
+    }
+  }
+  Future<bool> createStaff({
+    required String fullName,
+    required String email,
+    required String phone,
+    required String role,
+    String? avatarUrl,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      final res = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: "123456789",
+      );
+      if (res.user == null) {
+        _setError(AppStrings.createStaffFailed);
+        _setLoading(false);
+        return false;
+      }
+
+      final uid = res.user!.id;
+
+      await Supabase.instance.client.from('profiles').insert({
+        'id': uid,
+        'full_name': fullName,
+        'email': email,
+        'phone': phone,
+        'avatar_url': avatarUrl ?? "",
+        'role': role,
+        'created_at': DateTime.now().toIso8601String(),
+      });
+
+      await fetchStaff();
+      _setLoading(false);
+      return true;
+
+    } catch (e) {
+      _setLoading(false);
+      _setError("${AppStrings.createStaffErrorWithDetails}$e");
+      return false;
+    }
+  }
+
+  Future<bool> updateStaff({
+    required String id,
+    required String fullName,
+    required String email,
+    required String phone,
+    required String role,
+    String? avatarUrl,
+  }) async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      await Supabase.instance.client.from('profiles').update({
+        'full_name': fullName,
+        'email': email,
+        'phone': phone,
+        'avatar_url': avatarUrl ?? "",
+        'role': role,
+      }).eq('id', id);
+
+      await fetchStaff();
+      _setLoading(false);
+      return true;
+    } catch (e, s) {
+      _setError("${AppStrings.createStaffErrorWithDetails}$e");
+      _setLoading(false);
+      return false;
     }
   }
   void _setLoading(bool loading) {
@@ -235,7 +234,5 @@ class AuthViewModel extends BaseViewModel {
     _errorMessage = null;
     notifyListeners();
   }
-  void clearError() {
-    _clearError();
-  }
+
 }

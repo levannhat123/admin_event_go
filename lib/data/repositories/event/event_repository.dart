@@ -8,4 +8,5 @@ abstract class EventRepository {
   Future<EventDetailModel?> getEventById(String eventId);
   Future<List<EventDetailModel>> getAllEvents();
   Future<List<EventModel>> getAllEventsAsEventModel();
+  Stream<List<EventDetailModel>> watchAllEvents();
 }

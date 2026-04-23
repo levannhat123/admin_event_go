@@ -22,11 +22,15 @@ ProfileModel _$ProfileModelFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$ProfileModel {
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: "full_name")
   String? get fullName => throw _privateConstructorUsedError;
+  @JsonKey(name: "avatar_url")
   String? get avatarUrl => throw _privateConstructorUsedError;
   String? get phone => throw _privateConstructorUsedError;
-  DateTime? get createdAt => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
+  String? get role => throw _privateConstructorUsedError;
+  @JsonKey(name: "created_at")
+  DateTime? get createdAt => throw _privateConstructorUsedError;
 
   /// Serializes this ProfileModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -47,11 +51,12 @@ abstract class $ProfileModelCopyWith<$Res> {
   @useResult
   $Res call({
     String id,
-    String? fullName,
-    String? avatarUrl,
+    @JsonKey(name: "full_name") String? fullName,
+    @JsonKey(name: "avatar_url") String? avatarUrl,
     String? phone,
-    DateTime? createdAt,
     String? email,
+    String? role,
+    @JsonKey(name: "created_at") DateTime? createdAt,
   });
 }
 
@@ -74,8 +79,9 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
     Object? fullName = freezed,
     Object? avatarUrl = freezed,
     Object? phone = freezed,
-    Object? createdAt = freezed,
     Object? email = freezed,
+    Object? role = freezed,
+    Object? createdAt = freezed,
   }) {
     return _then(
       _value.copyWith(
@@ -95,14 +101,18 @@ class _$ProfileModelCopyWithImpl<$Res, $Val extends ProfileModel>
                 ? _value.phone
                 : phone // ignore: cast_nullable_to_non_nullable
                       as String?,
-            createdAt: freezed == createdAt
-                ? _value.createdAt
-                : createdAt // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
             email: freezed == email
                 ? _value.email
                 : email // ignore: cast_nullable_to_non_nullable
                       as String?,
+            role: freezed == role
+                ? _value.role
+                : role // ignore: cast_nullable_to_non_nullable
+                      as String?,
+            createdAt: freezed == createdAt
+                ? _value.createdAt
+                : createdAt // ignore: cast_nullable_to_non_nullable
+                      as DateTime?,
           )
           as $Val,
     );
@@ -120,11 +130,12 @@ abstract class _$$ProfileModelImplCopyWith<$Res>
   @useResult
   $Res call({
     String id,
-    String? fullName,
-    String? avatarUrl,
+    @JsonKey(name: "full_name") String? fullName,
+    @JsonKey(name: "avatar_url") String? avatarUrl,
     String? phone,
-    DateTime? createdAt,
     String? email,
+    String? role,
+    @JsonKey(name: "created_at") DateTime? createdAt,
   });
 }
 
@@ -146,8 +157,9 @@ class __$$ProfileModelImplCopyWithImpl<$Res>
     Object? fullName = freezed,
     Object? avatarUrl = freezed,
     Object? phone = freezed,
-    Object? createdAt = freezed,
     Object? email = freezed,
+    Object? role = freezed,
+    Object? createdAt = freezed,
   }) {
     return _then(
       _$ProfileModelImpl(
@@ -167,14 +179,18 @@ class __$$ProfileModelImplCopyWithImpl<$Res>
             ? _value.phone
             : phone // ignore: cast_nullable_to_non_nullable
                   as String?,
-        createdAt: freezed == createdAt
-            ? _value.createdAt
-            : createdAt // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
         email: freezed == email
             ? _value.email
             : email // ignore: cast_nullable_to_non_nullable
                   as String?,
+        role: freezed == role
+            ? _value.role
+            : role // ignore: cast_nullable_to_non_nullable
+                  as String?,
+        createdAt: freezed == createdAt
+            ? _value.createdAt
+            : createdAt // ignore: cast_nullable_to_non_nullable
+                  as DateTime?,
       ),
     );
   }
@@ -185,11 +201,12 @@ class __$$ProfileModelImplCopyWithImpl<$Res>
 class _$ProfileModelImpl implements _ProfileModel {
   const _$ProfileModelImpl({
     required this.id,
-    this.fullName,
-    this.avatarUrl,
+    @JsonKey(name: "full_name") this.fullName,
+    @JsonKey(name: "avatar_url") this.avatarUrl,
     this.phone,
-    this.createdAt,
     this.email,
+    this.role,
+    @JsonKey(name: "created_at") this.createdAt,
   });
 
   factory _$ProfileModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -198,19 +215,24 @@ class _$ProfileModelImpl implements _ProfileModel {
   @override
   final String id;
   @override
+  @JsonKey(name: "full_name")
   final String? fullName;
   @override
+  @JsonKey(name: "avatar_url")
   final String? avatarUrl;
   @override
   final String? phone;
   @override
-  final DateTime? createdAt;
-  @override
   final String? email;
+  @override
+  final String? role;
+  @override
+  @JsonKey(name: "created_at")
+  final DateTime? createdAt;
 
   @override
   String toString() {
-    return 'ProfileModel(id: $id, fullName: $fullName, avatarUrl: $avatarUrl, phone: $phone, createdAt: $createdAt, email: $email)';
+    return 'ProfileModel(id: $id, fullName: $fullName, avatarUrl: $avatarUrl, phone: $phone, email: $email, role: $role, createdAt: $createdAt)';
   }
 
   @override
@@ -224,9 +246,10 @@ class _$ProfileModelImpl implements _ProfileModel {
             (identical(other.avatarUrl, avatarUrl) ||
                 other.avatarUrl == avatarUrl) &&
             (identical(other.phone, phone) || other.phone == phone) &&
+            (identical(other.email, email) || other.email == email) &&
+            (identical(other.role, role) || other.role == role) &&
             (identical(other.createdAt, createdAt) ||
-                other.createdAt == createdAt) &&
-            (identical(other.email, email) || other.email == email));
+                other.createdAt == createdAt));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -237,8 +260,9 @@ class _$ProfileModelImpl implements _ProfileModel {
     fullName,
     avatarUrl,
     phone,
-    createdAt,
     email,
+    role,
+    createdAt,
   );
 
   /// Create a copy of ProfileModel
@@ -258,11 +282,12 @@ class _$ProfileModelImpl implements _ProfileModel {
 abstract class _ProfileModel implements ProfileModel {
   const factory _ProfileModel({
     required final String id,
-    final String? fullName,
-    final String? avatarUrl,
+    @JsonKey(name: "full_name") final String? fullName,
+    @JsonKey(name: "avatar_url") final String? avatarUrl,
     final String? phone,
-    final DateTime? createdAt,
     final String? email,
+    final String? role,
+    @JsonKey(name: "created_at") final DateTime? createdAt,
   }) = _$ProfileModelImpl;
 
   factory _ProfileModel.fromJson(Map<String, dynamic> json) =
@@ -271,15 +296,20 @@ abstract class _ProfileModel implements ProfileModel {
   @override
   String get id;
   @override
+  @JsonKey(name: "full_name")
   String? get fullName;
   @override
+  @JsonKey(name: "avatar_url")
   String? get avatarUrl;
   @override
   String? get phone;
   @override
-  DateTime? get createdAt;
-  @override
   String? get email;
+  @override
+  String? get role;
+  @override
+  @JsonKey(name: "created_at")
+  DateTime? get createdAt;
 
   /// Create a copy of ProfileModel
   /// with the given fields replaced by the non-null parameter values.

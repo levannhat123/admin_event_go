@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:admin_event_go/core/widgets/app_elevated_button.dart';
 import 'package:admin_event_go/core/widgets/custom_dropdown.dart';
 import 'package:admin_event_go/core/widgets/custom_switch.dart';
@@ -8,62 +6,53 @@ import 'package:admin_event_go/core/widgets/text_field.dart';
 import 'package:admin_event_go/data/models/event/ticket_type_model.dart';
 import 'package:admin_event_go/data/models/event/event_detail_model.dart';
 import 'package:admin_event_go/data/models/category/category_model.dart';
-import 'package:admin_event_go/presentation/dialogs/add_edit_ticket_type_dialog.dart';
 import 'package:admin_event_go/presentation/widgets/ticket_type_item_widget.dart';
 import 'package:admin_event_go/presentation/view_models/event_view_model.dart';
 import 'package:admin_event_go/data/services/supabase_storage_service.dart';
 import 'package:admin_event_go/injection/injection.dart';
+import 'package:admin_event_go/core/base/base_view.dart';
+import 'package:admin_event_go/presentation/view_models/category_view_model.dart';
+import 'package:admin_event_go/routers/router_name.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../core/constants/app_sizes.dart';
 import 'package:uuid/uuid.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_strings.dart';
+import 'dialogs/add_edit_ticket_type_dialog.dart';
 
 class AddEventPage extends StatefulWidget {
-  const AddEventPage({super.key});
+  final EventDetailModel? event;
+  final bool? isEditing;
+  const AddEventPage({super.key, this.event, this.isEditing});
 
   @override
   State<AddEventPage> createState() => _AddEventPageState();
 }
 
 class _AddEventPageState extends State<AddEventPage> {
-  final titleController = TextEditingController();
-  final descController = TextEditingController();
-  final locationController = TextEditingController();
-  final addressController = TextEditingController();
-  final orgNameController = TextEditingController();
-  final orgDescController = TextEditingController();
-  final minPriceController = TextEditingController();
-  final idLocationController = TextEditingController();
-
-  String? status = 'ACTIVE';
-  String? category;
-  String? ticketType;
-  bool isFree = false;
-  bool isHot = false;
-  DateTime? startTime;
-  DateTime? endTime;
-
-  List<TicketTypeModel> ticketTypes = [];
-
-  File? bannerImageFile;
-  File? logoImageFile;
-
   final _formKey = GlobalKey<FormState>();
 
-  Future<void> _selectDateTime(BuildContext context, bool isStartTime) async {
+  bool get isEdit => widget.isEditing ?? widget.event != null;
+  Future<void> _selectDateTime(
+    BuildContext context,
+    bool isStartTime,
+    EventViewModel vm,
+  ) async {
+    FocusScope.of(context).unfocus();
     final DateTime? pickedDate = await showDatePicker(
       context: context,
       initialDate: isStartTime
-          ? (startTime ?? DateTime.now())
-          : (endTime ?? startTime ?? DateTime.now()),
+          ? (vm.startTime ?? DateTime.now())
+          : (vm.endTime ?? vm.startTime ?? DateTime.now()),
       firstDate: DateTime(2023),
       lastDate: DateTime(2030),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF4257b4),
+              primary: AppColors.brandPrimary,
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.black,
@@ -84,7 +73,7 @@ class _AddEventPageState extends State<AddEventPage> {
           return Theme(
             data: Theme.of(context).copyWith(
               colorScheme: const ColorScheme.light(
-                primary: Color(0xFF4257b4),
+                primary: AppColors.brandPrimary,
                 onPrimary: Colors.white,
                 surface: Colors.white,
                 onSurface: Colors.black,
@@ -94,25 +83,20 @@ class _AddEventPageState extends State<AddEventPage> {
           );
         },
       );
+      if (pickedTime == null || !mounted) return;
 
-      if (pickedTime != null) {
-        final DateTime fullDateTime = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedTime.hour,
-          pickedTime.minute,
-        );
+      final DateTime fullDateTime = DateTime(
+        pickedDate.year,
+        pickedDate.month,
+        pickedDate.day,
+        pickedTime.hour,
+        pickedTime.minute,
+      );
 
-        if (mounted) {
-          setState(() {
-            if (isStartTime) {
-              startTime = fullDateTime;
-            } else {
-              endTime = fullDateTime;
-            }
-          });
-        }
+      if (isStartTime) {
+        vm.setStartTime(fullDateTime);
+      } else {
+        vm.setEndTime(fullDateTime);
       }
     }
   }
@@ -126,7 +110,7 @@ class _AddEventPageState extends State<AddEventPage> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSizes.size16),
         decoration: BoxDecoration(
           color: Colors.grey.shade100,
           borderRadius: BorderRadius.circular(8),
@@ -134,12 +118,8 @@ class _AddEventPageState extends State<AddEventPage> {
         ),
         child: Row(
           children: [
-            Icon(
-              icon,
-              color: const Color(0xFF4257b4),
-              size: 24,
-            ),
-            const SizedBox(width: 12),
+            Icon(icon, color: AppColors.brandPrimary, size: 24),
+            const SizedBox(width: AppSizes.size12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,30 +127,28 @@ class _AddEventPageState extends State<AddEventPage> {
                   Text(
                     label,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: AppSizes.size12,
                       color: Colors.grey.shade600,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSizes.size4),
                   Text(
                     dateTime != null
                         ? DateFormat('dd/MM/yyyy - HH:mm').format(dateTime)
-                        : 'Chưa chọn',
+                        : AppStrings.notAvailableShort,
                     style: TextStyle(
-                      fontSize: 16,
-                      color: dateTime != null ? Colors.black87 : Colors.grey.shade400,
+                      fontSize: AppSizes.size16,
+                      color: dateTime != null
+                          ? Colors.black87
+                          : Colors.grey.shade400,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(
-              Icons.calendar_today,
-              color: Colors.grey.shade400,
-              size: 20,
-            ),
+            Icon(Icons.calendar_today, color: Colors.grey.shade400, size: 20),
           ],
         ),
       ),
@@ -179,13 +157,13 @@ class _AddEventPageState extends State<AddEventPage> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      padding: const EdgeInsets.only(bottom: AppSizes.size12, top: AppSizes.size8),
       child: Text(
         title,
         style: const TextStyle(
-          fontSize: 18,
+          fontSize: AppSizes.size18,
           fontWeight: FontWeight.bold,
-          color: Color(0xFF0F172A),
+          color: AppColors.slateDark,
         ),
       ),
     );
@@ -193,227 +171,251 @@ class _AddEventPageState extends State<AddEventPage> {
 
   Widget _buildDivider() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Divider(
-        color: Colors.grey.shade300,
-        thickness: 1,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.size16),
+      child: Divider(color: Colors.grey.shade300, thickness: 1),
     );
   }
 
-  void _saveEvent() async {
-    // Validate form
-    if (titleController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập tiêu đề sự kiện');
+  void _saveEvent(EventViewModel vm) async {
+    if (vm.titleController.text.trim().isEmpty) {
+      _showErrorDialog(AppStrings.eventTitleRequired);
+      return;
+    }
+    if (vm.descController.text.trim().isEmpty) {
+      _showErrorDialog(AppStrings.eventDescriptionRequired);
+      return;
+    }
+    if (vm.selectedCategory == null) {
+      _showErrorDialog(AppStrings.eventCategoryRequired);
+      return;
+    }
+    if (vm.locationController.text.trim().isEmpty) {
+      _showErrorDialog(AppStrings.eventVenueRequired);
+      return;
+    }
+    if (vm.startTime == null) {
+      _showErrorDialog(AppStrings.eventStartTimeRequired);
+      return;
+    }
+    if (vm.endTime == null) {
+      _showErrorDialog(AppStrings.eventEndTimeRequired);
+      return;
+    }
+    if (vm.endTime!.isBefore(vm.startTime!)) {
+      _showErrorDialog(AppStrings.eventEndTimeAfterStart);
+      return;
+    }
+    if (vm.bannerImageFile == null &&
+        !(isEdit &&
+            vm.existingBannerUrl != null &&
+            vm.existingBannerUrl!.isNotEmpty)) {
+      _showErrorDialog(AppStrings.eventBannerRequired);
       return;
     }
 
-    if (descController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập mô tả sự kiện');
+    if (vm.status == null) {
+      _showErrorDialog(AppStrings.eventStatusRequired);
       return;
     }
 
-    if (locationController.text.trim().isEmpty) {
-      _showErrorDialog('Vui lòng nhập địa điểm tổ chức');
-      return;
-    }
 
-    if (startTime == null) {
-      _showErrorDialog('Vui lòng chọn thời gian bắt đầu');
-      return;
-    }
 
-    if (endTime == null) {
-      _showErrorDialog('Vui lòng chọn thời gian kết thúc');
-      return;
-    }
-
-    if (endTime!.isBefore(startTime!)) {
-      _showErrorDialog('Thời gian kết thúc phải sau thời gian bắt đầu');
-      return;
-    }
-
-    if (bannerImageFile == null) {
-      _showErrorDialog('Vui lòng chọn ảnh banner');
-      return;
-    }
-
-    if (status == null) {
-      _showErrorDialog('Vui lòng chọn trạng thái');
-      return;
-    }
-
-    if (category == null) {
-      _showErrorDialog('Vui lòng chọn danh mục');
-      return;
-    }
-
-    // Show loading
     if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(),
-      ),
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
       final storageService = getIt<SupabaseStorageService>();
-      final eventViewModel = getIt<EventViewModel>();
-
-      // Upload banner image to Supabase
+      final eventViewModel = vm;
       String? bannerUrl;
-      if (bannerImageFile != null) {
+      if (vm.bannerImageFile != null) {
         bannerUrl = await storageService.uploadImage(
-          imageFile: bannerImageFile!,
+          imageFile: vm.bannerImageFile!,
           bucket: 'event_go_image',
           folder: 'banners',
         );
+      } else if (isEdit) {
+        bannerUrl = vm.existingBannerUrl;
       }
-
-      // Upload logo image to Supabase (if exists)
       String? logoUrl;
-      if (logoImageFile != null) {
+      if (vm.logoImageFile != null) {
         logoUrl = await storageService.uploadImage(
-          imageFile: logoImageFile!,
+          imageFile: vm.logoImageFile!,
           bucket: 'event_go_image',
           folder: 'logos',
         );
+      } else if (isEdit) {
+        logoUrl = vm.existingLogoUrl;
       }
-
-      // Create event object
-      final eventId = const Uuid().v4();
+      final eventId = isEdit ? widget.event!.id : const Uuid().v4();
       final event = EventDetailModel(
         id: eventId,
-        title: titleController.text.trim(),
+        title: vm.titleController.text.trim(),
         bannerURL: bannerUrl,
-        description: descController.text.trim(),
-        venue: locationController.text.trim(),
-        categories: CategoryModel(
-          id: category == 'Hội thảo' ? '1' : category == 'Ca nhạc' ? '2' : '3',
-          name: category!,
-        ),
-        address: addressController.text.trim().isNotEmpty
-            ? addressController.text.trim()
+        description: vm.descController.text.trim(),
+        venue: vm.locationController.text.trim(),
+        categories: vm.selectedCategory!,
+        address: vm.addressController.text.trim().isNotEmpty
+            ? vm.addressController.text.trim()
             : null,
         orgLogoURL: logoUrl,
-        orgName: orgNameController.text.trim().isNotEmpty
-            ? orgNameController.text.trim()
+        orgName: vm.orgNameController.text.trim().isNotEmpty
+            ? vm.orgNameController.text.trim()
             : null,
-        orgDescription: orgDescController.text.trim().isNotEmpty
-            ? orgDescController.text.trim()
+        orgDescription: vm.orgDescController.text.trim().isNotEmpty
+            ? vm.orgDescController.text.trim()
             : null,
-        status: status,
-        minTicketPrice: minPriceController.text.trim().isNotEmpty
-            ? int.tryParse(minPriceController.text.trim())
+        status: vm.status,
+        minTicketPrice: vm.minPriceController.text.trim().isNotEmpty
+            ? int.tryParse(vm.minPriceController.text.trim())
             : null,
-        isFree: isFree,
-        ticketType: ticketTypes.isNotEmpty ? ticketTypes : null,
-        startTime: startTime,
-        endTime: endTime,
-        locationId: idLocationController.text.trim().isNotEmpty
-            ? idLocationController.text.trim()
+        isFree: vm.isFree,
+        ticketType: vm.ticketTypes.isNotEmpty ? vm.ticketTypes : null,
+        startTime: vm.startTime,
+        endTime: vm.endTime,
+        locationId: vm.idLocationController.text.trim().isNotEmpty
+            ? vm.idLocationController.text.trim()
             : null,
-        isHot: isHot,
+        isHot: vm.isHot,
       );
-
-      // Save event to Firebase
-      final success = await eventViewModel.addEvent(event);
-
+      bool success;
+      if (isEdit) {
+        success = await eventViewModel.updateEvent(eventId, event);
+      } else {
+        success = await eventViewModel.addEvent(event);
+      }
       if (!mounted) return;
-      Navigator.pop(context); // Close loading dialog
+      context.pop();
 
       if (success) {
-        _showSuccessDialog('Lưu sự kiện thành công!');
+        _showSuccessDialog(AppStrings.eventSaveSuccess);
       } else {
-        _showErrorDialog(eventViewModel.errorMessage ?? 'Có lỗi xảy ra khi lưu sự kiện');
+        _showErrorDialog(
+          eventViewModel.errorMessage ?? AppStrings.eventSaveFailed,
+        );
       }
     } catch (e) {
       if (!mounted) return;
-      Navigator.pop(context); // Close loading dialog
-      _showErrorDialog('Có lỗi xảy ra: ${e.toString()}');
+      context.pop();
+      _showErrorDialog('${AppStrings.genericErrorPrefix}${e.toString()}');
     }
   }
 
   void _showErrorDialog(String message) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Lỗi'),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Đóng'),
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSizes.size24),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-        ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 28),
+                const SizedBox(width: AppSizes.size12),
+                const Text(
+                  AppStrings.errorTitle,
+                  style: TextStyle(fontSize: AppSizes.size20, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.size16),
+            Text(
+              message,
+              style: const TextStyle(fontSize: AppSizes.size16, color: Colors.grey),
+            ),
+            const SizedBox(height: AppSizes.size30),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => context.pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: AppSizes.size16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                child: const Text(AppStrings.closeButton),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  void _showSuccessDialog(String message) {
-    showDialog(
+  void _showSuccessDialog(String message) async {
+    await showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Thành công'),
+      builder: (dialogContext) => AlertDialog(
+        title: const Text(AppStrings.successTitle),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              context.pop(); // Return to previous screen
+              FocusScope.of(context).unfocus();
+              dialogContext.pop();
             },
-            child: const Text('OK'),
+            child: const Text(AppStrings.dialogOkButton),
           ),
         ],
       ),
     );
+
+    if (mounted) {
+      context.go(RouterPath.events);
+    }
   }
 
-  // === TICKET TYPE MANAGEMENT ===
-  Future<void> _showAddEditTicketTypeDialog({TicketTypeModel? ticketType}) async {
+  Future<void> _showAddEditTicketTypeDialog(
+    EventViewModel vm, {
+    TicketTypeModel? ticketType,
+  }) async {
     final result = await showDialog<TicketTypeModel>(
       context: context,
       builder: (context) => AddEditTicketTypeDialog(ticketType: ticketType),
     );
-
     if (result != null) {
-      setState(() {
-        if (ticketType == null) {
-          // Thêm mới
-          ticketTypes.add(result);
-        } else {
-          // Cập nhật
-          final index = ticketTypes.indexWhere((t) => t.id == ticketType.id);
-          if (index != -1) {
-            ticketTypes[index] = result;
-          }
-        }
-      });
+      if (ticketType == null) {
+        vm.addTicketType(result);
+      } else {
+        vm.updateTicketType(result);
+      }
     }
   }
 
-  void _deleteTicketType(String id) {
+  void _deleteTicketType(String id, EventViewModel vm) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xóa'),
-        content: const Text('Bạn có chắc chắn muốn xóa loại vé này?'),
+        title: const Text(AppStrings.ticketTypeDeleteConfirmTitle),
+        content: const Text(AppStrings.ticketTypeDeleteConfirmContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Hủy'),
+            child: const Text(AppStrings.ticketTypeDeleteCancel),
           ),
           TextButton(
             onPressed: () {
-              setState(() {
-                ticketTypes.removeWhere((t) => t.id == id);
-              });
-              Navigator.pop(context);
+              vm.deleteTicketType(id);
+              context.pop();
             },
             child: const Text(
-              'Xóa',
+              AppStrings.ticketTypeDeleteConfirm,
               style: TextStyle(color: Colors.red),
             ),
           ),
@@ -423,358 +425,358 @@ class _AddEventPageState extends State<AddEventPage> {
   }
 
   @override
+  void dispose() {
+    getIt<EventViewModel>().clearForm();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        title: const Text('Thêm sự kiện mới'),
+        backgroundColor: AppColors.slateDark,
+        title: Text(
+          isEdit ? AppStrings.eventEditTitle : AppStrings.eventAddTitle,
+        ),
         centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.pop(),
         ),
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                    // === THÔNG TIN CƠ BẢN ===
-                    _buildSectionTitle('📋 Thông tin cơ bản'),
-                    AppTextField(
-                      lableText: 'Tiêu đề',
-                      controller: titleController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Ảnh banner
-                    ImagePickerWidget(
-                      label: 'Ảnh banner sự kiện',
-                      imageFile: bannerImageFile,
-                      height: 180,
-                      onImageSelected: (file) {
-                        setState(() {
-                          bannerImageFile = file;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-
-                    AppTextField(
-                      lableText: 'Mô tả sự kiện',
-                      controller: descController,
-                      maxLines: 4,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-
-                    CustomDropdown<String>(
-                      label: 'Trạng thái',
-                      items: ['ACTIVE', 'INACTIVE', 'COMPLETED'],
-                      value: status,
-                      getLabel: (v) {
-                        switch (v) {
-                          case 'ACTIVE':
-                            return 'Đang hoạt động';
-                          case 'INACTIVE':
-                            return 'Tạm dừng';
-                          case 'COMPLETED':
-                            return 'Đã kết thúc';
-                          default:
-                            return v;
-                        }
-                      },
-                      onChanged: (v) => setState(() => status = v),
-                    ),
-                    const SizedBox(height: 10),
-
-                    CustomDropdown<String>(
-                      label: 'Danh mục',
-                      items: ['Hội thảo', 'Ca nhạc', 'Thể thao'],
-                      value: category,
-                      getLabel: (v) => v,
-                      onChanged: (v) => setState(() => category = v),
-                    ),
-
-                    _buildDivider(),
-
-                    // === ĐỊA ĐIỂM ===
-                    _buildSectionTitle('📍 Địa điểm tổ chức'),
-                    AppTextField(
-                      lableText: 'Địa điểm tổ chức (Venue)',
-                      controller: locationController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-
-                    AppTextField(
-                      lableText: 'Địa chỉ chi tiết',
-                      controller: addressController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-
-                    AppTextField(
-                      lableText: 'ID địa điểm',
-                      controller: idLocationController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-
-                    _buildDivider(),
-
-                    // === THỜI GIAN ===
-                    _buildSectionTitle('🕒 Thời gian'),
-                    _buildDateTimeField(
-                      label: 'Thời gian bắt đầu',
-                      dateTime: startTime,
-                      onTap: () => _selectDateTime(context, true),
-                      icon: Icons.access_time,
-                    ),
-                    const SizedBox(height: 10),
-
-                    _buildDateTimeField(
-                      label: 'Thời gian kết thúc',
-                      dateTime: endTime,
-                      onTap: () => _selectDateTime(context, false),
-                      icon: Icons.event_available,
-                    ),
-
-                    _buildDivider(),
-
-                    // === THÔNG TIN VÉ ===
-                    _buildSectionTitle('💰 Thông tin giá vé'),
-                    AppTextField(
-                      lableText: 'Giá vé tối thiểu (VNĐ)',
-                      controller: minPriceController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-
-                    CustomSwitch(
-                      label: 'Sự kiện miễn phí',
-                      value: isFree,
-                      onChanged: (v) => setState(() => isFree = v),
-                    ),
-
-                    _buildDivider(),
-
-                    // === QUẢN LÝ LOẠI VÉ ===
-                    _buildSectionTitle('🎫 Quản lý loại vé'),
-
-                    // Nút thêm loại vé
-                    InkWell(
-                      onTap: () => _showAddEditTicketTypeDialog(),
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4257b4).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: const Color(0xFF4257b4),
-                            width: 2,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4257b4),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Thêm loại vé mới',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF4257b4),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Danh sách loại vé
-                    if (ticketTypes.isEmpty)
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.confirmation_number_outlined,
-                              size: 48,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Chưa có loại vé nào',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Nhấn nút "Thêm loại vé mới" để bắt đầu',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      ...ticketTypes.map((ticketType) {
-                        return TicketTypeItemWidget(
-                          ticketType: ticketType,
-                          onEdit: () => _showAddEditTicketTypeDialog(ticketType: ticketType),
-                          onDelete: () => _deleteTicketType(ticketType.id),
-                        );
-                      }),
-
-                    _buildDivider(),
-
-                    // === TỔ CHỨC ===
-                    _buildSectionTitle('🏢 Thông tin tổ chức'),
-                    ImagePickerWidget(
-                      label: 'Logo tổ chức',
-                      imageFile: logoImageFile,
-                      height: 120,
-                      onImageSelected: (file) {
-                        setState(() {
-                          logoImageFile = file;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
-
-                    AppTextField(
-                      lableText: 'Tên tổ chức',
-                      controller: orgNameController,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-                    const SizedBox(height: 10),
-
-                    AppTextField(
-                      lableText: 'Mô tả tổ chức',
-                      controller: orgDescController,
-                      maxLines: 3,
-                      borderColor: Colors.grey.shade300,
-                      fillColor: Colors.grey.shade100,
-                      focusedBorderColor: const Color(0xFF4257b4),
-                      enabledBorderColor: Colors.grey.shade300,
-                      shadowColor: AppColors.transparent,
-                    ),
-
-                    _buildDivider(),
-
-                    // === TÙY CHỌN KHÁC ===
-                    _buildSectionTitle('⚙️ Tùy chọn khác'),
-                    CustomSwitch(
-                      label: 'Sự kiện nổi bật',
-                      value: isHot,
-                      onChanged: (v) => setState(() => isHot = v),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // Nút hành động
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: Row(
+      body: BaseView<EventViewModel>(
+        viewModelBuilder: () => getIt<EventViewModel>(),
+        onModelReady: (vm) {
+          if (isEdit) {
+            vm.loadEventForEdit(widget.event!);
+          } else {
+            vm.clearForm();
+          }
+        },
+        builder: (context, vm, child) {
+          return Form(
+            key: _formKey,
+            child: Column(
               children: [
                 Expanded(
-                  child: AppElevatedButton(
-                    onPressed: () => context.pop(),
-                    text: 'Hủy',
-                    borderColor: Colors.grey.shade300,
-                    color: Colors.white,
-                    textColor: Colors.black87,
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSizes.size20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionTitle(AppStrings.eventBasicInfoSection),
+                          AppTextField(
+                            lableText: AppStrings.eventTitleLabel,
+                            controller: vm.titleController,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+                          ImagePickerWidget(
+                            label: AppStrings.eventBannerLabel,
+                            imageFile: vm.bannerImageFile,
+                            imageUrl: vm.existingBannerUrl,
+                            height: AppSizes.size180,
+                            onImageSelected: (file) {
+                              vm.setBannerImage(file);
+                            },
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+
+                          AppTextField(
+                            lableText: AppStrings.eventDescriptionLabel,
+                            controller: vm.descController,
+                            maxLines: 4,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+
+                          BaseView<CategoryViewModel>(
+                            padding: false,
+                            viewModelBuilder: () => getIt<CategoryViewModel>(),
+                            onModelReady: (catVm) => catVm.watchAll(),
+                            builder: (context, catVm, child) {
+                              if (catVm.isBusy && catVm.categories.isEmpty) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: AppSizes.size8,
+                                  ),
+                                  child: Center(
+                                    child: SizedBox(
+                                      height: AppSizes.size24,
+                                      width: AppSizes.size24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return CustomDropdown<CategoryModel>(
+                                label: AppStrings.eventCategoryLabel,
+                                items: catVm.categories,
+                                value: vm.selectedCategory,
+                                getLabel: (c) => c.name,
+                                onChanged: (v) => vm.setCategory(v!),
+                              );
+                            },
+                          ),
+
+                          _buildDivider(),
+                          _buildSectionTitle(AppStrings.eventLocationSection),
+                          AppTextField(
+                            lableText: AppStrings.eventVenueLabel,
+                            controller: vm.locationController,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+                          AppTextField(
+                            lableText: AppStrings.eventAddressLabel,
+                            controller: vm.addressController,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+
+                          AppTextField(
+                            lableText: AppStrings.eventLocationIdLabel,
+                            controller: vm.idLocationController,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          _buildDivider(),
+                          _buildSectionTitle(AppStrings.eventTimeSection),
+                          _buildDateTimeField(
+                            label: AppStrings.eventStartTimeLabel,
+                            dateTime: vm.startTime,
+                            onTap: () => _selectDateTime(context, true, vm),
+                            icon: Icons.access_time,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+
+                          _buildDateTimeField(
+                            label: AppStrings.eventEndTimeLabel,
+                            dateTime: vm.endTime,
+                            onTap: () => _selectDateTime(context, false, vm),
+                            icon: Icons.event_available,
+                          ),
+                          _buildDivider(),
+                          _buildSectionTitle(AppStrings.eventPriceSection),
+                          AppTextField(
+                            lableText: AppStrings.eventMinPriceLabel,
+                            controller: vm.minPriceController,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+                          CustomSwitch(
+                            label: AppStrings.eventIsFreeLabel,
+                            value: vm.isFree,
+                            onChanged: (v) => vm.setIsFree(v),
+                          ),
+                          _buildDivider(),
+                          _buildSectionTitle(AppStrings.eventTicketTypeSection),
+                          InkWell(
+                            onTap: () => _showAddEditTicketTypeDialog(vm),
+                            child: Container(
+                              padding: const EdgeInsets.all(AppSizes.size16),
+                              decoration: BoxDecoration(
+                                color: const Color(
+                                  0xFF4257b4,
+                                ).withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: AppColors.brandPrimary,
+                                  width: AppSizes.size2,
+                                  style: BorderStyle.solid,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(AppSizes.size8),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.brandPrimary,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppSizes.size12),
+                                  const Text(
+                                    AppStrings.eventAddTicketTypeButton,
+                                    style: TextStyle(
+                                      fontSize: AppSizes.size16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.brandPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSizes.size16),
+                          if (vm.ticketTypes.isEmpty)
+                            Container(
+                              padding: const EdgeInsets.all(AppSizes.size24),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.confirmation_number_outlined,
+                                    size: 48,
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  const SizedBox(height: AppSizes.size12),
+                                  Text(
+                                    AppStrings.eventNoTicketType,
+                                    style: TextStyle(
+                                      fontSize: AppSizes.size16,
+                                      color: Colors.grey.shade600,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSizes.size4),
+                                  Text(
+                                    AppStrings.eventAddTicketTypeGuide,
+                                    style: TextStyle(
+                                      fontSize: AppSizes.size14,
+                                      color: Colors.grey.shade500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            ...vm.ticketTypes.map((ticketType) {
+                              return TicketTypeItemWidget(
+                                ticketType: ticketType,
+                                onEdit: () => _showAddEditTicketTypeDialog(
+                                  vm,
+                                  ticketType: ticketType,
+                                ),
+                                onDelete: () =>
+                                    _deleteTicketType(ticketType.id, vm),
+                              );
+                            }),
+                          _buildDivider(),
+                          _buildSectionTitle(AppStrings.eventOrgSection),
+                          ImagePickerWidget(
+                            label: AppStrings.eventOrgLogoLabel,
+                            imageFile: vm.logoImageFile,
+                            imageUrl: vm.existingLogoUrl,
+                            height: AppSizes.size120,
+                            onImageSelected: (file) {
+                              vm.setLogoImage(file);
+                            },
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+                          AppTextField(
+                            lableText: AppStrings.eventOrgNameLabel,
+                            controller: vm.orgNameController,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          const SizedBox(height: AppSizes.size10),
+                          AppTextField(
+                            lableText: AppStrings.eventOrgDescLabel,
+                            controller: vm.orgDescController,
+                            maxLines: 3,
+                            borderColor: Colors.grey.shade300,
+                            fillColor: Colors.grey.shade100,
+                            focusedBorderColor: AppColors.brandPrimary,
+                            enabledBorderColor: Colors.grey.shade300,
+                            shadowColor: AppColors.transparent,
+                          ),
+                          _buildDivider(),
+                          _buildSectionTitle(
+                            AppStrings.eventOtherOptionsSection,
+                          ),
+                          CustomSwitch(
+                            label: AppStrings.eventIsHotLabel,
+                            value: vm.isHot,
+                            onChanged: (v) => vm.setIsHot(v),
+                          ),
+                          const SizedBox(height: AppSizes.size20),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppElevatedButton(
-                    onPressed: _saveEvent,
-                    text: 'Lưu sự kiện',
-                    borderColor: const Color(0xFF4257b4),
-                    color: const Color(0xFF4257b4),
-                    textColor: Colors.white,
+                Container(
+                  padding: const EdgeInsets.all(AppSizes.size20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, -5),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: AppElevatedButton(
+                          onPressed: () => context.pop(),
+                          text: AppStrings.eventCancelButton,
+                          borderColor: Colors.grey.shade300,
+                          color: Colors.white,
+                          textColor: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(width: AppSizes.size12),
+                      Expanded(
+                        child: AppElevatedButton(
+                          onPressed: () => _saveEvent(vm),
+                          text: AppStrings.eventSaveButton,
+                          borderColor: AppColors.brandPrimary,
+                          color: AppColors.brandPrimary,
+                          textColor: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
+          );
+        },
       ),
     );
   }
